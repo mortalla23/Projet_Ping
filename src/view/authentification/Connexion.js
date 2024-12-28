@@ -130,7 +130,7 @@ const Connexion = () => {
                 <Typography variant="body2">Don't have an account?</Typography>
                 <Typography
                   component={Link}
-                  to="/auth/register"
+                  to="/inscription"
                   fontWeight="500"
                   sx={{
                     textDecoration: 'none',

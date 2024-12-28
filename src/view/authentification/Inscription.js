@@ -115,7 +115,7 @@ const Inscription = () => (
               </Typography>
               <Typography
                 component={Link}
-                to="/auth/login"
+                to="/connexion"
                 fontWeight="500"
                 sx={{
                   textDecoration: 'none',
