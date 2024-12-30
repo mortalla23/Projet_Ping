@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Box,
@@ -16,8 +16,68 @@ import {
 // components
 import PageContainer from '../../component/container/PageContainer';
 import Logo from '../../layouts/logo/Logo';
+import axios from 'axios';
 
 const Connexion = () => {
+  // State pour les données du formulaire
+  const [formData, setFormData] = useState({
+    email: '', // Modifié pour refléter l'authentification par email
+    password: '',
+    remember: false,
+  });
+
+  // Gestion des changements dans le formulaire
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value,
+    });
+  };
+
+  // Validation des champs
+  const validateForm = () => {
+    if (!formData.email.trim()) {
+      alert("L'email est obligatoire.");
+      return false;
+    }
+    if (!formData.password.trim()) {
+      alert('Le mot de passe est obligatoire.');
+      return false;
+    }
+    return true;
+  };
+
+  // Gestion de la soumission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    const loginData = {
+      email: formData.email, // Authentification par email
+      password: formData.password,
+    };
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/users/connexion', loginData);
+      alert('Connexion réussie !');
+      console.log(response.data);
+      // Redirection ou traitement supplémentaire ici
+    } catch (error) {
+      console.error(error);
+      if (error.response && error.response.status === 401) {
+        alert('Nom d’utilisateur ou mot de passe incorrect.');
+      } else if (error.response) {
+        alert(`Erreur : ${error.response.data || "Une erreur s'est produite."}`);
+      } else {
+        alert("Impossible de se connecter au serveur.");
+      }
+    }
+  };
+
   return (
     <PageContainer title="Login" description="This is Login page">
       <Box
@@ -53,81 +113,90 @@ const Connexion = () => {
               </Box>
               {/* Title */}
               <Typography fontWeight="700" variant="h4" mb={3} textAlign="center">
-                Login
+                Connexion
               </Typography>
-              
+
               {/* Form Fields */}
-              <Stack spacing={3}>
-                <Box>
-                  <Typography
-                    variant="subtitle1"
-                    fontWeight={600}
-                    component="label"
-                    htmlFor="username"
-                    mb="5px"
-                  >
-                    Username
-                  </Typography>
-                  <TextField
-                    id="username"
-                    placeholder="Enter your username"
-                    variant="outlined"
-                    fullWidth
-                  />
-                </Box>
-                <Box>
-                  <Typography
-                    variant="subtitle1"
-                    fontWeight={600}
-                    component="label"
-                    htmlFor="password"
-                    mb="5px"
-                  >
-                    Password
-                  </Typography>
-                  <TextField
-                    id="password"
-                    type="password"
-                    placeholder="Enter your password"
-                    variant="outlined"
-                    fullWidth
-                  />
-                </Box>
-                <Stack justifyContent="space-between" direction="row" alignItems="center">
-                  <FormGroup>
-                    <FormControlLabel
-                      control={<Checkbox defaultChecked />}
-                      label="Remember this Device"
+              <form onSubmit={handleSubmit}>
+                <Stack spacing={3}>
+                  <Box>
+                    <Typography
+                      variant="subtitle1"
+                      fontWeight={600}
+                      component="label"
+                      htmlFor="email"
+                      mb="5px"
+                    >
+                      Email
+                    </Typography>
+                    <TextField
+                      id="email"
+                      name="email"
+                      placeholder="Entrez votre email"
+                      variant="outlined"
+                      fullWidth
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
                     />
-                  </FormGroup>
-                  <Typography
-                    component={Link}
-                    to="/forgot-password"
-                    fontWeight="500"
+                  </Box>
+                  <Box>
+                    <Typography
+                      variant="subtitle1"
+                      fontWeight={600}
+                      component="label"
+                      htmlFor="password"
+                      mb="5px"
+                    >
+                      Mot de passe
+                    </Typography>
+                    <TextField
+                      id="password"
+                      name="password"
+                      type="password"
+                      placeholder="Entrez votre mot de passe"
+                      variant="outlined"
+                      fullWidth
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
+                    />
+                  </Box>
+                  <Stack justifyContent="space-between" direction="row" alignItems="center">
+                    <FormGroup>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            name="remember"
+                            checked={formData.remember}
+                            onChange={handleChange}
+                          />
+                        }
+                        label="Se souvenir de moi"
+                      />
+                    </FormGroup>
+                  </Stack>
+                </Stack>
+                {/* Submit Button */}
+                <Box mt={3}>
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    size="large"
+                    fullWidth
+                    type="submit"
                     sx={{
-                      textDecoration: 'none',
-                      color: 'primary.main',
+                      textTransform: 'none',
+                      borderRadius: '8px',
                     }}
                   >
-                    Forgot Password?
-                  </Typography>
-                </Stack>
-              </Stack>
-              {/* Submit Button */}
-              <Box mt={3}>
-                <Button
-                  color="primary"
-                  variant="contained"
-                  size="large"
-                  fullWidth
-                  type="submit"
-                >
-                  Sign In
-                </Button>
-              </Box>
+                    Connexion
+                  </Button>
+                </Box>
+              </form>
               {/* Footer */}
               <Stack direction="row" spacing={1} justifyContent="center" mt={3}>
-                <Typography variant="body2">Don't have an account?</Typography>
+                <Typography variant="body2">Vous n'avez pas de compte ?</Typography>
                 <Typography
                   component={Link}
                   to="/inscription"
@@ -137,7 +206,7 @@ const Connexion = () => {
                     color: 'primary.main',
                   }}
                 >
-                  Create an account
+                  Créer un compte
                 </Typography>
               </Stack>
             </Card>
