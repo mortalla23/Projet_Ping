@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
 import {
   Box,
   Grid,
@@ -19,6 +20,7 @@ import Logo from '../../layouts/logo/Logo';
 import axios from 'axios';
 
 const Connexion = () => {
+  const navigate = useNavigate();
   // State pour les données du formulaire
   const [formData, setFormData] = useState({
     email: '', // Modifié pour refléter l'authentification par email
@@ -34,7 +36,7 @@ const Connexion = () => {
       [name]: type === 'checkbox' ? checked : value,
     });
   };
-
+ 
   // Validation des champs
   const validateForm = () => {
     if (!formData.email.trim()) {
@@ -46,6 +48,18 @@ const Connexion = () => {
       return false;
     }
     return true;
+  };
+  const getRedirectPath = (role) => {
+    switch (role) {
+      case 'TEACHER':
+        return '/teacher/dashboard';
+      case 'ORTHOPHONIST':
+        return '/ortho..';
+      case 'PATIENT':
+        return '/patient....';
+      default:
+        return '/connexion';
+    }
   };
 
   // Gestion de la soumission
@@ -63,20 +77,21 @@ const Connexion = () => {
 
     try {
       const response = await axios.post('http://localhost:5000/api/users/connexion', loginData);
+      const user = response.data;
       alert('Connexion réussie !');
       console.log(response.data);
-      // Redirection ou traitement supplémentaire ici
+      console.log("Détails de l'utilisateur :", user);
+      // Stocker les données utilisateur si nécessaire (par ex., localStorage ou contexte)
+      localStorage.setItem('user', JSON.stringify(user));
+
+      navigate(getRedirectPath(user.role));
+      
     } catch (error) {
       console.error(error);
-      if (error.response && error.response.status === 401) {
-        alert('Nom d’utilisateur ou mot de passe incorrect.');
-      } else if (error.response) {
-        alert(`Erreur : ${error.response.data || "Une erreur s'est produite."}`);
-      } else {
-        alert("Impossible de se connecter au serveur.");
-      }
+      alert(error.response?.data?.message || "Erreur lors de la connexion.");
     }
   };
+
 
   return (
     <PageContainer title="Login" description="This is Login page">
