@@ -5,6 +5,12 @@ import Connexion from './view/authentification/Connexion';
 import Inscription from './view/authentification/Inscription';
 import EnseiAccueil from './view/enseignant/EnseiAccueil';
 
+// Composants pour les différentes sections du tableau de bord
+import EnseiEleves from './view/enseignant/EnseiEleves';
+import EnseiHistorique from './view/enseignant/EnseiHistorique';
+import EnseiRapports from './view/enseignant/EnseiRapports';
+import EnseiAmenagements from './view/enseignant/EnseiAmenagements';
+
 // Composant pour les routes protégées
 const ProtectedRoute = ({ children, role }) => {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -19,7 +25,6 @@ const ProtectedRoute = ({ children, role }) => {
     return <Navigate to="/connexion" />;
   }
 
-  // Si tout est bon, retourne la page demandée
   return children;
 };
 
@@ -32,7 +37,7 @@ function App() {
         <Route path="/connexion" element={<Connexion />} />
         <Route path="/inscription" element={<Inscription />} />
         
-        {/* Route protégée pour l'enseignant */}
+        {/* Routes protégées pour l'enseignant */}
         <Route
           path="/teacher/dashboard"
           element={
@@ -40,9 +45,15 @@ function App() {
               <EnseiAccueil />
             </ProtectedRoute>
           }
-        />
+        >
+          {/* Sous-routes du tableau de bord */}
+          <Route path="eleves" element={<EnseiEleves />} />
+          <Route path="historique" element={<EnseiHistorique />} />
+          <Route path="rapports" element={<EnseiRapports />} />
+          <Route path="amenagements" element={<EnseiAmenagements />} />
+        </Route>
         
-        {/* Ajoute d'autres routes ici si nécessaire */}
+        {/* Ajoutez d'autres routes ici si nécessaire */}
       </Routes>
     </Router>
   );
