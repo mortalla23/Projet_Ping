@@ -18,7 +18,7 @@ const EnseiHistorique = () => {
   ];
 
   return (
-    <Box>
+    <Box sx={{ padding: '20px' }}>
       <Typography variant="h5" gutterBottom>
         Historique éducation
       </Typography>

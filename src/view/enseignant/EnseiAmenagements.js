@@ -65,8 +65,8 @@ const EnseiAmenagements = () => {
   };
 
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom>
+    <Box sx={{ padding: '20px' }}>
+      <Typography variant="h5" gutterBottom>
         Gestion des Aménagements Scolaires
       </Typography>
       <TableContainer component={Paper}>

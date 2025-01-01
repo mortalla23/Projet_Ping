@@ -11,6 +11,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Button
 } from "@mui/material";
 import { Logout, AccountCircle } from "@mui/icons-material";
 import logo from "../../assets/images/logos/bauman.png";
@@ -130,6 +131,16 @@ const EnseiAccueil = () => {
         </Box>
 
         {/* Contenu Dynamique */}
+       
+        {/* Contenu Dynamique */}
+        <Box sx={{ backgroundColor: "#FFFFFF", padding: 2, borderRadius: "8px", boxShadow: "0 2px 5px #00000033" }}>
+          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            Bienvenue {user.name} !
+          </Typography>
+          <Typography variant="body1" sx={{ marginTop: 1 }}>
+            Vous êtes connecté en tant que {user.role}.
+          </Typography>
+        </Box>
         <Outlet />
       </Box>
     </Box>

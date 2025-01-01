@@ -18,7 +18,7 @@ const EnseiRapports = () => {
   ];
 
   return (
-    <Box>
+    <Box sx={{ padding: '20px' }}>
       <Typography variant="h5" gutterBottom>
         Rapports d'exercices
       </Typography>

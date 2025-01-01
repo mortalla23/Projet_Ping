@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   Box,
   Typography,
@@ -15,39 +16,114 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  TablePagination
 } from '@mui/material';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const EnseiEleves = () => {
-  const [students, setStudents] = useState([
-    { id: 1, name: 'Jean Dupont', age: 14, class: '3A' },
-    { id: 2, name: 'Marie Curie', age: 15, class: '3B' },
-  ]);
-
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [newStudent, setNewStudent] = useState({ name: '', age: '', class: '' });
+  const [searchEmail, setSearchEmail] = useState(''); // Email pour rechercher un élève
+  const [foundStudent, setFoundStudent] = useState(null); // Élève trouvé
+  const [teacherId, setTeacherId] = useState(null);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  // Pagination State
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewStudent({ ...newStudent, [name]: value });
-  };
-
-  const handleAddStudent = () => {
-    if (newStudent.name && newStudent.age && newStudent.class) {
-      setStudents([...students, { id: students.length + 1, ...newStudent }]);
-      setNewStudent({ name: '', age: '', class: '' });
-      handleClose();
+  useEffect(() => {
+    const storedTeacherId = localStorage.getItem('teacherId');
+    console.log('ID enseignant récupéré depuis localStorage :', storedTeacherId);
+    if (storedTeacherId) {
+      setTeacherId(storedTeacherId);
+      fetchStudents(storedTeacherId);
     } else {
-      alert('Veuillez remplir tous les champs.');
+      toast.error('Aucun ID enseignant trouvé. Veuillez vous reconnecter.');
+    }
+  }, []);
+
+  const fetchStudents = async (teacherId) => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/teacher/students', {
+        params: { teacherId },
+      });
+      setStudents(response.data);
+    } catch (error) {
+      console.error('Erreur lors du chargement des élèves :', error);
+      toast.error('Erreur lors du chargement des élèves.');
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleSearchStudent = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/teacher/students', {
+        params: { email: searchEmail },
+      });
+      setFoundStudent(response.data);
+      toast.success('Élève trouvé.');
+    } catch (error) {
+      console.error('Erreur lors de la recherche de l’élève :', error);
+      toast.error('Aucun élève trouvé avec cet email.');
+    }
+  };
+
+  const handleAssociateStudent = async () => {
+    if (!foundStudent) {
+      toast.error('Aucun élève à associer.');
+      return;
+    }
+    const studentEmail = foundStudent.email; // Utiliser l'email de l'élève au lieu de l'ID
+    if (!studentEmail) {
+      toast.error("L'email de l'élève est manquant.");
+      return;
+    }
+    try {
+      await axios.post('http://localhost:5000/api/teacher/link-student-by-email', {
+        teacherId,
+        studentEmail,
+        studentId: foundStudent.id,
+      });
+      
+      setStudents([...students, foundStudent]); // Ajouter l'élève à la liste locale
+      setFoundStudent(null); // Réinitialiser la recherche
+      setSearchEmail(''); // Réinitialiser l'email
+      handleClose();
+      toast.success('Élève associé avec succès.');
+    } catch (error) {
+      console.error('Erreur lors de l’association de l’élève :', error);
+      toast.error('Erreur lors de l’association de l’élève.');
+    }
+  };
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    setOpen(false);
+    setFoundStudent(null);
+    setSearchEmail('');
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  if (loading) {
+    return <Typography>Chargement des données...</Typography>;
+  }
+
   return (
-    <Box>
+    <Box sx={{ padding: '20px' }}>
+      <ToastContainer />
       <Typography variant="h5" gutterBottom>
-        Tous les élèves
+        Liste des élèves
       </Typography>
       <Button variant="contained" color="primary" onClick={handleOpen} sx={{ mb: 2, bgcolor: '#5BA8B4' }}>
         Ajouter un élève
@@ -56,62 +132,67 @@ const EnseiEleves = () => {
         <Table>
           <TableHead>
             <TableRow sx={{ bgcolor: '#5BA8B4' }}>
-              <TableCell sx={{ color: '#fff' }}>#</TableCell>
-              <TableCell sx={{ color: '#fff' }}>Nom</TableCell>
-              <TableCell sx={{ color: '#fff' }}>Âge</TableCell>
-              <TableCell sx={{ color: '#fff' }}>Classe</TableCell>
+              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>#</TableCell>
+              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Nom d'utilisateur</TableCell>
+              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Email</TableCell>
+              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Date de naissance</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {students.map((student) => (
+            {students.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((student, index) => (
               <TableRow key={student.id}>
-                <TableCell>{student.id}</TableCell>
-                <TableCell>{student.name}</TableCell>
-                <TableCell>{student.age}</TableCell>
-                <TableCell>{student.class}</TableCell>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{student.username || 'Non disponible'}</TableCell>
+                <TableCell>{student.email || 'Non disponible'}</TableCell>
+                <TableCell>
+                  {student.birth_date ? new Date(student.birth_date).toLocaleDateString() : 'Non disponible'}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={students.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </TableContainer>
 
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Ajouter un élève</DialogTitle>
+        <DialogTitle>Associer un élève existant</DialogTitle>
         <DialogContent>
           <TextField
             margin="dense"
-            name="name"
-            label="Nom"
-            type="text"
+            name="searchEmail"
+            label="Email de l'élève"
+            type="email"
             fullWidth
-            value={newStudent.name}
-            onChange={handleChange}
+            value={searchEmail}
+            onChange={(e) => setSearchEmail(e.target.value)}
           />
-          <TextField
-            margin="dense"
-            name="age"
-            label="Âge"
-            type="number"
-            fullWidth
-            value={newStudent.age}
-            onChange={handleChange}
-          />
-          <TextField
-            margin="dense"
-            name="class"
-            label="Classe"
-            type="text"
-            fullWidth
-            value={newStudent.class}
-            onChange={handleChange}
-          />
+          <Button onClick={handleSearchStudent} color="primary">
+            Rechercher
+          </Button>
+          {foundStudent && (
+            <Box mt={2}>
+              <Typography variant="body1">Nom : {foundStudent.username}</Typography>
+              <Typography variant="body1">Email : {foundStudent.email}</Typography>
+              <Typography variant="body1">
+                Date de naissance : {new Date(foundStudent.birth_date).toLocaleDateString()}
+              </Typography>
+            </Box>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="secondary">
             Annuler
           </Button>
-          <Button onClick={handleAddStudent} color="primary">
-            Ajouter
+          <Button onClick={handleAssociateStudent} color="primary" disabled={!foundStudent}>
+            Associer
           </Button>
         </DialogActions>
       </Dialog>
