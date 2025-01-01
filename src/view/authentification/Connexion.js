@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom'
+import { toast, ToastContainer } from 'react-toastify';
 import {
   Box,
   Grid,
@@ -78,9 +79,18 @@ const Connexion = () => {
     try {
       const response = await axios.post('http://localhost:5000/api/users/connexion', loginData);
       const user = response.data;
+      if (user.role === 'TEACHER') {
+        // Stocker le teacherId dans localStorage
+        localStorage.setItem('teacherId', user.id);
+        toast.success('Connexion réussie en tant qu’enseignant.');
+        navigate('/teacher/dashboard');
+      } else {
+        toast.error('Vous devez être un enseignant pour accéder à cette section.');
+      }
       alert('Connexion réussie !');
       console.log(response.data);
       console.log("Détails de l'utilisateur :", user);
+      
       // Stocker les données utilisateur si nécessaire (par ex., localStorage ou contexte)
       localStorage.setItem('user', JSON.stringify(user));
 
@@ -95,6 +105,7 @@ const Connexion = () => {
 
   return (
     <PageContainer title="Login" description="This is Login page">
+      <ToastContainer />
       <Box
         sx={{
           position: 'relative',
