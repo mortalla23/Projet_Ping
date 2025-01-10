@@ -138,7 +138,7 @@ const EnseiAccueil = () => {
             Bienvenue {user.name} !
           </Typography>
           <Typography variant="body1" sx={{ marginTop: 1 }}>
-            Vous êtes connecté en tant que {user.role}.
+            Vous êtes connecté .
           </Typography>
         </Box>
         <Outlet />
