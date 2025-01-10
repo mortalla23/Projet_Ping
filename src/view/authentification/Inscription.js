@@ -101,13 +101,21 @@ const Inscription = () => {
           },
         }}
       >
-        <Grid container spacing={0} justifyContent="center" sx={{ height: '100vh' }}>
+        <Grid
+          container
+          spacing={0}
+          justifyContent="center"
+          sx={{
+            height: '100vh',
+            padding: { xs: 2, sm: 4 }, // Ajout de padding pour les petits écrans
+          }}
+        >
           <Grid
             item
             xs={12}
-            sm={12}
+            sm={10}
+            md={8}
             lg={4}
-            xl={3}
             display="flex"
             justifyContent="center"
             alignItems="center"
@@ -115,22 +123,21 @@ const Inscription = () => {
             <Card
               elevation={9}
               sx={{
-                p: 4,
-                zIndex: 1,
+                p: { xs: 2, sm: 4 }, // Réduction du padding pour les petits écrans
                 width: '100%',
-                maxWidth: '500px',
+                maxWidth: { xs: '350px', sm: '400px', lg: '500px' }, // Responsiveness
                 borderRadius: '12px',
                 boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
               }}
             >
-              <Box display="flex" justifyContent="center" mb={3}>
-                <Logo />
+              <Box display="flex" justifyContent="center" mb={2}>
+                <Logo style={{ maxWidth: '100px', maxHeight: '50px' }} />
               </Box>
-              <Typography fontWeight="700" variant="h4" mb={3} textAlign="center">
+              <Typography fontWeight="700" variant="h5" mb={2} textAlign="center">
                 Create Account
               </Typography>
               <form onSubmit={handleSubmit} style={{ maxWidth: '100%' }}>
-                <Stack spacing={3}>
+                <Stack spacing={2}>
                   <TextField
                     id="username"
                     name="username"
@@ -201,10 +208,16 @@ const Inscription = () => {
                     value={formData.birth_date}
                     onChange={handleChange}
                     required
+                    label="Date de naissance"
                     InputLabelProps={{
                       shrink: true,
                     }}
+                    sx={{
+                      backgroundColor: '#fff',
+                      borderRadius: '4px',
+                    }}
                   />
+
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -236,6 +249,7 @@ const Inscription = () => {
             </Card>
           </Grid>
         </Grid>
+
       </Box>
     </PageContainer>
   );
