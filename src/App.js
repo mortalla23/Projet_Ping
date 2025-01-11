@@ -4,12 +4,21 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import Connexion from './view/authentification/Connexion';
 import Inscription from './view/authentification/Inscription';
 import EnseiAccueil from './view/enseignant/EnseiAccueil';
+import PatientAccueil from './view/patient/PatientAccueil';
 
 // Composants pour les différentes sections du tableau de bord
 import EnseiEleves from './view/enseignant/EnseiEleves';
 import EnseiHistorique from './view/enseignant/EnseiHistorique';
 import EnseiRapports from './view/enseignant/EnseiRapports';
 import EnseiAmenagements from './view/enseignant/EnseiAmenagements';
+
+import CompteRendus from './view/patient/CompteRendus';
+import  AménagementScolaire from './view/patient/AménagementScolaire';
+import PatientAnamnèse from './view/patient/PatientAnamnèse';
+import AjoutIntervenant from './view/patient/AjoutIntervenant';
+import ConsulDocuments from './view/patient/ConsulDocuments';
+
+
 
 // Composant pour les routes protégées
 const ProtectedRoute = ({ children, role }) => {
@@ -52,6 +61,24 @@ function App() {
           <Route path="rapports" element={<EnseiRapports />} />
           <Route path="amenagements" element={<EnseiAmenagements />} />
         </Route>
+
+        {/* Routes protégées pour le patient  */}
+        <Route
+          path="/patient/dashboard"
+          element={
+            <ProtectedRoute role="PATIENT">
+              <PatientAccueil />
+            </ProtectedRoute>
+          }
+        >
+          {/* Sous-routes du tableau de bord */}
+          <Route path="cr" element={<CompteRendus />} />
+          <Route path="ajIntervenant" element={<AjoutIntervenant />} />
+          <Route path="ascolaires" element={<AménagementScolaire />} />
+          <Route path="anamnese" element={<PatientAnamnèse />} />
+          <Route path="documents" element={<ConsulDocuments />} />
+        </Route>
+       
         
         {/* Ajoutez d'autres routes ici si nécessaire */}
       </Routes>

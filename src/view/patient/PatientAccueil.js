@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import React, { useState , useEffect  } from "react";
+import { useLocation, NavLink, Outlet } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -11,19 +11,39 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Button
+  
 } from "@mui/material";
 import { Logout, AccountCircle } from "@mui/icons-material";
 import logo from "../../assets/images/logos/bauman.png";
 
-const EnseiAccueil = () => {
+const PatientAccueil = () => {
   const [menuAnchor, setMenuAnchor] = useState(null);
+  const [showDynamicContent, setShowDynamicContent] = useState(true);
 
   const user = JSON.parse(localStorage.getItem("user")) || {
     name: "Utilisateur",
     role: "Non défini",
     email: "inconnu@example.com",
   };
+
+ // Utiliser useLocation pour détecter la route actuelle
+  const location = useLocation();
+  useEffect(() => {
+    const hiddenPages = [
+        "/patient/dashboard/anamnese",
+        "/patient/dashboard/cr",
+        "/patient/dashboard/ajIntervenant",
+        "/patient/dashboard/ascolaires",
+        "/patient/dashboard/documents",
+      ];
+     // Si l'utilisateur est sur l'une de ces pages, on cache la section dynamique
+     if (hiddenPages.includes(location.pathname)) {
+      setShowDynamicContent(false);
+    } else {
+      setShowDynamicContent(true);
+    }
+  }, [location]);
+  const isSpecificPage = location.pathname === "/patient/dashboard/anamnese";
 
   const handleMenuOpen = (event) => setMenuAnchor(event.currentTarget);
   const handleMenuClose = () => setMenuAnchor(null);
@@ -34,7 +54,8 @@ const EnseiAccueil = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", height: "100vh", bgcolor: "#E6F0F3" }}>
+    <Box sx={{ display: "flex", height: isSpecificPage ? "150vh" : "100vh", bgcolor: "#E6F0F3" }}>
+        
       {/* Menu Latéral */}
       <Drawer
         variant="permanent"
@@ -75,17 +96,20 @@ const EnseiAccueil = () => {
 
         {/* Liens du Menu */}
         <List>
-          <ListItem button component={NavLink} to="/teacher/dashboard/eleves" sx={linkStyle}>
-            <ListItemText primary="Tous les élèves" />
+          <ListItem button component={NavLink} to="/patient/dashboard/anamnese" sx={linkStyle}>
+            <ListItemText primary="Anamnèse" />
           </ListItem>
-          <ListItem button component={NavLink} to="/teacher/dashboard/historique" sx={linkStyle}>
-            <ListItemText primary="Historique éducation" />
+          <ListItem button component={NavLink} to="/patient/dashboard/cr" sx={linkStyle}>
+            <ListItemText primary="Mes Compte-Rendus" />
           </ListItem>
-          <ListItem button component={NavLink} to="/teacher/dashboard/rapports" sx={linkStyle}>
-            <ListItemText primary="Rapports d'exercices" />
+          <ListItem button component={NavLink} to="/patient/dashboard/ajIntervenant" sx={linkStyle}>
+            <ListItemText primary="Ajout d'un intervenant" />
           </ListItem>
-          <ListItem button component={NavLink} to="/teacher/dashboard/amenagements" sx={linkStyle}>
+          <ListItem button component={NavLink} to="/patient/dashboard/ascolaires" sx={linkStyle}>
             <ListItemText primary="Aménagements scolaires" />
+          </ListItem>
+          <ListItem button component={NavLink} to="/patient/dashboard/documents" sx={linkStyle}>
+            <ListItemText primary="Mes Documents" />
           </ListItem>
         </List>
       </Drawer>
@@ -108,7 +132,7 @@ const EnseiAccueil = () => {
           }}
         >
           <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-            Tableau de bord de l'enseignant
+            Tableau de bord du patient
           </Typography>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <IconButton onClick={handleMenuOpen} aria-label="Menu utilisateur">
@@ -132,15 +156,17 @@ const EnseiAccueil = () => {
 
         {/* Contenu Dynamique */}
        
-        {/* Contenu Dynamique */}
-        <Box sx={{ backgroundColor: "#FFFFFF", padding: 2, borderRadius: "8px", boxShadow: "0 2px 5px #00000033" }}>
-          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-            Bienvenue {user.username} !
-          </Typography>
-          <Typography variant="body1" sx={{ marginTop: 1 }}>
-            Vous êtes connecté.
-          </Typography>
-        </Box>
+         {/* Contenu Dynamique */}
+         {showDynamicContent && (
+          <Box sx={{ backgroundColor: "#FFFFFF", padding: 2, borderRadius: "8px", boxShadow: "0 2px 5px #00000033" }}>
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+              Bienvenue {user.username} !
+            </Typography>
+            <Typography variant="body1" sx={{ marginTop: 1 }}>
+              Vous êtes connecté.
+            </Typography>
+          </Box>
+        )}
         <Outlet />
       </Box>
     </Box>
@@ -156,4 +182,4 @@ const linkStyle = {
   },
 };
 
-export default EnseiAccueil;
+export default PatientAccueil;
