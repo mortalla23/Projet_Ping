@@ -55,9 +55,9 @@ const Connexion = () => {
       case 'TEACHER':
         return '/teacher/dashboard';
       case 'ORTHOPHONIST':
-        return '/ortho..';
+        return '/ortho/dashboard';
       case 'PATIENT':
-        return '/patient....';
+        return '/patient/dashboard';
       default:
         return '/connexion';
     }

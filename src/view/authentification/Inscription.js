@@ -3,8 +3,11 @@ import { Grid, Box, Card, Typography, Stack, Button, TextField, MenuItem, Checkb
 import axios from 'axios';
 import PageContainer from '../../component/container/PageContainer';
 import Logo from '../../layouts/logo/Logo';
+import { useNavigate } from 'react-router-dom';
 
 const Inscription = () => {
+  const navigate = useNavigate(); // Initialisez useNavigate
+
   // State pour les données du formulaire
   const [formData, setFormData] = useState({
     username: '',
@@ -74,6 +77,7 @@ const Inscription = () => {
       const response = await axios.post('http://localhost:5000/api/users/inscription', formData);
       alert('Inscription réussie !');
       resetForm();
+      navigate('/connexion'); // Redirection vers la page de connexion
       console.log(response.data);
     } catch (error) {
       if (error.response && error.response.data) {
