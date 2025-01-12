@@ -1,5 +1,5 @@
 import React, { useState , useEffect  } from "react";
-import { useLocation, NavLink, Outlet } from "react-router-dom";
+import { useLocation, NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -16,7 +16,7 @@ import {
 import { Logout, AccountCircle } from "@mui/icons-material";
 import logo from "../../assets/images/logos/bauman.png";
 
-const PatientAccueil = () => {
+const OrthoAccueil = () => {
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [showDynamicContent, setShowDynamicContent] = useState(true);
 
@@ -28,13 +28,14 @@ const PatientAccueil = () => {
 
  // Utiliser useLocation pour détecter la route actuelle
   const location = useLocation();
+  const navigate = useNavigate();
   useEffect(() => {
     const hiddenPages = [
-        "/patient/dashboard/anamnese",
-        "/patient/dashboard/cr",
-        "/patient/dashboard/ajIntervenant",
-        "/patient/dashboard/ascolaires",
-        "/patient/dashboard/documents",
+        "/ortho/dashboard/allPatients",
+        "/ortho/dashboard/profile",
+        // "/ortho/dashboard/ajIntervenant",
+        // "/ortho/dashboard/ascolaires",
+        // "/ortho/dashboard/documents",
       ];
      // Si l'utilisateur est sur l'une de ces pages, on cache la section dynamique
      if (hiddenPages.includes(location.pathname)) {
@@ -43,7 +44,7 @@ const PatientAccueil = () => {
       setShowDynamicContent(true);
     }
   }, [location]);
-  const isSpecificPage = location.pathname === "/patient/dashboard/anamnese";
+  const isSpecificPage = location.pathname === "/ortho/dashboard/allPatients";
 
   const handleMenuOpen = (event) => setMenuAnchor(event.currentTarget);
   const handleMenuClose = () => setMenuAnchor(null);
@@ -52,8 +53,14 @@ const PatientAccueil = () => {
     localStorage.removeItem("user");
     window.location.href = "/connexion";
   };
+
+  const handleProfileRedirect = () => {
+    navigate("/ortho/dashboard/profile");
+  };
+
+  // Fonction pour actualiser la page et revenir à la page d'accueil
   const handleLogoClick = () => {
-    window.location.href = "/patient/dashboard"; // Rediriger vers la page d'accueil
+    window.location.href = "/ortho/dashboard"; // Rediriger vers la page d'accueil
   };
 
   return (
@@ -101,21 +108,13 @@ const PatientAccueil = () => {
 
         {/* Liens du Menu */}
         <List>
-          <ListItem button component={NavLink} to="/patient/dashboard/anamnese" sx={linkStyle}>
-            <ListItemText primary="Anamnèse" />
+          <ListItem button component={NavLink} to="/ortho/dashboard/allPatients" sx={linkStyle}>
+            <ListItemText primary="Mes patients" />
           </ListItem>
-          <ListItem button component={NavLink} to="/patient/dashboard/cr" sx={linkStyle}>
+          {/* <ListItem button component={NavLink} to="/" sx={linkStyle}>
             <ListItemText primary="Mes Compte-Rendus" />
-          </ListItem>
-          <ListItem button component={NavLink} to="/patient/dashboard/ajIntervenant" sx={linkStyle}>
-            <ListItemText primary="Ajout d'un intervenant" />
-          </ListItem>
-          <ListItem button component={NavLink} to="/patient/dashboard/ascolaires" sx={linkStyle}>
-            <ListItemText primary="Aménagements scolaires" />
-          </ListItem>
-          <ListItem button component={NavLink} to="/patient/dashboard/documents" sx={linkStyle}>
-            <ListItemText primary="Mes Documents" />
-          </ListItem>
+          </ListItem> */}
+          
         </List>
       </Drawer>
 
@@ -137,10 +136,10 @@ const PatientAccueil = () => {
           }}
         >
           <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-            Tableau de bord du patient
+            Tableau de bord de l'orthophoniste
           </Typography>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <IconButton onClick={handleMenuOpen} aria-label="Menu utilisateur">
+          <IconButton onClick={handleProfileRedirect} aria-label="Aller au profil">
               <AccountCircle sx={{ fontSize: 40, color: "#FFFFFF" }} />
             </IconButton>
             <Menu
@@ -187,4 +186,4 @@ const linkStyle = {
   },
 };
 
-export default PatientAccueil;
+export default OrthoAccueil;

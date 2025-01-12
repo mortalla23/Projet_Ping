@@ -24,6 +24,10 @@ const EnseiAccueil = () => {
     localStorage.removeItem("user");
     window.location.href = "/connexion";
   };
+  // Fonction pour actualiser la page et revenir à la page d'accueil
+  const handleLogoClick = () => {
+    window.location.href = "/teacher/dashboard"; // Rediriger vers la page d'accueil
+  };
 
   // Ouvrir/fermer la messagerie
   const toggleMessaging = () => setOpenMessaging(!openMessaging);
@@ -50,7 +54,9 @@ const EnseiAccueil = () => {
           <Avatar
             alt="Logo"
             src={logo}
-            sx={{ width: 70, height: 70, margin: "0 auto", boxShadow: "0 0 10px #00000033" }}
+            sx={{ width: 70, height: 70, margin: "0 auto", boxShadow: "0 0 10px #00000033" , cursor: "pointer", 
+            }}
+            onClick={handleLogoClick} // Ajouter le clic pour rediriger
           />
           <Typography variant="h5" sx={{ mt: 2, fontWeight: "bold" }}>Menu</Typography>
         </Box>

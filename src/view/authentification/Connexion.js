@@ -79,27 +79,41 @@ const Connexion = () => {
     try {
       const response = await axios.post('http://localhost:5000/api/users/connexion', loginData);
       const user = response.data;
+    
+      // Vérifie si l'utilisateur est un enseignant
       if (user.role === 'TEACHER') {
         // Stocker le teacherId dans localStorage
         localStorage.setItem('teacherId', user.id);
         toast.success('Connexion réussie en tant qu’enseignant.');
         navigate('/teacher/dashboard');
+      } else if (user.role === 'ORTHOPHONIST') {
+        // Si l'utilisateur est un orthophoniste, stocke également orthoId
+        localStorage.setItem('orthoId', user.id);  // Stocke l'ID de l'orthophoniste
+        toast.success('Connexion réussie en tant qu’orthophoniste.');
+        navigate('/ortho/dashboard');
+      } else if (user.role === 'PATIENT') {
+        localStorage.setItem('patientId', user.id);  // Stocke l'ID de du patient( eleve)
+        toast.success('Connexion réussie en tant que patient.');
+        navigate('/patient/dashboard');
       } else {
-        toast.error('Vous devez être un enseignant pour accéder à cette section.');
+        toast.error('Rôle non reconnu. Connexion échouée.');
+        return;
       }
+    
+      // Stocker les données utilisateur si nécessaire (par ex., localStorage ou contexte)
+      localStorage.setItem('user', JSON.stringify(user));  // Stocker les informations utilisateur
       alert('Connexion réussie !');
       console.log(response.data);
       console.log("Détails de l'utilisateur :", user);
-      
-      // Stocker les données utilisateur si nécessaire (par ex., localStorage ou contexte)
-      localStorage.setItem('user', JSON.stringify(user));
-
+    
+      // Rediriger vers la page en fonction du rôle
       navigate(getRedirectPath(user.role));
-      
+    
     } catch (error) {
       console.error(error);
       alert(error.response?.data?.message || "Erreur lors de la connexion.");
     }
+    
   };
 
 

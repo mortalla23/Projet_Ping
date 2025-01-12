@@ -5,21 +5,27 @@ import Connexion from './view/authentification/Connexion';
 import Inscription from './view/authentification/Inscription';
 import EnseiAccueil from './view/enseignant/EnseiAccueil';
 import PatientAccueil from './view/patient/PatientAccueil';
+import OrthoAccueil from './view/orthophoniste/OrthoAccueil';
+import Messages from './view/message/Message';
 
-// Composants pour les différentes sections du tableau de bord
+// Composants pour les différentes sections du tableau de bord pour enseignant
 import EnseiEleves from './view/enseignant/EnseiEleves';
 import EnseiHistorique from './view/enseignant/EnseiHistorique';
 import EnseiRapports from './view/enseignant/EnseiRapports';
 import EnseiAmenagements from './view/enseignant/EnseiAmenagements';
 
+// Composants pour les différentes sections du tableau de bord pour patient
 import CompteRendus from './view/patient/CompteRendus';
 import  AménagementScolaire from './view/patient/AménagementScolaire';
 import PatientAnamnèse from './view/patient/PatientAnamnèse';
 import AjoutIntervenant from './view/patient/AjoutIntervenant';
 import ConsulDocuments from './view/patient/ConsulDocuments';
 
-import Messages from './view/message/Message'; 
+ 
 
+// Composants pour les différentes sections du tableau de bord pour orthophoniste
+import OrthoPatients from './view/orthophoniste/OrthoPatients';
+import OrthoProfile from './view/orthophoniste/OrthoProfile';
 
 
 
@@ -79,6 +85,24 @@ function App() {
           {/* Sous-routes du tableau de bord */}
           <Route path="cr" element={<CompteRendus />} />
           <Route path="ajIntervenant" element={<AjoutIntervenant />} />
+          <Route path="ascolaires" element={<AménagementScolaire />} />
+          <Route path="anamnese" element={<PatientAnamnèse />} />
+          <Route path="documents" element={<ConsulDocuments />} />
+          <Route path="messages" element={<Messages />} />
+        </Route>
+       
+       {/* Routes protégées pour l'orthophoniste */}
+       <Route
+          path="/ortho/dashboard"
+          element={
+            <ProtectedRoute role="ORTHOPHONIST">
+              <OrthoAccueil />
+            </ProtectedRoute>
+          }
+        >
+          {/* Sous-routes du tableau de bord */}
+          <Route path="allPatients" element={<OrthoPatients />} />
+          <Route path="profile" element={< OrthoProfile />} />
           <Route path="ascolaires" element={<AménagementScolaire />} />
           <Route path="anamnese" element={<PatientAnamnèse />} />
           <Route path="documents" element={<ConsulDocuments />} />
