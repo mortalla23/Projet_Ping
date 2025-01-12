@@ -49,7 +49,9 @@ const EnseiEleves = () => {
       const response = await axios.get('http://localhost:5000/api/teacher/students', {
         params: { teacherId },
       });
-      setStudents(response.data);
+      console.log('Données reçues :', response.data); 
+      // Si la réponse n'est pas déjà un tableau, on l'encapsule dans un tableau
+      setStudents(Array.isArray(response.data) ? response.data : [response.data]);
     } catch (error) {
       console.error('Erreur lors du chargement des élèves :', error);
       toast.error('Erreur lors du chargement des élèves.');
@@ -140,13 +142,11 @@ const EnseiEleves = () => {
           </TableHead>
           <TableBody>
             {students.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((student, index) => (
-              <TableRow key={student.id}>
+              <TableRow key={student.id}>  {/* Assurez-vous que student.id est unique */}
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{student.username || 'Non disponible'}</TableCell>
                 <TableCell>{student.email || 'Non disponible'}</TableCell>
-                <TableCell>
-                  {student.birth_date ? new Date(student.birth_date).toLocaleDateString() : 'Non disponible'}
-                </TableCell>
+                <TableCell>{student.birth_date ? new Date(student.birth_date).toLocaleDateString() : 'Non disponible'}</TableCell>
               </TableRow>
             ))}
           </TableBody>
