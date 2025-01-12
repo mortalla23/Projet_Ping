@@ -18,6 +18,10 @@ import PatientAnamnèse from './view/patient/PatientAnamnèse';
 import AjoutIntervenant from './view/patient/AjoutIntervenant';
 import ConsulDocuments from './view/patient/ConsulDocuments';
 
+import Messages from './view/message/Message'; 
+
+
+
 
 
 // Composant pour les routes protégées
@@ -60,6 +64,7 @@ function App() {
           <Route path="historique" element={<EnseiHistorique />} />
           <Route path="rapports" element={<EnseiRapports />} />
           <Route path="amenagements" element={<EnseiAmenagements />} />
+          <Route path="messages" element={<Messages />} />
         </Route>
 
         {/* Routes protégées pour le patient  */}
@@ -77,10 +82,13 @@ function App() {
           <Route path="ascolaires" element={<AménagementScolaire />} />
           <Route path="anamnese" element={<PatientAnamnèse />} />
           <Route path="documents" element={<ConsulDocuments />} />
+          <Route path="messages" element={<Messages />} />
         </Route>
        
         
         {/* Ajoutez d'autres routes ici si nécessaire */}
+
+        
       </Routes>
     </Router>
   );
