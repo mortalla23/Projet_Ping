@@ -43,21 +43,23 @@ const OrthoProfile = () => {
   }
 
   return (
-    <Box sx={{ padding: 3, bgcolor: "#fff", borderRadius: "8px", boxShadow: "0 2px 5px #00000033" }}>
-      <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2 }}>
+    <Box
+      sx={{
+        padding: 2,
+        bgcolor: "#fff",
+        borderRadius: "8px",
+        boxShadow: "0 2px 5px #00000033",
+        maxWidth: "800px", // Limiter la largeur du profil
+        margin: "auto", // Centrer horizontalement
+        minHeight: "600px", // Hauteur minimale du formulaire
+        display: "flex", // Utiliser flexbox pour une gestion plus flexible
+        flexDirection: "column", // Aligner les éléments en colonne
+        justifyContent: "flex-start", // Aligner les éléments au sommet
+      }}
+    >
+      <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}>
         Mon Profil
       </Typography>
-      
-      {/* Bouton Déconnexion juste en dessous du titre */}
-      <Button 
-        color="secondary" 
-        variant="outlined" 
-        size="large" 
-        onClick={handleLogout}
-        sx={{ mb: 2 }}
-      >
-        Déconnexion
-      </Button>
 
       <form>
         <TextField
@@ -88,25 +90,8 @@ const OrthoProfile = () => {
           onChange={handleChange}
         />
 
-        {/* <TextField
-          fullWidth
-          label="Téléphone"
-          name="phone"
-          value={user.phone || ""}
-          margin="normal"
-          onChange={handleChange}
-        />
-        <TextField
-          fullWidth
-          label="Adresse"
-          name="address"
-          value={user.address || ""}
-          margin="normal"
-          onChange={handleChange}
-        /> */}
-
-        {/* Alignement des boutons en bas du formulaire */}
-        <Stack direction="row" spacing={2} mt={3} justifyContent="flex-end">
+        <Stack direction="column" spacing={2} mt={3} alignItems="center">
+          {/* Bouton Enregistrer */}
           <Button
             color="primary"
             variant="contained"
@@ -117,9 +102,26 @@ const OrthoProfile = () => {
               '&:hover': {
                 backgroundColor: '#4c9ca3', // Couleur au survol
               },
+              width: "200px", // Réduction de la largeur des boutons
+              padding: "12px", // Augmentation du padding
             }}
           >
             Enregistrer
+          </Button>
+
+          {/* Bouton Déconnexion */}
+          <Button
+            color="secondary"
+            variant="outlined"
+            size="large"
+            onClick={handleLogout}
+            sx={{
+              mt: 2,  // Ajout de marges pour espacer les boutons
+              width: "200px", // Réduction de la largeur des boutons
+              padding: "12px", // Augmentation du padding
+            }}
+          >
+            Déconnexion
           </Button>
         </Stack>
       </form>
