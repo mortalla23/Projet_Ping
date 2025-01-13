@@ -84,6 +84,7 @@ const Connexion = () => {
       if (user.role === 'TEACHER') {
         // Stocker le teacherId dans localStorage
         localStorage.setItem('teacherId', user.id);
+        console.log(localStorage.getItem('userId')); // Vérifie que l'ID est bien stocké
         toast.success('Connexion réussie en tant qu’enseignant.');
         navigate('/teacher/dashboard');
       } else if (user.role === 'ORTHOPHONIST') {
