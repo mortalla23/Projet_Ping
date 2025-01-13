@@ -5,7 +5,6 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/logos/bauman.png";
 import Messages from "../message/Message"; // Modifiez le chemin ici
 
-
 const EnseiAccueil = () => {
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [openMessaging, setOpenMessaging] = useState(false); // La gestion de l'état de la messagerie
@@ -24,7 +23,7 @@ const EnseiAccueil = () => {
     localStorage.removeItem("user");
     window.location.href = "/connexion";
   };
-  // Fonction pour actualiser la page et revenir à la page d'accueil
+
   const handleLogoClick = () => {
     window.location.href = "/teacher/dashboard"; // Rediriger vers la page d'accueil
   };
@@ -54,9 +53,8 @@ const EnseiAccueil = () => {
           <Avatar
             alt="Logo"
             src={logo}
-            sx={{ width: 70, height: 70, margin: "0 auto", boxShadow: "0 0 10px #00000033" , cursor: "pointer", 
-            }}
-            onClick={handleLogoClick} // Ajouter le clic pour rediriger
+            sx={{ width: 70, height: 70, margin: "0 auto", boxShadow: "0 0 10px #00000033" , cursor: "pointer" }}
+            onClick={handleLogoClick}
           />
           <Typography variant="h5" sx={{ mt: 2, fontWeight: "bold" }}>Menu</Typography>
         </Box>
@@ -83,7 +81,7 @@ const EnseiAccueil = () => {
         flexGrow: 1,
         p: 3,
         transition: "margin-right 0.3s ease",
-        marginRight: openMessaging ? 55 : 0, // Pousse le contenu principal vers la gauche si la messagerie est ouverte
+        marginRight: openMessaging ? "420px" : 0, // Pousse le contenu principal vers la gauche si la messagerie est ouverte
       }}>
         {/* Barre Supérieure */}
         <Box sx={{
@@ -122,7 +120,7 @@ const EnseiAccueil = () => {
         <Outlet />
       </Box>
 
-      {/* Drawer pour la messagerie */}
+      {/* Drawer pour la messagerie (zone superposée sur la page principale) */}
       {openMessaging && (
         <Box sx={{
           position: "fixed", top: 0, right: 0, bottom: 0, width: "400px", bgcolor: "#ffffff", zIndex: 1300,
