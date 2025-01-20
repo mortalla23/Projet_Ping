@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Grid, Box, Card, Typography, Stack, Button, TextField, MenuItem, Checkbox, FormControlLabel } from '@mui/material';
 import axios from 'axios';
 import PageContainer from '../../component/container/PageContainer';
-import Logo from '../../layouts/logo/Logo';
+import Logo from '../../layouts/logo/Logo'; // Conserve le logo
 import { useNavigate } from 'react-router-dom';
 
 const Inscription = () => {
-  const navigate = useNavigate(); // Initialisez useNavigate
+  const navigate = useNavigate();
 
   // State pour les données du formulaire
   const [formData, setFormData] = useState({
@@ -14,7 +14,7 @@ const Inscription = () => {
     email: '',
     password: '',
     role: 'TEACHER',
-    birth_date: '',
+    birthDate: '', // Utilisation de "birthDate" pour correspondre à l'API
     acceptTerms: false,
   });
 
@@ -41,7 +41,7 @@ const Inscription = () => {
       alert("Le mot de passe doit contenir au moins 6 caractères.");
       return false;
     }
-    if (!formData.birth_date) {
+    if (!formData.birthDate) {
       alert("La date de naissance est obligatoire.");
       return false;
     }
@@ -59,7 +59,7 @@ const Inscription = () => {
       email: '',
       password: '',
       role: 'TEACHER',
-      birth_date: '',
+      birthDate: '',
       acceptTerms: false,
     });
   };
@@ -73,16 +73,29 @@ const Inscription = () => {
     }
 
     try {
-      console.log(formData);
-      const response = await axios.post('http://localhost:5000/api/users/inscription', formData);
+      // Exclusion de `acceptTerms`
+      const { acceptTerms, ...dataToSend } = formData;
+
+      console.log("Données envoyées :", dataToSend);
+
+      const response = await axios.post('http://localhost:5000/api/users/inscription', dataToSend, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log("Réponse de l'API :", response.data);
       alert('Inscription réussie !');
       resetForm();
       navigate('/connexion'); // Redirection vers la page de connexion
-      console.log(response.data);
     } catch (error) {
-      if (error.response && error.response.data) {
-        alert(`Erreur : ${error.response.data.message || "Une erreur s'est produite."}`);
+      console.error('Erreur lors de l\'inscription :', error);
+      if (error.response) {
+        console.error("Statut HTTP :", error.response.status);
+        console.error("Données de la réponse :", error.response.data);
+        alert(`Erreur : ${error.response.data.message || "Une erreur est survenue."}`);
       } else {
+        console.error("Erreur sans réponse du serveur :", error);
         alert("Impossible de se connecter au serveur.");
       }
     }
@@ -135,10 +148,10 @@ const Inscription = () => {
               }}
             >
               <Box display="flex" justifyContent="center" mb={2}>
-                <Logo style={{ maxWidth: '100px', maxHeight: '50px' }} />
+                <Logo style={{ maxWidth: '100px', maxHeight: '50px' }} /> {/* Logo conservé */}
               </Box>
               <Typography fontWeight="700" variant="h5" mb={2} textAlign="center">
-                Create Account
+                Créer un compte
               </Typography>
               <form onSubmit={handleSubmit} style={{ maxWidth: '100%' }}>
                 <Stack spacing={2}>
@@ -204,12 +217,12 @@ const Inscription = () => {
                     <MenuItem value="PATIENT">Patient</MenuItem>
                   </TextField>
                   <TextField
-                    id="birth_date"
-                    name="birth_date"
+                    id="birthDate"
+                    name="birthDate"
                     type="date"
                     variant="outlined"
                     fullWidth
-                    value={formData.birth_date}
+                    value={formData.birthDate}
                     onChange={handleChange}
                     required
                     label="Date de naissance"
@@ -253,7 +266,6 @@ const Inscription = () => {
             </Card>
           </Grid>
         </Grid>
-
       </Box>
     </PageContainer>
   );
