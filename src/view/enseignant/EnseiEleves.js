@@ -73,6 +73,8 @@ const EnseiEleves = () => {
     }
   };
 
+  
+
   const handleAssociateStudent = async () => {
     if (!foundStudent) {
       toast.error('Aucun élève à associer.');
@@ -146,7 +148,7 @@ const EnseiEleves = () => {
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{student.username || 'Non disponible'}</TableCell>
                 <TableCell>{student.email || 'Non disponible'}</TableCell>
-                <TableCell>{student.birth_date ? new Date(student.birth_date).toLocaleDateString() : 'Non disponible'}</TableCell>
+                <TableCell>{student.birthDate ? new Date(student.birthDate).toLocaleDateString() : 'Non disponible'}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -182,7 +184,7 @@ const EnseiEleves = () => {
               <Typography variant="body1">Nom : {foundStudent.username}</Typography>
               <Typography variant="body1">Email : {foundStudent.email}</Typography>
               <Typography variant="body1">
-                Date de naissance : {new Date(foundStudent.birth_date).toLocaleDateString()}
+                Date de naissance : {new Date(foundStudent.birthDate).toLocaleDateString()}
               </Typography>
             </Box>
           )}
