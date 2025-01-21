@@ -12,7 +12,7 @@ const SearchUsers = ({ onSelectUser }) => {
 
     setLoading(true); // Commencer à charger
     try {
-      const response = await fetch(`http://localhost:5000/api/teacher/students?searchTerm=${searchTerm}`);
+      const response = await fetch(`http://localhost:5000/api/users/search/${searchTerm}`);
       if (response.ok) {
         const data = await response.json();
         setUsers(data); // Remplir la liste avec les utilisateurs trouvés
