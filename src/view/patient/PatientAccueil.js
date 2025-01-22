@@ -30,7 +30,7 @@ const PatientAccueil = () => {
   const location = useLocation();
   useEffect(() => {
     const hiddenPages = [
-        "/patient/dashboard/anamnese",
+        "/patient/dashboard/anamnese"+localStorage.getItem('patientId'),
         "/patient/dashboard/cr",
         "/patient/dashboard/ajIntervenant",
         "/patient/dashboard/ascolaires",
@@ -43,7 +43,7 @@ const PatientAccueil = () => {
       setShowDynamicContent(true);
     }
   }, [location]);
-  const isSpecificPage = location.pathname === "/patient/dashboard/anamnese";
+  const isSpecificPage = location.pathname === "/patient/dashboard/anamnese"+localStorage.getItem('patientId');
 
   const handleMenuOpen = (event) => setMenuAnchor(event.currentTarget);
   const handleMenuClose = () => setMenuAnchor(null);
@@ -101,7 +101,9 @@ const PatientAccueil = () => {
 
         {/* Liens du Menu */}
         <List>
-          <ListItem button component={NavLink} to="/patient/dashboard/anamnese" sx={linkStyle}>
+          <ListItem button component={NavLink} to={`/patient/dashboard/anamnese/${localStorage.getItem('patientId')}`} 
+    sx={linkStyle}
+  >
             <ListItemText primary="Anamnèse" />
           </ListItem>
           <ListItem button component={NavLink} to="/patient/dashboard/cr" sx={linkStyle}>

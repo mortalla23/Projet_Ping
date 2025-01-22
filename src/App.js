@@ -13,6 +13,8 @@ import EnseiEleves from './view/enseignant/EnseiEleves';
 import EnseiHistorique from './view/enseignant/EnseiHistorique';
 import EnseiRapports from './view/enseignant/EnseiRapports';
 import EnseiAmenagements from './view/enseignant/EnseiAmenagements';
+import EnseiHistoriqueEducation from './view/enseignant/EnseiHistoriqueEducation';
+import EnseiPpre from './view/enseignant/EnseiPpre';
 
 // Composants pour les différentes sections du tableau de bord pour patient
 import CompteRendus from './view/patient/CompteRendus';
@@ -20,15 +22,19 @@ import  AménagementScolaire from './view/patient/AménagementScolaire';
 import PatientAnamnèse from './view/patient/PatientAnamnèse';
 import AjoutIntervenant from './view/patient/AjoutIntervenant';
 import ConsulDocuments from './view/patient/ConsulDocuments';
-
+import HistoriqueEducation from './view/patient/HistoriqueEducation';
+import HistoriqueSante from './view/patient/HistoriqueSante';
+import PatientPpre from './view/patient/PatientPpre';
  
 
 // Composants pour les différentes sections du tableau de bord pour orthophoniste
 import OrthoPatients from './view/orthophoniste/OrthoPatients';
 import OrthoProfile from './view/orthophoniste/OrthoProfile';
-
-
-
+import Anamnese from './view/orthophoniste/Anamnese';
+import OrthoHistoriqueEducation from './view/orthophoniste/OrthoHistoriqueEducation';
+import OrthoHistoriqueSante from './view/orthophoniste/OrthoHistoriqueSante';
+import OrthoPpre from './view/orthophoniste/OrthoPpre';
+import Button from './view/patient/Button';
 
 // Composant pour les routes protégées
 const ProtectedRoute = ({ children, role }) => {
@@ -55,6 +61,7 @@ function App() {
         <Route path="/" element={<Navigate to="/connexion" />} />
         <Route path="/connexion" element={<Connexion />} />
         <Route path="/inscription" element={<Inscription />} />
+        <Route path="/button" element={<Button />} />
         
         {/* Routes protégées pour l'enseignant */}
         <Route
@@ -68,9 +75,12 @@ function App() {
           {/* Sous-routes du tableau de bord */}
           <Route path="eleves" element={<EnseiEleves />} />
           <Route path="historique" element={<EnseiHistorique />} />
+          <Route path="historique-education/:userId" element={<EnseiHistoriqueEducation />} />
           <Route path="rapports" element={<EnseiRapports />} />
           <Route path="amenagements" element={<EnseiAmenagements />} />
           <Route path="messages" element={<Messages />} />
+          <Route path="ppre/:userId" element={<EnseiPpre/>} />
+          
         </Route>
 
         {/* Routes protégées pour le patient  */}
@@ -86,7 +96,11 @@ function App() {
           <Route path="cr" element={<CompteRendus />} />
           <Route path="ajIntervenant" element={<AjoutIntervenant />} />
           <Route path="ascolaires" element={<AménagementScolaire />} />
-          <Route path="anamnese" element={<PatientAnamnèse />} />
+          <Route path="anamnese/:userId" element={<PatientAnamnèse />} />
+          <Route path="historique-education/:userId" element={<HistoriqueEducation />} />
+          <Route path="historique-sante/:userId" element={<HistoriqueSante/>} />
+          <Route path="ppre/:userId" element={<PatientPpre/>} />
+          
           <Route path="documents" element={<ConsulDocuments />} />
           <Route path="messages" element={<Messages />} />
         </Route>
@@ -104,9 +118,13 @@ function App() {
           <Route path="allPatients" element={<OrthoPatients />} />
           <Route path="profile" element={< OrthoProfile />} />
           <Route path="ascolaires" element={<AménagementScolaire />} />
-          <Route path="anamnese" element={<PatientAnamnèse />} />
+          <Route path="anamnese/:userId" element={<Anamnese />} />
+          <Route path="historique-education/:userId" element={<OrthoHistoriqueEducation />} />
+          <Route path="historique-sante/:userId" element={<OrthoHistoriqueSante />} />
           <Route path="documents" element={<ConsulDocuments />} />
           <Route path="messages" element={<Messages />} />
+          <Route path="ppre/:userId" element={<OrthoPpre/>} />
+          
         </Route>
        
         

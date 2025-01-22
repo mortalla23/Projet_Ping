@@ -16,7 +16,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const PatientAnamnèse = () => {
   const { userId } = useParams();
-  const documentIdRef = useRef(null);
+
+
   const initialFormData = {
     consultationDemandePar: null,
     motifConsultation: null,
@@ -163,8 +164,8 @@ const PatientAnamnèse = () => {
 
   const [formData, setFormData] = useState(initialFormData);
   const [expanded, setExpanded] = useState(false);
- // const [selectedCaracteres, setSelectedCaracteres] = useState([]);
-  
+  //const [selectedCaracteres, setSelectedCaracteres] = useState([]);
+  const documentIdRef = useRef(null);
   // Liste des caractères prédéfinis
   const caracteresOptions = [
     "Volontaire",
@@ -240,26 +241,26 @@ const PatientAnamnèse = () => {
   
       if (anamneseData) {
         console.log("Anamnèse ajoutée avec succès", anamneseData);
-        var id=0;  
-        
-        if(documentIdRef.current){
-            id=documentIdRef.current;
-          }
-          console.log("document id "+id);
+  
         // 2. Ajouter le user_document après avoir obtenu l'ID de l'anamnèse
+        console.log("the document id"+documentIdRef.current);
+        var id=0;
+        if (documentIdRef.current) {
+        id = documentIdRef.current;
+      }
         const userDocumentResponse = await fetch('http://localhost:5000/api/user-documents', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              id:id,
+              id : id,
               userId: userId, // Assure-toi que userId est valide et non 0
               documentId: anamneseData.id, // Assure-toi que anamneseData.id est correct
               documentName: 'Anamnese.pdf',
               documentType: 'Anamnese',
               isPublic: false,
-              updatedBy: localStorage.getItem('patientId'),
+              updatedBy: localStorage.getItem('orthoId'),
             }),
           });
       
