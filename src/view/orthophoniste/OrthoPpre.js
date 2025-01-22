@@ -1,4 +1,4 @@
-import React, { useState,useRef } from "react";
+import React, { useState,useEffect,useRef } from "react";
 import { useParams } from "react-router-dom";
 import {
   Box,
@@ -35,6 +35,34 @@ const Ppre = () => {
     });
   };
 
+   useEffect(() => {
+        const fetchPpre = async () => {
+          try {
+            const userDocResponse = await fetch(
+              `http://localhost:5000/api/user-documents?userId=${userId}&documentType=PPRE`
+            );
+            const userDocData = await userDocResponse.json();
+            if (userDocData && userDocData[0].documentId) {
+              documentIdRef.current=userDocData[0].id;
+              const ppreResponse = await fetch(
+                `http://localhost:5000/api/ppre/${userDocData[0].documentId}`
+              );
+              const ppreData = await ppreResponse.json();
+              if (ppreData) {
+                setFormData({
+                  ...initialFormData,
+                  ...ppreData,
+                });
+              }
+            }
+          } catch (error) {
+            console.error("Erreur lors du chargement du ppre:", error);
+          }
+        };
+    
+        fetchPpre();
+      }, [userId]);
+    
   const handleSubmit = async (e) => {
     e.preventDefault();
     
