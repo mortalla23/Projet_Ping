@@ -85,7 +85,8 @@ const PatientAccueil = () => {
           "& .MuiDrawer-paper": {
             width: 260,
             boxSizing: "border-box",
-            bgcolor: "#5BA8B4",
+            bgcolor: "transparent", // Pas de fond uni pour permettre le dégradé
+            backgroundImage: "linear-gradient(to bottom, #397C9A, #51B7A0)", // Dégradé vertical
             color: "#FFFFFF",
             padding: "10px 0",
           },
@@ -327,7 +328,7 @@ const buttonStyle = {
 const linkStyle = {
   "&.Mui-selected, &:hover": {
     bgcolor: "#5BA8B4",
-    color: "#FFFFFF",
+    color: "#white",
     fontWeight: "bold",
   },
 };
