@@ -65,6 +65,7 @@ function App() {
             <ProtectedRoute role="TEACHER">
               <EnseiAccueil />
             </ProtectedRoute>
+            
           }
         >
           {/* Sous-routes du tableau de bord */}
