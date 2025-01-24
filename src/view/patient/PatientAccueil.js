@@ -35,6 +35,7 @@ const PatientAccueil = () => {
         "/patient/dashboard/ajIntervenant",
         "/patient/dashboard/ascolaires",
         "/patient/dashboard/documents",
+        "/patient/dashboard/pap",
       ];
      // Si l'utilisateur est sur l'une de ces pages, on cache la section dynamique
      if (hiddenPages.includes(location.pathname)) {
@@ -110,9 +111,29 @@ const PatientAccueil = () => {
           <ListItem button component={NavLink} to="/patient/dashboard/ajIntervenant" sx={linkStyle}>
             <ListItemText primary="Ajout d'un intervenant" />
           </ListItem>
-          <ListItem button component={NavLink} to="/patient/dashboard/ascolaires" sx={linkStyle}>
-            <ListItemText primary="Aménagements scolaires" />
-          </ListItem>
+          <ListItem
+              button
+              component={NavLink}
+              to={`/patient/dashboard/pap?userId=${localStorage.getItem('patientId')}`}
+              sx={linkStyle}
+              onClick={() => {
+                console.log("userId dans localStorage :", localStorage.getItem('patientId'));
+              }}
+            >
+          <ListItemText primary="PAP" />
+        </ListItem>
+
+        <ListItem
+              button
+              component={NavLink}
+              to={`/patient/dashboard/ascolaires?userId=${localStorage.getItem('patientId')}`}
+              sx={linkStyle}
+              onClick={() => {
+                console.log("userId dans localStorage :", localStorage.getItem('patientId'));
+              }}
+            >
+          <ListItemText primary="Aménagements scolaires" />
+        </ListItem>
           <ListItem button component={NavLink} to="/patient/dashboard/documents" sx={linkStyle}>
             <ListItemText primary="Mes Documents" />
           </ListItem>

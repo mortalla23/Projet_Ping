@@ -20,6 +20,8 @@ import  AménagementScolaire from './view/patient/AménagementScolaire';
 import PatientAnamnèse from './view/patient/PatientAnamnèse';
 import AjoutIntervenant from './view/patient/AjoutIntervenant';
 import ConsulDocuments from './view/patient/ConsulDocuments';
+import PAPForm from './view/patient/PAPForm';
+
 
  
 
@@ -85,6 +87,7 @@ function App() {
           {/* Sous-routes du tableau de bord */}
           <Route path="cr" element={<CompteRendus />} />
           <Route path="ajIntervenant" element={<AjoutIntervenant />} />
+          <Route path="pap" element={<PAPForm />} />
           <Route path="ascolaires" element={<AménagementScolaire />} />
           <Route path="anamnese" element={<PatientAnamnèse />} />
           <Route path="documents" element={<ConsulDocuments />} />
