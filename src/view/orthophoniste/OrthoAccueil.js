@@ -13,11 +13,13 @@ import {
   MenuItem,
   
 } from "@mui/material";
-import { Logout, AccountCircle } from "@mui/icons-material";
+import { Logout, AccountCircle, Message } from "@mui/icons-material";
 import logo from "../../assets/images/logos/bauman.png";
+import Messages from "../message/Message"; // Modifiez le chemin ici
 
 const OrthoAccueil = () => {
   const [menuAnchor, setMenuAnchor] = useState(null);
+  const [openMessaging, setOpenMessaging] = useState(false); // La gestion de l'état de la messagerie
   const [showDynamicContent, setShowDynamicContent] = useState(true);
 
   const user = JSON.parse(localStorage.getItem("user")) || {
@@ -63,8 +65,10 @@ const OrthoAccueil = () => {
     window.location.href = "/ortho/dashboard"; // Rediriger vers la page d'accueil
   };
 
+  // Ouvrir/fermer la messagerie
+  const toggleMessaging = () => setOpenMessaging(!openMessaging);
   return (
-    <Box sx={{ display: "flex", height: isSpecificPage ? "150vh" : "100vh", bgcolor: "#E6F0F3" }}>
+    <Box sx={{ display: "flex", height: "100vh", bgcolor: "#E6F0F3" }}>
         
       {/* Menu Latéral */}
       <Drawer
@@ -139,9 +143,13 @@ const OrthoAccueil = () => {
             Tableau de bord de l'orthophoniste
           </Typography>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-          <IconButton onClick={handleProfileRedirect} aria-label="Aller au profil">
+            <IconButton onClick={handleProfileRedirect} aria-label="Aller au profil">
               <AccountCircle sx={{ fontSize: 40, color: "#FFFFFF" }} />
             </IconButton>
+            <IconButton onClick={toggleMessaging} aria-label="Messagerie">
+              <Message sx={{ fontSize: 40, color: "#FFFFFF" }} />
+            </IconButton>
+            
             <Menu
               anchorEl={menuAnchor}
               open={Boolean(menuAnchor)}
@@ -171,8 +179,20 @@ const OrthoAccueil = () => {
             </Typography>
           </Box>
         )}
+        
         <Outlet />
       </Box>
+
+      {/* Drawer pour la messagerie (zone superposée sur la page principale) */}
+      {openMessaging && (
+        <Box sx={{
+          position: "fixed", top: 0, right: 0, bottom: 0, width: "400px", bgcolor: "#ffffff", zIndex: 1300,
+          boxShadow: "0 0 15px rgba(0, 0, 0, 0.3)", padding: "20px", transition: "width 0.3s ease",
+          height: "100%", overflowY: "auto", maxWidth: "600px", display: "block",
+        }}>
+          <Messages />
+        </Box>
+      )}
     </Box>
   );
 };
