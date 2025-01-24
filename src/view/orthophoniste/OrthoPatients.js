@@ -174,7 +174,7 @@ const OrthoPatients = () => {
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{student.username || 'Non disponible'}</TableCell>
                 <TableCell>{student.email || 'Non disponible'}</TableCell>
-                <TableCell>{student.birth_date ? new Date(student.birth_date).toLocaleDateString() : 'Non disponible'}</TableCell>
+                <TableCell>{student.birthDate ? new Date(student.birthDate).toLocaleDateString() : 'Non disponible'}</TableCell>
                 <TableCell>
                   <IconButton onClick={(e) => handleMenuOpen(e, student)}>
                     <MoreVert /> {/* Icône de menu */}
