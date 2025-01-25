@@ -123,7 +123,12 @@ const OrthoAccueil = () => {
       </Drawer>
 
       {/* Contenu Principal */}
-      <Box sx={{ flexGrow: 1, p: 3 }}>
+     <Box sx={{
+            flexGrow: 1,
+            p: 3,
+            transition: "margin-right 0.3s ease",
+            marginRight: openMessaging ? "420px" : 0, // Pousse le contenu principal vers la gauche si la messagerie est ouverte
+          }}>
         {/* Barre Supérieure */}
         <Box
           sx={{

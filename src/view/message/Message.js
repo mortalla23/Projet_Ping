@@ -23,6 +23,7 @@ const fetchConversations = async (userId) => {
 const fetchMessagesByConversation = async (conversationId) => {
     try {
         const response = await axios.get(`${BASE_URL}/messages/conversation/${conversationId}`);
+        console.log("Données des messages reçues de l'API :", response.data);
         return response.data;
     } catch (error) {
         console.error("Erreur lors de la récupération des messages :", error);
@@ -75,6 +76,7 @@ const Messages = () => {
     const getUserId = () => {
         const orthoId = localStorage.getItem('orthoId');
         const teacherId = localStorage.getItem('teacherId');
+        
         return teacherId || orthoId;
     };
 
@@ -82,15 +84,32 @@ const Messages = () => {
 
     useEffect(() => {
       if (userId) {
-          fetchConversations(userId).then(data => {
-              console.log("Conversations récupérées:", data);
-              setConversations(Array.isArray(data) ? data : []);
-              localStorage.setItem('conversations', JSON.stringify(Array.isArray(data) ? data : []));
+        fetchConversations(userId).then(data => {
+          console.log("Conversations récupérées avant filtrage :", data);
+        
+          const userIdInt = parseInt(userId, 10);
+          console.log("UserId après conversion en entier :", userIdInt);
+        
+          const filteredConversations = data.filter(conv => {
+              console.log("Analyse de la conversation :", conv);
+        
+              if (!Array.isArray(conv.userIds)) {
+                  console.warn("userIds n'est pas un tableau :", conv);
+                  return false;
+              }
+        
+              return conv.userIds.includes(userIdInt);
           });
+        
+          console.log("Conversations après filtrage :", filteredConversations);
+          setConversations(filteredConversations);
+          localStorage.setItem('conversations', JSON.stringify(filteredConversations));
+        });
+        
       }
-    }, [userId]);
+  }, [userId]);
+  
     
-
     const getSenderName = async (senderId) => {
       if (!senderId) return "Utilisateur inconnu";
       try {
@@ -104,68 +123,103 @@ const Messages = () => {
   
   useEffect(() => {
     if (conversationId) {
-        const fetchMessages = async () => {
-            try {
-                const msgs = await fetchMessagesByConversation(conversationId);
-                const updatedMessages = await Promise.all(
-                    msgs.map(async (msg) => ({
-                        ...msg,
-                        senderName: msg.sender_id === parseInt(userId)
-                            ? localStorage.getItem('username')
-                            : await getSenderName(msg.sender_id || msg.senderId),
-                    }))
-                );
-                setMessages(updatedMessages);
-            } catch (error) {
-                console.error("Erreur lors de la récupération des messages :", error);
-            }
-        };
-  
-        fetchMessages(); // Appel immédiat
-        
-    }
-  }, [conversationId]);
-  
-
-  
-  
-  useEffect(() => {
-    const savedConversationId = localStorage.getItem('selectedConversation');
-    if (savedConversationId) {
-        setConversationId(savedConversationId);
-        fetchMessagesByConversation(savedConversationId).then(async (msgs) => {
+        fetchMessagesByConversation(conversationId).then(async (msgs) => {
             const updatedMessages = await Promise.all(
-                msgs.map(async (msg) => ({
-                    ...msg,
-                    senderName: msg.sender_id === parseInt(userId)
-                        ? localStorage.getItem('username')
-                        : await getSenderName(msg.sender_id || msg.senderId),
-                }))
+                msgs.map(async (msg) => {
+                    let senderName;
+
+                    // Vérification si le message provient de l'utilisateur actuel
+                    if (parseInt(msg.sender_id) === parseInt(userId)) {
+                        senderName = localStorage.getItem('username') || "Moi";
+                    } else {
+                        const userDetails = await fetchUserDetails(msg.sender_id);
+                        senderName = userDetails ? userDetails.username : `Utilisateur ${msg.sender_id}`;
+                    }
+
+                    return { ...msg, senderName };
+                })
             );
+
             setMessages(updatedMessages);
         });
     }
+}, [conversationId]);
+
+  
+  useEffect(() => {
+    // Vérifier si une conversation est enregistrée et la supprimer pour démarrer avec une page vide
+    localStorage.removeItem('selectedConversation'); 
+    setConversationId(null);  // Assurer que l'ID est null au démarrage
+    setMessages([]); // Vider la liste des messages
   }, []);
+  
   
 
 useEffect(() => {
   const savedConversationId = localStorage.getItem('selectedConversation');
   if (savedConversationId) {
       setConversationId(savedConversationId);
+      handleSelectConversation(savedConversationId);
       fetchMessagesByConversation(savedConversationId).then(msgs => {
           setMessages(msgs);
       });
   }
 }, []);
 
-const handleSelectConversation = (id) => {
+const [refreshKey, setRefreshKey] = useState(0);
+
+
+useEffect(() => {
+    if (conversationId) {
+        fetchMessagesByConversation(conversationId).then(msgs => {
+            setMessages(msgs);
+        });
+    }
+}, [conversationId, refreshKey]);
+
+
+const handleSelectConversation = async (id) => {
   setConversationId(id);
+  setRefreshKey(prevKey => prevKey + 1);
   localStorage.setItem('selectedConversation', id);
 
-  fetchMessagesByConversation(id).then(msgs => {
-      setMessages(msgs);
-  });
+  try {
+      const msgs = await fetchMessagesByConversation(id);
+
+      const updatedMessages = await Promise.all(
+          msgs.map(async (msg) => {
+              let senderName;
+              if (parseInt(msg.sender_id) === parseInt(userId)) {
+                  senderName = "Moi";
+              } else {
+                  const userDetails = await fetchUserDetails(msg.sender_id);
+                  senderName = userDetails ? userDetails.username : `Utilisateur ${msg.sender_id}`;
+              }
+              return { ...msg, senderName };
+          })
+      );
+
+      setMessages([]);  // Forcer un re-render en vidant l'état temporairement
+      setTimeout(() => setMessages(updatedMessages), 0);  // Re-rendu correct
+  } catch (error) {
+      console.error("Erreur lors de la récupération des messages :", error);
+  }
 };
+
+
+
+useEffect(() => {
+  const savedUsername = localStorage.getItem('username');
+  if (savedUsername) {
+      console.log("Utilisateur connecté :", savedUsername);
+  } else {
+      console.warn("Aucun nom d'utilisateur trouvé");
+  }
+}, []);
+
+
+
+
 const handleSendMessage = async () => {
   if (newMessage.trim() && conversationId) {
       try {
@@ -179,9 +233,8 @@ const handleSendMessage = async () => {
           });
 
           // Rafraîchir les messages après l'envoi
-          fetchMessagesByConversation(conversationId).then((msgs) => {
-              setMessages(msgs);
-          });
+          const msgs = await fetchMessagesByConversation(conversationId);
+            setMessages(msgs);
 
           setNewMessage("");  // Réinitialiser le champ du message
       } catch (error) {
@@ -189,8 +242,6 @@ const handleSendMessage = async () => {
       }
   }
 };
-
-
 
 
     const handleSearch = async (e) => {
@@ -240,77 +291,109 @@ const handleSendMessage = async () => {
 
 
     return (
-        <Box sx={{ display: "flex", height: "100vh" }}>
-            <Box sx={{ width: "30%", padding: 2, borderRight: "1px solid #ddd" }}>
-                <TextField
-                    fullWidth
-                    label="Rechercher un utilisateur"
-                    variant="outlined"
-                    value={searchQuery}
-                    onChange={handleSearch}
-                    sx={{ mb: 2 }}
-                />
-                {searchResults.length > 0 && (
-                    <List>
-                        {searchResults.map((user) => (
-                            <ListItem key={user.id} button onClick={() => handleCreateConversation(user)}>
-                                <ListItemText primary={user.username} />
-                            </ListItem>
-                        ))}
-                    </List>
-                )}
-              <Typography variant="h6">Conversations</Typography>
-                {filteredConversations.length > 0 ? (
-                  filteredConversations.map((conv) => {
-                    const currentUser = localStorage.getItem('username');
-                    const otherUser = conv?.usernames?.find(username => username !== currentUser);
-
-                    return (
-                      <Box key={conv.id} onClick={() => handleSelectConversation(conv.id)}
-                        sx={{ cursor: "pointer", padding: 1, borderBottom: "1px solid #ddd" }}>
-                        <Typography>{otherUser || `Conversation ${conv.id}`}</Typography>
-                      </Box>
-                    );
-                  })
-                ) : (
-                  <Typography>Aucune conversation trouvée.</Typography>
-                )}
-              
+      <Box sx={{ display: "flex", height: "100vh" }}>
+      {/* Section Conversations */}
+      <Box sx={{ width: "30%", padding: 2, borderRight: "1px solid #ddd" }}>
+        <TextField
+          fullWidth
+          label="Rechercher un utilisateur"
+          variant="outlined"
+          value={searchQuery}
+          onChange={handleSearch}
+          sx={{ mb: 2 }}
+        />
+        {searchResults.length > 0 && (
+          <List>
+            {searchResults.map((user) => (
+              <ListItem key={user.id} button onClick={() => handleCreateConversation(user)}>
+                <ListItemText primary={user.username} />
+              </ListItem>
+            ))}
+          </List>
+        )}
+        <Typography variant="h6">Conversations</Typography>
+        {filteredConversations.length > 0 ? (
+          filteredConversations.map((conv) => {
+            const currentUser = localStorage.getItem('username');
+            const otherUser = conv?.usernames?.find(username => username !== currentUser);
+    
+            return (
+              <Box
+                key={conv.id}
+                onClick={() => handleSelectConversation(conv.id)}
+                sx={{
+                  cursor: "pointer",
+                  padding: 1,
+                  borderBottom: "1px solid #ddd",
+                  backgroundColor: conversationId === conv.id ? '#f0f0f0' : 'transparent',
+                }}
+              >
+                <Typography>{otherUser || `Conversation ${conv.id}`}</Typography>
+              </Box>
+            );
+          })
+        ) : (
+          <Typography>Aucune conversation trouvée.</Typography>
+        )}
+      </Box>
+    
+      {/* Section Messages */}
+      <Box sx={{ width: "70%", padding: 2 }}>
+  {conversationId ? (
+    <>
+      <Typography variant="h6">Messages</Typography>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        {messages.map((msg) => {
+          const currentUsername = localStorage.getItem('username');
+          const isSentByCurrentUser = msg.senderName === currentUsername;
+          console.log("Utilisateur actuel :", currentUsername);
+       
+          return (
+            <Box
+              key={msg.id}
+              sx={{
+                display: 'flex',
+                justifyContent: isSentByCurrentUser ? 'flex-end' : 'flex-start',
+              }}
+            >
+              <Typography
+                sx={{
+                  backgroundColor: isSentByCurrentUser ? 'green' : 'gray',
+                  padding: '10px',
+                  borderRadius: '10px',
+                  color: 'white',
+                  maxWidth: '60%',
+                  wordBreak: 'break-word',
+                  textAlign: isSentByCurrentUser ? 'right' : 'left',
+                }}
+              >
+                <strong>{isSentByCurrentUser ? 'Moi' : msg.senderName}:</strong> {msg.content}
+              </Typography>
             </Box>
-            <Box sx={{ width: "70%", padding: 2 }}>
-              <Typography variant="h6">Messages</Typography>
-              {messages.map((msg) => {
-    const currentUsername = localStorage.getItem('username');  // Récupérer le nom de l'utilisateur connecté
-    const senderName = msg.senderName || msg.sender_id;  // Utiliser senderName si disponible, sinon sender_id
+          );
+        })}
+      </Box>
 
-    return (
-        <Typography key={msg.id} sx={{
-            backgroundColor: senderName === currentUsername ? 'green' : 'gray',
-            padding: '5px',
-            borderRadius: '5px',
-            color: 'white',
-            display: 'inline-block',
-            marginBottom: '5px'
-        }}>
-            <strong>{senderName}:</strong> {msg.content}
-        </Typography>
-    );
-})}
+      <TextField
+        value={newMessage}
+        onChange={(e) => setNewMessage(e.target.value)}
+        fullWidth
+        label="Nouveau message"
+        sx={{ mt: 2 }}
+      />
+      <Button onClick={handleSendMessage} variant="contained" sx={{ mt: 1 }}>
+        Envoyer
+      </Button>
+    </>
+  ) : (
+    <Typography variant="h6" sx={{ textAlign: 'center', marginTop: '20%' }}>
+      Sélectionnez une conversation pour afficher les messages
+    </Typography>
+  )}
+</Box>
 
-
-
-
-              <TextField 
-                  value={newMessage} 
-                  onChange={(e) => setNewMessage(e.target.value)} 
-                  fullWidth 
-                  label="Nouveau message" 
-              />
-              <Button onClick={handleSendMessage} variant="contained">Envoyer</Button>
-          </Box>
-
-
-        </Box>
+    </Box>
+    
     );
 };
 
