@@ -11,6 +11,11 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
 } from "@mui/material";
 import { Logout, AccountCircle } from "@mui/icons-material";
 import logo from "../../assets/images/logos/bauman.png";
@@ -31,16 +36,15 @@ const PatientAccueil = () => {
   const location = useLocation();
   useEffect(() => {
     const hiddenPages = [
-
-        "/patient/dashboard/anamnese",
-        "/patient/dashboard/cr",
-        "/patient/dashboard/ajIntervenant",
-        "/patient/dashboard/ascolaires",
-        "/patient/dashboard/documents",
-        "/patient/dashboard/pap",
-      ];
-     // Si l'utilisateur est sur l'une de ces pages, on cache la section dynamique
-     if (hiddenPages.includes(location.pathname)) {
+      "/patient/dashboard/anamnese",
+      "/patient/dashboard/cr",
+      "/patient/dashboard/ajIntervenant",
+      "/patient/dashboard/ascolaires",
+      "/patient/dashboard/documents",
+      "/patient/dashboard/pap",
+    ];
+    // Si l'utilisateur est sur l'une de ces pages, on cache la section dynamique
+    if (hiddenPages.includes(location.pathname)) {
       setShowDynamicContent(false);
     } else {
       setShowDynamicContent(true);
@@ -123,28 +127,28 @@ const PatientAccueil = () => {
             <ListItemText primary="Ajout d'un intervenant" />
           </ListItem>
           <ListItem
-              button
-              component={NavLink}
-              to={`/patient/dashboard/pap?userId=${localStorage.getItem('patientId')}`}
-              sx={linkStyle}
-              onClick={() => {
-                console.log("userId dans localStorage :", localStorage.getItem('patientId'));
-              }}
-            >
-          <ListItemText primary="PAP" />
-        </ListItem>
+            button
+            component={NavLink}
+            to={`/patient/dashboard/pap?userId=${localStorage.getItem('patientId')}`}
+            sx={linkStyle}
+            onClick={() => {
+              console.log("userId dans localStorage :", localStorage.getItem('patientId'));
+            }}
+          >
+            <ListItemText primary="PAP" />
+          </ListItem>
 
-        <ListItem
-              button
-              component={NavLink}
-              to={`/patient/dashboard/ascolaires?userId=${localStorage.getItem('patientId')}`}
-              sx={linkStyle}
-              onClick={() => {
-                console.log("userId dans localStorage :", localStorage.getItem('patientId'));
-              }}
-            >
-          <ListItemText primary="Aménagements scolaires" />
-        </ListItem>
+          <ListItem
+            button
+            component={NavLink}
+            to={`/patient/dashboard/ascolaires?userId=${localStorage.getItem('patientId')}`}
+            sx={linkStyle}
+            onClick={() => {
+              console.log("userId dans localStorage :", localStorage.getItem('patientId'));
+            }}
+          >
+            <ListItemText primary="Aménagements scolaires" />
+          </ListItem>
           <ListItem button component={NavLink} to="/patient/dashboard/documents" sx={linkStyle}>
             <ListItemText primary="Mes Documents" />
           </ListItem>
@@ -196,23 +200,25 @@ const PatientAccueil = () => {
       </Box>
 
       {/* Bannière de Consentement */}
-      {showBanner && (
-        <Box sx={{
-          position: "fixed", bottom: 0, width: "100%", bgcolor: "#5BA8B4", color: "white", textAlign: "center", p: 2,
-          zIndex: 1200, boxShadow: "0 -2px 5px rgba(0, 0, 0, 0.1)",
-        }}>
+      <Dialog open={showBanner} onClose={() => setShowBanner(false)}>
+        <DialogTitle sx={{ bgcolor: "#5BA8B4", color: "white" }}>Politique de Cookies</DialogTitle>
+        <DialogContent>
           <Typography>
             Nous utilisons des cookies pour améliorer votre expérience.{" "}
             <span style={{ textDecoration: "underline", cursor: "pointer" }} onClick={() => setShowPrivacyPolicy(true)}>
               Voir la politique de confidentialité
             </span>.
           </Typography>
-          <Box sx={{ mt: 1 }}>
-            <button onClick={acceptCookies} style={buttonStyle}>Accepter</button>
-            <button onClick={declineCookies} style={buttonStyle}>Refuser</button>
-          </Box>
-        </Box>
-      )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={acceptCookies} sx={{ backgroundColor: "#5BA8B4", color: "white" }}>
+            Accepter
+          </Button>
+          <Button onClick={declineCookies} sx={{ backgroundColor: "#5BA8B4", color: "white" }}>
+            Refuser
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Politique de Confidentialité */}
             {showPrivacyPolicy && (
