@@ -11,6 +11,8 @@ const Inscription = () => {
   // State pour les données du formulaire
   const [formData, setFormData] = useState({
     username: '',
+    lastName: '',
+    firstName: '',
     email: '',
     password: '',
     role: 'TEACHER',
@@ -31,6 +33,14 @@ const Inscription = () => {
   const validateForm = () => {
     if (!formData.username.trim()) {
       alert("Le nom d'utilisateur est obligatoire.");
+      return false;
+    }
+    if (!formData.lastName.trim()) {
+      alert("Le nom est obligatoire.");
+      return false;
+    }
+    if (!formData.firstName.trim()) {
+      alert("Le prénom est obligatoire.");
       return false;
     }
     if (!formData.email.trim()) {
@@ -56,6 +66,8 @@ const Inscription = () => {
   const resetForm = () => {
     setFormData({
       username: '',
+      lastName: '',
+      firstName: '',
       email: '',
       password: '',
       role: 'TEACHER',
@@ -156,9 +168,37 @@ const Inscription = () => {
               <form onSubmit={handleSubmit} style={{ maxWidth: '100%' }}>
                 <Stack spacing={2}>
                   <TextField
+                    id="lastName"
+                    name="lastName"
+                    placeholder="Votre nom..."
+                    variant="outlined"
+                    fullWidth
+                    sx={{
+                      backgroundColor: '#fff',
+                      borderRadius: '4px',
+                    }}
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                  />
+                  <TextField
+                    id="firstName"
+                    name="firstName"
+                    placeholder="Votre prénom..."
+                    variant="outlined"
+                    fullWidth
+                    sx={{
+                      backgroundColor: '#fff',
+                      borderRadius: '4px',
+                    }}
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    required
+                  />
+                  <TextField
                     id="username"
                     name="username"
-                    placeholder="Enter your name"
+                    placeholder="Votre nom d'utilisateur..."
                     variant="outlined"
                     fullWidth
                     sx={{
@@ -172,7 +212,7 @@ const Inscription = () => {
                   <TextField
                     id="email"
                     name="email"
-                    placeholder="Enter your email"
+                    placeholder="Votre email..."
                     variant="outlined"
                     fullWidth
                     sx={{
