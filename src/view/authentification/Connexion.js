@@ -84,16 +84,19 @@ const Connexion = () => {
       if (user.role === 'TEACHER') {
         // Stocker le teacherId dans localStorage
         localStorage.setItem('teacherId', user.id);
+        localStorage.setItem('username', user.username);
         console.log(localStorage.getItem('userId')); // Vérifie que l'ID est bien stocké
         toast.success('Connexion réussie en tant qu’enseignant.');
         navigate('/teacher/dashboard');
       } else if (user.role === 'ORTHOPHONIST') {
         // Si l'utilisateur est un orthophoniste, stocke également orthoId
         localStorage.setItem('orthoId', user.id);  // Stocke l'ID de l'orthophoniste
+        localStorage.setItem('username', user.username);
         toast.success('Connexion réussie en tant qu’orthophoniste.');
         navigate('/ortho/dashboard');
       } else if (user.role === 'PATIENT') {
         localStorage.setItem('patientId', user.id);  // Stocke l'ID de du patient( eleve)
+        localStorage.setItem('username', user.username);
         toast.success('Connexion réussie en tant que patient.');
         navigate('/patient/dashboard');
       } else {
@@ -106,7 +109,8 @@ const Connexion = () => {
       alert('Connexion réussie !');
       console.log(response.data);
       console.log("Détails de l'utilisateur :", user);
-    
+      console.log("Nom d'utilisateur stocké:", localStorage.getItem('username'));
+
       // Rediriger vers la page en fonction du rôle
       navigate(getRedirectPath(user.role));
     

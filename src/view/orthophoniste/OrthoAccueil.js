@@ -17,12 +17,15 @@ import {
   DialogTitle,
   Button,
 } from "@mui/material";
-import { Logout, AccountCircle } from "@mui/icons-material";
+import { Logout, AccountCircle, Message } from "@mui/icons-material";
 import logo from "../../assets/images/logos/bauman.png";
-import Messages from "../message/Message";
+
+import Messages from "../message/Message"; // Modifiez le chemin ici
+
 
 const OrthoAccueil = () => {
   const [menuAnchor, setMenuAnchor] = useState(null);
+  const [openMessaging, setOpenMessaging] = useState(false); // La gestion de l'état de la messagerie
   const [showDynamicContent, setShowDynamicContent] = useState(true);
   const [showBanner, setShowBanner] = useState(true); // Etat pour afficher la bannière de cookies
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false); // Etat pour afficher la politique de confidentialité
@@ -69,6 +72,12 @@ const OrthoAccueil = () => {
     window.location.href = "/ortho/dashboard"; // Rediriger vers la page d'accueil
   };
 
+  // Ouvrir/fermer la messagerie
+  const toggleMessaging = () => setOpenMessaging(!openMessaging);
+  return (
+    <Box sx={{ display: "flex", height: "100vh", bgcolor: "#E6F0F3" }}>
+        
+
   const acceptCookies = () => {
     alert("Vous avez accepté les cookies.");
     setShowBanner(false);
@@ -83,6 +92,7 @@ const OrthoAccueil = () => {
 
   return (
     <Box sx={{ display: "flex", height: isSpecificPage ? "150vh" : "100vh", bgcolor: "#E6F0F3" }}>
+
       {/* Menu Latéral */}
       <Drawer
         variant="permanent"
@@ -124,8 +134,14 @@ const OrthoAccueil = () => {
       </Drawer>
 
       {/* Contenu Principal */}
-      <Box sx={{ flexGrow: 1, p: 3 }}>
+     <Box sx={{
+            flexGrow: 1,
+            p: 3,
+            transition: "margin-right 0.3s ease",
+            marginRight: openMessaging ? "420px" : 0, // Pousse le contenu principal vers la gauche si la messagerie est ouverte
+          }}>
         {/* Barre Supérieure */}
+
       <Box sx={{
               display: "flex", 
               justifyContent: "space-between", 
@@ -190,6 +206,7 @@ const OrthoAccueil = () => {
               </Menu>
             </Box>
 
+
         {/* Contenu Dynamique */}
         {showDynamicContent && (
           <Box sx={{ backgroundColor: "#FFFFFF", padding: 2, borderRadius: "8px", boxShadow: "0 2px 5px #00000033" }}>
@@ -201,8 +218,19 @@ const OrthoAccueil = () => {
             </Typography>
           </Box>
         )}
+        
         <Outlet />
       </Box>
+
+
+      {/* Drawer pour la messagerie (zone superposée sur la page principale) */}
+      {openMessaging && (
+        <Box sx={{
+          position: "fixed", top: 0, right: 0, bottom: 0, width: "400px", bgcolor: "#ffffff", zIndex: 1300,
+          boxShadow: "0 0 15px rgba(0, 0, 0, 0.3)", padding: "20px", transition: "width 0.3s ease",
+          height: "100%", overflowY: "auto", maxWidth: "600px", display: "block",
+        }}>
+          <Messages />
 
       {/* Bannière de Consentement */}
       <Dialog open={showBanner} onClose={() => setShowBanner(false)}>
@@ -318,6 +346,7 @@ const OrthoAccueil = () => {
 
             <button onClick={closePrivacyPolicy} style={buttonStyle}>Fermer</button>
           </Box>
+
         </Box>
       )}
     </Box>

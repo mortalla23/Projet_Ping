@@ -1,22 +1,44 @@
+
 import React, { useState } from "react";
 import { Box, Typography, Drawer, IconButton, Menu, MenuItem, ListItem, ListItemText, Avatar, List, Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
+
 import { Logout, AccountCircle, Message } from "@mui/icons-material";
-import { NavLink, Outlet, useNavigate } from "react-router-dom"; 
+import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom"; 
 import logo from "../../assets/images/logos/bauman.png";
 import Messages from "../message/Message"; // Modifiez le chemin ici
 
 const EnseiAccueil = () => {
   const [menuAnchor, setMenuAnchor] = useState(null);
+
   const [openMessaging, setOpenMessaging] = useState(false); // Gestion de l'état de la messagerie
   const [showBanner, setShowBanner] = useState(true); // Gestion de l'état de la bannière
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false); // Gestion de l'état de la politique de confidentialité
+
   const navigate = useNavigate(); 
+  const location = useLocation(); // Utilisation de useLocation pour détecter la route actuelle
 
   const user = JSON.parse(localStorage.getItem("user")) || {
     name: "Utilisateur",
     role: "Non défini",
     email: "inconnu@example.com",
   };
+
+  // Définir les pages où le contenu dynamique doit être masqué
+  useEffect(() => {
+    const hiddenPages = [
+        "/teacher/dashboard/eleves",  // Exemples de pages où masquer le contenu dynamique
+        "/teacher/dashboard/historique",
+        "/teacher/dashboard/rapports",
+        "/teacher/dashboard/amenagements",
+      ];
+
+     // Si l'utilisateur est sur l'une de ces pages, on cache la section dynamique
+     if (hiddenPages.includes(location.pathname)) {
+      setShowDynamicContent(false);
+    } else {
+      setShowDynamicContent(true);
+    }
+  }, [location]);
 
   const handleMenuOpen = (event) => setMenuAnchor(event.currentTarget);
   const handleMenuClose = () => setMenuAnchor(null);
@@ -69,7 +91,7 @@ const EnseiAccueil = () => {
           <Avatar
             alt="Logo"
             src={logo}
-            sx={{ width: 70, height: 70, margin: "0 auto", boxShadow: "0 0 10px #00000033" , cursor: "pointer" }}
+            sx={{ width: 70, height: 70, margin: "0 auto", boxShadow: "0 0 10px #00000033", cursor: "pointer" }}
             onClick={handleLogoClick}
           />
           <Typography variant="h5" sx={{ mt: 2, fontWeight: "bold" }}>Menu</Typography>
@@ -147,6 +169,7 @@ const EnseiAccueil = () => {
           </IconButton>
         </Box>
 
+
         <Menu
           anchorEl={menuAnchor}
           open={Boolean(menuAnchor)}
@@ -170,6 +193,7 @@ const EnseiAccueil = () => {
           <Typography variant="h6" sx={{ fontWeight: "bold" }}>Bienvenue {user.username} !</Typography>
           <Typography variant="body1" sx={{ marginTop: 1 }}>Vous êtes connecté.</Typography>
         </Box>
+
         <Outlet />
       </Box>
 
