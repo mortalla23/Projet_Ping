@@ -98,33 +98,73 @@ const EnseiAccueil = () => {
         transition: "margin-right 0.3s ease",
         marginRight: openMessaging ? "420px" : 0,
       }}>
+      <Box sx={{
+        display: "flex", 
+        justifyContent: "space-between", 
+        alignItems: "center", 
+        mb: 2,
+        bgcolor: "#5BA8B4", 
+        color: "#FFFFFF", 
+        py: 2, 
+        px: 3, 
+        borderRadius: "10px", 
+        boxShadow: "0 2px 5px #00000033",
+        position: "relative",  // Assure que les éléments sont positionnés par rapport à la barre
+      }}>
+        <Typography variant="h4" sx={{ fontWeight: "bold" }}>Tableau de bord de l'enseignant</Typography>
         <Box sx={{
-          display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2,
-          bgcolor: "#5BA8B4", color: "#FFFFFF", py: 2, px: 3, borderRadius: "10px", boxShadow: "0 2px 5px #00000033",
+          display: "flex", 
+          alignItems: "center", 
+          gap: 3,  // L'ajustement de l'espacement entre les boutons
+          zIndex: 2,  // Assure que les éléments sont visibles au-dessus de la messagerie
         }}>
-          <Typography variant="h4" sx={{ fontWeight: "bold" }}>Tableau de bord de l'enseignant</Typography>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <IconButton onClick={handleMenuOpen} aria-label="Menu utilisateur">
-              <AccountCircle sx={{ fontSize: 40, color: "#FFFFFF" }} />
-            </IconButton>
-            <IconButton onClick={toggleMessaging} aria-label="Messagerie">
-              <Message sx={{ fontSize: 40, color: "#FFFFFF" }} />
-            </IconButton>
-            <Menu
-              anchorEl={menuAnchor}
-              open={Boolean(menuAnchor)}
-              onClose={handleMenuClose}
-              sx={{ "& .MuiPaper-root": { minWidth: 200 } }}
-            >
-              <MenuItem disabled sx={{ color: "#555" }}>{user.name}</MenuItem>
-              <MenuItem disabled sx={{ color: "#555" }}>{user.email}</MenuItem>
-              <MenuItem disabled sx={{ color: "#555" }}>{user.role}</MenuItem>
-              <MenuItem onClick={handleLogout} sx={{ color: "red" }}>
-                <Logout fontSize="small" sx={{ mr: 1 }} /> Déconnexion
-              </MenuItem>
-            </Menu>
-          </Box>
+          <IconButton onClick={handleMenuOpen} aria-label="Menu utilisateur" sx={{ zIndex: 3 }}>
+            <AccountCircle sx={{ fontSize: 40, color: "#FFFFFF" }} />
+          </IconButton>
+
+          {/* Positionner l'icône Messagerie sur la barre verte */}
+          <IconButton
+            onClick={toggleMessaging}
+            aria-label="Messagerie"
+            sx={{
+              position: "absolute",  // Positionner en absolu sur la barre verte
+              right: -470,  // Décalage de l'icône Messagerie à droite
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "transparent",
+              boxShadow: "none",
+              zIndex: 1,  // Mettre l'icône de messagerie en dessous du bouton `AccountCircle`
+              "&:hover": {
+                backgroundColor: "transparent",
+              },
+              "&:focus": {
+                outline: "none",
+                backgroundColor: "transparent",
+              },
+            }}
+          >
+            <Message sx={{ fontSize: 40, color: "#FFFFFF" }} />
+          </IconButton>
         </Box>
+
+        <Menu
+          anchorEl={menuAnchor}
+          open={Boolean(menuAnchor)}
+          onClose={handleMenuClose}
+          sx={{ "& .MuiPaper-root": { minWidth: 200 } }}
+        >
+          <MenuItem disabled sx={{ color: "#555" }}>{user.name}</MenuItem>
+          <MenuItem disabled sx={{ color: "#555" }}>{user.email}</MenuItem>
+          <MenuItem disabled sx={{ color: "#555" }}>{user.role}</MenuItem>
+          <MenuItem onClick={handleLogout} sx={{ color: "red" }}>
+            <Logout fontSize="small" sx={{ mr: 1 }} /> Déconnexion
+          </MenuItem>
+        </Menu>
+      </Box>
+
+
+
+       
 
         <Box sx={{ backgroundColor: "#FFFFFF", padding: 2, borderRadius: "8px", boxShadow: "0 2px 5px #00000033" }}>
           <Typography variant="h6" sx={{ fontWeight: "bold" }}>Bienvenue {user.username} !</Typography>
