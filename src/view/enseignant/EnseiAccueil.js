@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Typography, Drawer, IconButton, Menu, MenuItem, ListItem, ListItemText, Avatar, List, Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
 
 import { Logout, AccountCircle, Message } from "@mui/icons-material";
@@ -13,6 +13,7 @@ const EnseiAccueil = () => {
   const [openMessaging, setOpenMessaging] = useState(false); // Gestion de l'état de la messagerie
   const [showBanner, setShowBanner] = useState(true); // Gestion de l'état de la bannière
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false); // Gestion de l'état de la politique de confidentialité
+  const [showDynamicContent, setShowDynamicContent] = useState(true); // Pour masquer le contenu dynamique
 
   const navigate = useNavigate(); 
   const location = useLocation(); // Utilisation de useLocation pour détecter la route actuelle
