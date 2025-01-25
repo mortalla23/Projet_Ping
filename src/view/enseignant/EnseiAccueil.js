@@ -1,7 +1,5 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // Ajout de useEffect
 import { Box, Typography, Drawer, IconButton, Menu, MenuItem, ListItem, ListItemText, Avatar, List, Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
-
 import { Logout, AccountCircle, Message } from "@mui/icons-material";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom"; 
 import logo from "../../assets/images/logos/bauman.png";
@@ -9,11 +7,11 @@ import Messages from "../message/Message"; // Modifiez le chemin ici
 
 const EnseiAccueil = () => {
   const [menuAnchor, setMenuAnchor] = useState(null);
-
   const [openMessaging, setOpenMessaging] = useState(false); // Gestion de l'état de la messagerie
   const [showBanner, setShowBanner] = useState(true); // Gestion de l'état de la bannière
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false); // Gestion de l'état de la politique de confidentialité
-
+  const [showDynamicContent, setShowDynamicContent] = useState(true); // Gestion de l'affichage du contenu dynamique
+  
   const navigate = useNavigate(); 
   const location = useLocation(); // Utilisation de useLocation pour détecter la route actuelle
 
@@ -169,7 +167,6 @@ const EnseiAccueil = () => {
           </IconButton>
         </Box>
 
-
         <Menu
           anchorEl={menuAnchor}
           open={Boolean(menuAnchor)}
@@ -185,16 +182,14 @@ const EnseiAccueil = () => {
         </Menu>
       </Box>
 
-
-
-       
-
+      {showDynamicContent && (
         <Box sx={{ backgroundColor: "#FFFFFF", padding: 2, borderRadius: "8px", boxShadow: "0 2px 5px #00000033" }}>
           <Typography variant="h6" sx={{ fontWeight: "bold" }}>Bienvenue {user.username} !</Typography>
           <Typography variant="body1" sx={{ marginTop: 1 }}>Vous êtes connecté.</Typography>
         </Box>
+      )}
 
-        <Outlet />
+      <Outlet />
       </Box>
 
       {openMessaging && (
@@ -206,6 +201,30 @@ const EnseiAccueil = () => {
           <Messages />
         </Box>
       )}
+
+      {/* Bannière de Consentement */}
+      <Dialog open={showBanner} onClose={() => setShowBanner(false)}>
+        <DialogTitle sx={{ bgcolor: "#5BA8B4", color: "white" }}>Politique de Cookies</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Nous utilisons des cookies pour améliorer votre expérience.{" "}
+            <span style={{ textDecoration: "underline", cursor: "pointer" }} onClick={() => setShowPrivacyPolicy(true)}>
+              Voir la politique de confidentialité
+            </span>.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={acceptCookies} sx={{ backgroundColor: "#5BA8B4", color: "white" }}>
+            Accepter
+          </Button>
+          <Button onClick={declineCookies} sx={{ backgroundColor: "#5BA8B4", color: "white" }}>
+            Refuser
+          </Button>
+          <Button onClick={customizeCookies} sx={{ backgroundColor: "#5BA8B4", color: "white" }}>
+            Personnaliser
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Bannière de Consentement */}
       <Dialog open={showBanner} onClose={() => setShowBanner(false)}>
