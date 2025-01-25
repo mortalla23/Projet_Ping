@@ -1,5 +1,7 @@
+
 import React, { useState } from "react";
 import { Box, Typography, Drawer, IconButton, Menu, MenuItem, ListItem, ListItemText, Avatar, List, Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
+
 import { Logout, AccountCircle, Message } from "@mui/icons-material";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom"; 
 import logo from "../../assets/images/logos/bauman.png";
@@ -7,9 +9,11 @@ import Messages from "../message/Message"; // Modifiez le chemin ici
 
 const EnseiAccueil = () => {
   const [menuAnchor, setMenuAnchor] = useState(null);
+
   const [openMessaging, setOpenMessaging] = useState(false); // Gestion de l'état de la messagerie
   const [showBanner, setShowBanner] = useState(true); // Gestion de l'état de la bannière
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false); // Gestion de l'état de la politique de confidentialité
+
   const navigate = useNavigate(); 
   const location = useLocation(); // Utilisation de useLocation pour détecter la route actuelle
 
@@ -165,6 +169,7 @@ const EnseiAccueil = () => {
           </IconButton>
         </Box>
 
+
         <Menu
           anchorEl={menuAnchor}
           open={Boolean(menuAnchor)}
@@ -188,6 +193,7 @@ const EnseiAccueil = () => {
           <Typography variant="h6" sx={{ fontWeight: "bold" }}>Bienvenue {user.username} !</Typography>
           <Typography variant="body1" sx={{ marginTop: 1 }}>Vous êtes connecté.</Typography>
         </Box>
+
         <Outlet />
       </Box>
 
