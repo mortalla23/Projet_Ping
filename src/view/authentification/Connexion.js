@@ -62,6 +62,16 @@ const Connexion = () => {
         return '/connexion';
     }
   };
+  const handleLogin = (userId, username) => {
+    // Nettoyer les anciennes données
+    localStorage.removeItem('patientId');
+    localStorage.removeItem('orthoId');
+    localStorage.removeItem('teacherId');
+    
+    // Stocker les nouvelles informations de l'utilisateur connecté
+    localStorage.setItem('userId', userId); 
+    localStorage.setItem('username', username); 
+};
 
   // Gestion de la soumission
   const handleSubmit = async (e) => {
@@ -79,21 +89,27 @@ const Connexion = () => {
     try {
       const response = await axios.post('http://localhost:5000/api/users/connexion', loginData);
       const user = response.data;
-    
+
+     // Appelez handleLogin pour mettre à jour le localStorage
+     handleLogin(user.id, user.username); // Enregistrer l'ID et le nom d'utilisateur dans localStorage
+     
       // Vérifie si l'utilisateur est un enseignant
       if (user.role === 'TEACHER') {
         // Stocker le teacherId dans localStorage
         localStorage.setItem('teacherId', user.id);
+        localStorage.setItem('username', user.username);
         console.log(localStorage.getItem('userId')); // Vérifie que l'ID est bien stocké
         toast.success('Connexion réussie en tant qu’enseignant.');
         navigate('/teacher/dashboard');
       } else if (user.role === 'ORTHOPHONIST') {
         // Si l'utilisateur est un orthophoniste, stocke également orthoId
         localStorage.setItem('orthoId', user.id);  // Stocke l'ID de l'orthophoniste
+        localStorage.setItem('username', user.username);
         toast.success('Connexion réussie en tant qu’orthophoniste.');
         navigate('/ortho/dashboard');
       } else if (user.role === 'PATIENT') {
         localStorage.setItem('patientId', user.id);  // Stocke l'ID de du patient( eleve)
+        localStorage.setItem('username', user.username);
         toast.success('Connexion réussie en tant que patient.');
         navigate('/patient/dashboard');
       } else {
@@ -106,9 +122,11 @@ const Connexion = () => {
       alert('Connexion réussie !');
       console.log(response.data);
       console.log("Détails de l'utilisateur :", user);
-    
-      // Rediriger vers la page en fonction du rôle
-      navigate(getRedirectPath(user.role));
+      console.log("Nom d'utilisateur stocké:", localStorage.getItem('username'));
+
+      console.log("Utilisateur connecté, ID:", localStorage.getItem('patientId') || localStorage.getItem('orthoId') || localStorage.getItem('teacherId'));
+      navigate(getRedirectPath(user.role));  // Après avoir confirmé que l'ID est correct
+      
     
     } catch (error) {
       console.error(error);

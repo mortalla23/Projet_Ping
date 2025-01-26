@@ -22,6 +22,8 @@ import  AménagementScolaire from './view/patient/AménagementScolaire';
 import PatientAnamnèse from './view/patient/PatientAnamnèse';
 import AjoutIntervenant from './view/patient/AjoutIntervenant';
 import ConsulDocuments from './view/patient/ConsulDocuments';
+import PAPForm from './view/patient/PAPForm';
+
 import HistoriqueEducation from './view/patient/HistoriqueEducation';
 import HistoriqueSante from './view/patient/HistoriqueSante';
 import PatientPpre from './view/patient/PatientPpre';
@@ -70,6 +72,7 @@ function App() {
             <ProtectedRoute role="TEACHER">
               <EnseiAccueil />
             </ProtectedRoute>
+            
           }
         >
           {/* Sous-routes du tableau de bord */}
@@ -95,6 +98,7 @@ function App() {
           {/* Sous-routes du tableau de bord */}
           <Route path="cr" element={<CompteRendus />} />
           <Route path="ajIntervenant" element={<AjoutIntervenant />} />
+          <Route path="pap" element={<PAPForm />} />
           <Route path="ascolaires" element={<AménagementScolaire />} />
           <Route path="anamnese/:userId" element={<PatientAnamnèse />} />
           <Route path="historique-education/:userId" element={<HistoriqueEducation />} />
