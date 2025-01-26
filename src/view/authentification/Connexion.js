@@ -62,6 +62,16 @@ const Connexion = () => {
         return '/connexion';
     }
   };
+  const handleLogin = (userId, username) => {
+    // Nettoyer les anciennes données
+    localStorage.removeItem('patientId');
+    localStorage.removeItem('orthoId');
+    localStorage.removeItem('teacherId');
+    
+    // Stocker les nouvelles informations de l'utilisateur connecté
+    localStorage.setItem('userId', userId); 
+    localStorage.setItem('username', username); 
+};
 
   // Gestion de la soumission
   const handleSubmit = async (e) => {
@@ -79,7 +89,10 @@ const Connexion = () => {
     try {
       const response = await axios.post('http://localhost:5000/api/users/connexion', loginData);
       const user = response.data;
-    
+
+     // Appelez handleLogin pour mettre à jour le localStorage
+     handleLogin(user.id, user.username); // Enregistrer l'ID et le nom d'utilisateur dans localStorage
+     
       // Vérifie si l'utilisateur est un enseignant
       if (user.role === 'TEACHER') {
         // Stocker le teacherId dans localStorage
@@ -111,8 +124,9 @@ const Connexion = () => {
       console.log("Détails de l'utilisateur :", user);
       console.log("Nom d'utilisateur stocké:", localStorage.getItem('username'));
 
-      // Rediriger vers la page en fonction du rôle
-      navigate(getRedirectPath(user.role));
+      console.log("Utilisateur connecté, ID:", localStorage.getItem('patientId') || localStorage.getItem('orthoId') || localStorage.getItem('teacherId'));
+      navigate(getRedirectPath(user.role));  // Après avoir confirmé que l'ID est correct
+      
     
     } catch (error) {
       console.error(error);

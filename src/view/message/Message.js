@@ -7,6 +7,7 @@ const BASE_URL = 'http://localhost:5000/api';
 const fetchConversations = async (userId) => {
     try {
         const response = await axios.get(`${BASE_URL}/conversations/user/${userId}`);
+        console.log("Conversations pour l'utilisateur:", userId);
         // Vérifier si la réponse contient un tableau sinon renvoyer un tableau vide
         if (Array.isArray(response.data)) {
           return response.data;
@@ -74,42 +75,44 @@ const Messages = () => {
     const [searchResults, setSearchResults] = useState([]);
 
     const getUserId = () => {
-        const orthoId = localStorage.getItem('orthoId');
-        const teacherId = localStorage.getItem('teacherId');
-        
-        return teacherId || orthoId;
-    };
-
-    const userId = getUserId();
-
+      const userId = localStorage.getItem('patientId') || localStorage.getItem('orthoId') || localStorage.getItem('teacherId');
+      console.log("Utilisateur connecté, ID récupéré:", userId);
+      return userId;
+  };
+  
+  
     useEffect(() => {
+      const userId = getUserId();
+      console.log("Utilisateur connectée, ID:", userId); // Vérifier que l'ID est correct ici
+    }, []);
+    
+    useEffect(() => {
+      const userId = getUserId();
+      console.log("Utilisateur connectéeee, ID:", userId); 
       if (userId) {
         fetchConversations(userId).then(data => {
           console.log("Conversations récupérées avant filtrage :", data);
-        
-          const userIdInt = parseInt(userId, 10);
-          console.log("UserId après conversion en entier :", userIdInt);
-        
+    
+          // Filtrage en fonction de l'ID de l'utilisateur
           const filteredConversations = data.filter(conv => {
-              console.log("Analyse de la conversation :", conv);
-        
-              if (!Array.isArray(conv.userIds)) {
-                  console.warn("userIds n'est pas un tableau :", conv);
-                  return false;
-              }
-        
-              return conv.userIds.includes(userIdInt);
+            const userIdInt = parseInt(userId, 10);
+            console.log("Conversation ID: " + conv.id + ", User IDs: " + conv.userIds);
+    
+            // Vérifier que l'utilisateur connecté n'est pas dans la conversation
+          return conv.userIds.includes(userIdInt);
           });
-        
+    
           console.log("Conversations après filtrage :", filteredConversations);
           setConversations(filteredConversations);
           localStorage.setItem('conversations', JSON.stringify(filteredConversations));
+        }).catch(error => {
+          console.error("Erreur lors de la récupération des conversations :", error);
         });
-        
       }
-  }, [userId]);
-  
+    }, []);
     
+    
+
     const getSenderName = async (senderId) => {
       if (!senderId) return "Utilisateur inconnu";
       try {
@@ -123,6 +126,7 @@ const Messages = () => {
   
   useEffect(() => {
     if (conversationId) {
+      const userId = getUserId();
         fetchMessagesByConversation(conversationId).then(async (msgs) => {
             const updatedMessages = await Promise.all(
                 msgs.map(async (msg) => {
@@ -179,6 +183,7 @@ useEffect(() => {
 
 
 const handleSelectConversation = async (id) => {
+  const userId = getUserId();
   setConversationId(id);
   setRefreshKey(prevKey => prevKey + 1);
   localStorage.setItem('selectedConversation', id);
@@ -221,6 +226,7 @@ useEffect(() => {
 
 
 const handleSendMessage = async () => {
+  const userId = getUserId();
   if (newMessage.trim() && conversationId) {
       try {
           await axios.post(`${BASE_URL}/messages/add`, null, {
@@ -255,6 +261,7 @@ const handleSendMessage = async () => {
     };
 
     const handleCreateConversation = async (user) => {
+      const userId = getUserId();
       try {
           const response = await axios.get(`${BASE_URL}/conversations/check`, {
               params: { senderId: userId, receiverId: user.id }
@@ -285,11 +292,6 @@ const handleSendMessage = async () => {
       }
   };
   
-  const filteredConversations = conversations.filter(conv =>
-    Array.isArray(conv.userIds) && conv.userIds.includes(parseInt(userId))
-);
-
-
     return (
       <Box sx={{ display: "flex", height: "100vh" }}>
       {/* Section Conversations */}
@@ -312,8 +314,8 @@ const handleSendMessage = async () => {
           </List>
         )}
         <Typography variant="h6">Conversations</Typography>
-        {filteredConversations.length > 0 ? (
-          filteredConversations.map((conv) => {
+        {conversations.length > 0 ? (
+          conversations.map((conv) => {
             const currentUser = localStorage.getItem('username');
             const otherUser = conv?.usernames?.find(username => username !== currentUser);
     
