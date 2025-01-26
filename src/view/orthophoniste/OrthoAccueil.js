@@ -26,7 +26,7 @@ const OrthoAccueil = () => {
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [openMessaging, setOpenMessaging] = useState(false);
   const [showDynamicContent, setShowDynamicContent] = useState(true);
-  const [showBanner, setShowBanner] = useState(true);
+  const [showBanner, setShowBanner] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
 
   const user = JSON.parse(localStorage.getItem("user")) || {
@@ -55,10 +55,7 @@ const OrthoAccueil = () => {
   const handleMenuOpen = (event) => setMenuAnchor(event.currentTarget);
   const handleMenuClose = () => setMenuAnchor(null);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    window.location.href = "/connexion";
-  };
+ 
 
   const handleProfileRedirect = () => {
     navigate("/ortho/dashboard/profile");
@@ -70,15 +67,30 @@ const OrthoAccueil = () => {
 
   const toggleMessaging = () => setOpenMessaging(!openMessaging);
 
-  const acceptCookies = () => {
-    alert("Vous avez accepté les cookies.");
-    setShowBanner(false);
-  };
-
-  const declineCookies = () => {
-    alert("Vous avez refusé les cookies.");
-    setShowBanner(false);
-  };
+  // Vérifiez si l'utilisateur a déjà accepté ou refusé les cookies à la connexion
+    useEffect(() => {
+      const cookiesConsent = localStorage.getItem("cookiesConsent");
+      if (!cookiesConsent) {
+        setShowBanner(true); // Afficher la bannière si aucun consentement n'a été pris
+      }
+    }, []);
+  
+    // Fonction pour gérer la déconnexion
+    const handleLogout = () => {
+      localStorage.removeItem("user"); // Supprimer les informations de l'utilisateur
+      localStorage.removeItem("cookiesConsent"); // Supprimer le consentement des cookies pour réafficher la bannière lors de la prochaine connexion
+      window.location.href = "/connexion"; // Rediriger vers la page de connexion
+    };
+  
+    const acceptCookies = () => {
+      localStorage.setItem("cookiesConsent", "accepted"); // Enregistrer le consentement dans localStorage
+      setShowBanner(false); // Masquer la bannière
+    };
+  
+    const declineCookies = () => {
+      localStorage.setItem("cookiesConsent", "declined"); // Enregistrer le refus dans localStorage
+      setShowBanner(false); // Masquer la bannière
+    };
 
   const closePrivacyPolicy = () => setShowPrivacyPolicy(false);
 

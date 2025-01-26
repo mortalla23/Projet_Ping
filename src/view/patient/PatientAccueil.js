@@ -25,7 +25,7 @@ const PatientAccueil = () => {
   const [openMessaging, setOpenMessaging] = useState(false); // Gestion de l'état de la messagerie
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [showDynamicContent, setShowDynamicContent] = useState(true);
-  const [showBanner, setShowBanner] = useState(true); // Etat pour afficher la bannière de cookies
+  const [showBanner, setShowBanner] = useState(false); // Etat pour afficher la bannière de cookies
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false); // Etat pour afficher la politique de confidentialité
 
   const user = JSON.parse(localStorage.getItem("user")) || {
@@ -58,26 +58,36 @@ const PatientAccueil = () => {
   const handleMenuOpen = (event) => setMenuAnchor(event.currentTarget);
   const handleMenuClose = () => setMenuAnchor(null);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    window.location.href = "/connexion";
-  };
+
 
   const toggleMessaging = () => setOpenMessaging(!openMessaging); // Ouvrir/fermer la messagerie
 
   const handleLogoClick = () => {
     window.location.href = "/patient/dashboard"; // Rediriger vers la page d'accueil
   };
+  // Vérifiez si l'utilisateur a déjà accepté ou refusé les cookies à la connexion
+  useEffect(() => {
+    const cookiesConsent = localStorage.getItem("cookiesConsent");
+    if (!cookiesConsent) {
+      setShowBanner(true); // Afficher la bannière si aucun consentement n'a été pris
+    }
+  }, []);
 
-  // Fonction pour actualiser la page et revenir à la page d'accueil
+  // Fonction pour gérer la déconnexion
+  const handleLogout = () => {
+    localStorage.removeItem("user"); // Supprimer les informations de l'utilisateur
+    localStorage.removeItem("cookiesConsent"); // Supprimer le consentement des cookies pour réafficher la bannière lors de la prochaine connexion
+    window.location.href = "/connexion"; // Rediriger vers la page de connexion
+  };
+
   const acceptCookies = () => {
-    alert("Vous avez accepté les cookies.");
-    setShowBanner(false);
+    localStorage.setItem("cookiesConsent", "accepted"); // Enregistrer le consentement dans localStorage
+    setShowBanner(false); // Masquer la bannière
   };
 
   const declineCookies = () => {
-    alert("Vous avez refusé les cookies.");
-    setShowBanner(false);
+    localStorage.setItem("cookiesConsent", "declined"); // Enregistrer le refus dans localStorage
+    setShowBanner(false); // Masquer la bannière
   };
 
   const closePrivacyPolicy = () => setShowPrivacyPolicy(false);
