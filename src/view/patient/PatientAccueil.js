@@ -17,10 +17,12 @@ import {
   DialogTitle,
   Button,
 } from "@mui/material";
-import { Logout, AccountCircle } from "@mui/icons-material";
+import { Logout, AccountCircle, Message } from "@mui/icons-material";
 import logo from "../../assets/images/logos/bauman.png";
+import Messages from "../message/Message";
 
 const PatientAccueil = () => {
+  const [openMessaging, setOpenMessaging] = useState(false); // Gestion de l'état de la messagerie
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [showDynamicContent, setShowDynamicContent] = useState(true);
   const [showBanner, setShowBanner] = useState(true); // Etat pour afficher la bannière de cookies
@@ -61,6 +63,8 @@ const PatientAccueil = () => {
     window.location.href = "/connexion";
   };
 
+  const toggleMessaging = () => setOpenMessaging(!openMessaging); // Ouvrir/fermer la messagerie
+
   const handleLogoClick = () => {
     window.location.href = "/patient/dashboard"; // Rediriger vers la page d'accueil
   };
@@ -79,7 +83,7 @@ const PatientAccueil = () => {
   const closePrivacyPolicy = () => setShowPrivacyPolicy(false);
 
   return (
-    <Box sx={{ display: "flex", height: isSpecificPage ? "150vh" : "100vh", bgcolor: "#E6F0F3" }}>
+    <Box sx={{ display: "flex", height: "100vh", bgcolor: "#E6F0F3" }}>
       {/* Menu Latéral */}
       <Drawer
         variant="permanent"
@@ -156,19 +160,55 @@ const PatientAccueil = () => {
       </Drawer>
 
       {/* Contenu Principal */}
-      <Box sx={{ flexGrow: 1, p: 3 }}>
+     <Box sx={{
+            flexGrow: 1,
+            p: 3,
+            transition: "margin-right 0.3s ease",
+            marginRight: openMessaging ? "420px" : 0,
+          }}>
         {/* Barre Supérieure */}
         <Box sx={{
           display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2,
-          bgcolor: "#5BA8B4", color: "#FFFFFF", py: 2, px: 3, borderRadius: "10px", boxShadow: "0 2px 5px #00000033",
+          bgcolor: "#5BA8B4", color: "#FFFFFF", py: 2, px: 3, borderRadius: "10px", boxShadow: "0 2px 5px #00000033",position: "relative",
         }}>
           <Typography variant="h4" sx={{ fontWeight: "bold" }}>
             Tableau de bord du patient
           </Typography>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <IconButton onClick={handleMenuOpen} aria-label="Menu utilisateur">
+          <Box sx={{
+                   display: "flex", 
+                   alignItems: "center", 
+                   gap: 3,  // L'ajustement de l'espacement entre les boutons
+                   zIndex: 2,  // Assure que les éléments sont visibles au-dessus de la messagerie
+                 }}>
+            <IconButton onClick={handleMenuOpen} aria-label="Menu utilisateur" sx={{ zIndex: 3 }}>
               <AccountCircle sx={{ fontSize: 40, color: "#FFFFFF" }} />
             </IconButton>
+
+            {/* Positionner l'icône Messagerie sur la barre verte */}
+            <IconButton
+              onClick={toggleMessaging}
+              aria-label="Messagerie"
+              sx={{
+                position: "absolute",  // Positionner en absolu sur la barre verte
+                right: -470,  // Décalage de l'icône Messagerie à droite
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "transparent",
+                boxShadow: "none",
+                zIndex: 1,  // Mettre l'icône de messagerie en dessous du bouton `AccountCircle`
+                "&:hover": {
+                  backgroundColor: "transparent",
+                },
+                "&:focus": {
+                  outline: "none",
+                  backgroundColor: "transparent",
+                },
+              }}
+            >
+              <Message sx={{ fontSize: 40, color: "#FFFFFF" }} />
+            </IconButton>
+          </Box>
+
             <Menu
               anchorEl={menuAnchor}
               open={Boolean(menuAnchor)}
@@ -183,7 +223,7 @@ const PatientAccueil = () => {
               </MenuItem>
             </Menu>
           </Box>
-        </Box>
+     
 
         {/* Contenu Dynamique */}
         {showDynamicContent && (
@@ -198,7 +238,15 @@ const PatientAccueil = () => {
         )}
         <Outlet />
       </Box>
-
+      {openMessaging && (
+        <Box sx={{
+          position: "fixed", top: 0, right: 0, bottom: 0, width: "400px", bgcolor: "#ffffff", zIndex: 1300,
+          boxShadow: "0 0 15px rgba(0, 0, 0, 0.3)", padding: "20px", transition: "width 0.3s ease",
+          height: "100%", overflowY: "auto", maxWidth: "600px", display: "block",
+        }}>
+          <Messages />
+        </Box>
+      )}
       {/* Bannière de Consentement */}
       <Dialog open={showBanner} onClose={() => setShowBanner(false)}>
         <DialogTitle sx={{ bgcolor: "#5BA8B4", color: "white" }}>Politique de Cookies</DialogTitle>
