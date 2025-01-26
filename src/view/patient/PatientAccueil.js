@@ -125,7 +125,7 @@ const PatientAccueil = () => {
             <ListItemText primary="Anamnèse" />
           </ListItem>
           <ListItem button component={NavLink} to="/patient/dashboard/cr" sx={linkStyle}>
-            <ListItemText primary="Mes Compte-Rendus" />
+            <ListItemText primary="Mes compte-rendus" />
           </ListItem>
           <ListItem button component={NavLink} to="/patient/dashboard/ajIntervenant" sx={linkStyle}>
             <ListItemText primary="Ajout d'un intervenant" />
@@ -154,7 +154,7 @@ const PatientAccueil = () => {
             <ListItemText primary="Aménagements scolaires" />
           </ListItem>
           <ListItem button component={NavLink} to="/patient/dashboard/documents" sx={linkStyle}>
-            <ListItemText primary="Mes Documents" />
+            <ListItemText primary="Mes documents" />
           </ListItem>
         </List>
       </Drawer>
