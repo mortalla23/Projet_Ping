@@ -192,13 +192,13 @@ const PatientAnamnèse = () => {
     const fetchAnamnese = async () => {
       try {
         const userDocResponse = await fetch(
-          `http://localhost:5000/api/user-documents?userId=${userId}&documentType=Anamnese`
+          `https://localhost:5000/api/user-documents?userId=${userId}&documentType=Anamnese`
         );
         const userDocData = await userDocResponse.json();
         if (userDocData && userDocData[0].documentId) {
           documentIdRef.current=userDocData[0].id;
           const anamneseResponse = await fetch(
-            `http://localhost:5000/api/anamnese/${userDocData[0].documentId}`
+            `https://localhost:5000/api/anamnese/${userDocData[0].documentId}`
           );
           const anamneseData = await anamneseResponse.json();
           if (anamneseData) {
@@ -229,7 +229,7 @@ const PatientAnamnèse = () => {
   
     try {
       // Envoi de la demande d'anamnèse
-    const anamneseResponse = await fetch('http://localhost:5000/api/anamnese/', {
+    const anamneseResponse = await fetch('https://localhost:5000/api/anamnese/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -247,7 +247,7 @@ const PatientAnamnèse = () => {
           }
           console.log("document id "+id);
         // 2. Ajouter le user_document après avoir obtenu l'ID de l'anamnèse
-        const userDocumentResponse = await fetch('http://localhost:5000/api/user-documents', {
+        const userDocumentResponse = await fetch('https://localhost:5000/api/user-documents', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

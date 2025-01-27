@@ -55,7 +55,7 @@ const OrthoPatients = () => {
 
   const fetchStudents = async (orthoId) => {
     try {
-      const response = await axios.get('http://localhost:5000/api/orthophoniste/patients', {
+      const response = await axios.get('https://localhost:5000/api/orthophoniste/patients',{
         params: { orthoId },
       });
       console.log('Données reçues de l\'API:', response.data); // Affiche les données reçues
@@ -89,7 +89,7 @@ const OrthoPatients = () => {
 
   const handleSearchStudent = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/orthophoniste/patients', {
+      const response = await axios.get('https://localhost:5000/api/orthophoniste/patients', {
         params: { email: searchEmail },
       });
       setFoundStudent(response.data);
@@ -111,7 +111,7 @@ const OrthoPatients = () => {
       return;
     }
     try {
-      await axios.post('http://localhost:5000/api/orthophoniste/patient/ajouter', {
+      await axios.post('https://localhost:5000/api/orthophoniste/patient/ajouter', {
         orthoId,
         studentId: foundStudent.id,
       });

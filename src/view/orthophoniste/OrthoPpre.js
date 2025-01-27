@@ -39,13 +39,13 @@ const Ppre = () => {
         const fetchPpre = async () => {
           try {
             const userDocResponse = await fetch(
-              `http://localhost:5000/api/user-documents?userId=${userId}&documentType=PPRE`
+              `https://localhost:5000/api/user-documents?userId=${userId}&documentType=PPRE`
             );
             const userDocData = await userDocResponse.json();
             if (userDocData && userDocData[0].documentId) {
               documentIdRef.current=userDocData[0].id;
               const ppreResponse = await fetch(
-                `http://localhost:5000/api/ppre/${userDocData[0].documentId}`
+                `https://localhost:5000/api/ppre/${userDocData[0].documentId}`
               );
               const ppreData = await ppreResponse.json();
               if (ppreData) {
@@ -71,7 +71,7 @@ const Ppre = () => {
         console.log(formData);
     
         // Envoi des données au backend
-        const response = await fetch('http://localhost:5000/api/ppre', {
+        const response = await fetch('https://localhost:5000/api/ppre', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ const Ppre = () => {
             console.log("document id "+id);
             console.log("l'ppre id "+ppreData.id);
           // 2. Ajouter le user_document après avoir obtenu l'ID de l'anamnèse
-          const userDocumentResponse = await fetch('http://localhost:5000/api/user-documents', {
+          const userDocumentResponse = await fetch('https://localhost:5000/api/user-documents', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

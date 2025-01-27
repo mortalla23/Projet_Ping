@@ -65,9 +65,8 @@ const EnseiHistorique = () => {
       requestData.bilanOrthophonique = formData.bilanOrthophonique;
       // Ajouter d'autres attributs ici selon les besoins
     }
-
     // Envoi des données au backend via une requête POST
-    const response = await axios.post('http://localhost:5000/api/user-documents', requestData);
+    const response = await axios.post('https://localhost:5000/api/user-documents', requestData);
 
     if (response.status === 200) {
       console.log('Données envoyées avec succès:', response.data);

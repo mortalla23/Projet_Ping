@@ -36,8 +36,6 @@ import Anamnese from './view/orthophoniste/Anamnese';
 import OrthoHistoriqueEducation from './view/orthophoniste/OrthoHistoriqueEducation';
 import OrthoHistoriqueSante from './view/orthophoniste/OrthoHistoriqueSante';
 import OrthoPpre from './view/orthophoniste/OrthoPpre';
-import Button from './view/patient/Button';
-
 // Composant pour les routes protégées
 const ProtectedRoute = ({ children, role }) => {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -63,7 +61,6 @@ function App() {
         <Route path="/" element={<Navigate to="/connexion" />} />
         <Route path="/connexion" element={<Connexion />} />
         <Route path="/inscription" element={<Inscription />} />
-        <Route path="/button" element={<Button />} />
         
         {/* Routes protégées pour l'enseignant */}
         <Route

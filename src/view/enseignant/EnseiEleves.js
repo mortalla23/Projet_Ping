@@ -44,9 +44,10 @@ const EnseiEleves = () => {
     }
   }, []);
 
+
   const fetchStudents = async (teacherId) => {
     try {
-      const response = await axios.get('http://localhost:5000/api/teacher/students', {
+      const response = await axios.get('https://localhost:5000/api/teacher/students', {
         params: { teacherId },
       });
       console.log('Données reçues :', response.data); 
@@ -62,7 +63,7 @@ const EnseiEleves = () => {
 
   const handleSearchStudent = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/teacher/students', {
+      const response = await axios.get('https://localhost:5000/api/teacher/students', {
         params: { email: searchEmail },
       });
       setFoundStudent(response.data);
@@ -86,7 +87,7 @@ const EnseiEleves = () => {
       return;
     }
     try {
-      await axios.post('http://localhost:5000/api/teacher/link-student-by-email', {
+      await axios.post('https://localhost:5000/api/teacher/link-student-by-email', {
         teacherId,
         studentEmail,
         studentId: foundStudent.id,

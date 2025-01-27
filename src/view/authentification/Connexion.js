@@ -85,9 +85,8 @@ const Connexion = () => {
       email: formData.email, // Authentification par email
       password: formData.password,
     };
-
     try {
-      const response = await axios.post('http://localhost:5000/api/users/connexion', loginData);
+      const response = await axios.post('https://localhost:5000/api/users/connexion', loginData);
       const user = response.data;
 
      // Appelez handleLogin pour mettre à jour le localStorage

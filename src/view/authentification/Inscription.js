@@ -90,10 +90,13 @@ const Inscription = () => {
 
       console.log("Données envoyées :", dataToSend);
 
-      const response = await axios.post('http://localhost:5000/api/users/inscription', dataToSend, {
+      const response = await axios.post('https://localhost:5000/api/users/inscription', dataToSend, {
         headers: {
           'Content-Type': 'application/json',
         },
+        httpsAgent: new (require("https").Agent)({
+          rejectUnauthorized: false, // Ignore les erreurs SSL
+        }),
       });
 
       console.log("Réponse de l'API :", response.data);
@@ -103,7 +106,7 @@ const Inscription = () => {
     } catch (error) {
       console.error('Erreur lors de l\'inscription :', error);
       if (error.response) {
-        console.error("Statut HTTP :", error.response.status);
+        console.error("Statut HTTPS :", error.response.status);
         console.error("Données de la réponse :", error.response.data);
         alert(`Erreur : ${error.response.data.message || "Une erreur est survenue."}`);
       } else {

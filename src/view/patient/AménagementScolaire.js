@@ -38,7 +38,7 @@ const SectionAmenagement = () => {
 useEffect(() => {
   const fetchUserRole = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/users/${intervenantId}`);
+      const response = await fetch(`https://localhost:5000/api/users/${intervenantId}`);
       if (!response.ok) {
         throw new Error(`Erreur serveur : ${response.status} ${response.statusText}`);
       }
@@ -63,7 +63,7 @@ useEffect(() => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/amenagements/user/${userId}`);
+        const response = await fetch(`https://localhost:5000/api/amenagements/user/${userId}`);
         if (!response.ok) {
           throw new Error(`Erreur serveur : ${response.status} ${response.statusText}`);
         }
@@ -213,7 +213,7 @@ useEffect(() => {
                     onClick={async () => {
                       try {
                         const response = await fetch(
-                          `http://localhost:5000/api/amenagements/validate`,
+                          `https://localhost:5000/api/amenagements/validate`,
                           {
                             method: "POST",
                             headers: {
@@ -274,7 +274,7 @@ useEffect(() => {
       };
   
       try {
-        const response = await fetch("http://localhost:5000/api/amenagements/create", {
+        const response = await fetch("https://localhost:5000/api/amenagements/create", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

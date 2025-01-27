@@ -56,18 +56,17 @@ const HistoriqueEducation = () => {
 
   const [formData, setFormData] = useState(initialFormData);
 
-
   useEffect(() => {
       const fetchHistoriqueEducation = async () => {
         try {
           const userDocResponse = await fetch(
-            `http://localhost:5000/api/user-documents?userId=${userId}&documentType=HistoriqueEducation`
+            `https://localhost:5000/api/user-documents?userId=${userId}&documentType=HistoriqueEducation`
           );
           const userDocData = await userDocResponse.json();
           if (userDocData && userDocData[0].documentId) {
             documentIdRef.current=userDocData[0].id;
             const historiqueEducationResponse = await fetch(
-              `http://localhost:5000/api/historique-education/${userDocData[0].documentId}`
+              `https://localhost:5000/api/historique-education/${userDocData[0].documentId}`
             );
             const historiqueEducationData = await historiqueEducationResponse.json();
             if (historiqueEducationData) {
@@ -102,7 +101,7 @@ const HistoriqueEducation = () => {
       console.log(formData);
   
       // Envoi des données au backend
-      const response = await fetch('http://localhost:5000/api/historique-education', {
+      const response = await fetch('https://localhost:5000/api/historique-education', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -121,7 +120,7 @@ const HistoriqueEducation = () => {
           console.log("document id "+id);
           console.log("l'histot id "+historiqueEducationData.id);
         // 2. Ajouter le user_document après avoir obtenu l'ID de l'anamnèse
-        const userDocumentResponse = await fetch('http://localhost:5000/api/user-documents', {
+        const userDocumentResponse = await fetch('https://localhost:5000/api/user-documents', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

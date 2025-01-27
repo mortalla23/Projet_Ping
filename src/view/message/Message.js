@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography, TextField, Button, List, ListItem, ListItemText } from "@mui/material";
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:5000/api';
-
+const BASE_URL = 'https://localhost:5000/api';
 const fetchConversations = async (userId) => {
     try {
         const response = await axios.get(`${BASE_URL}/conversations/user/${userId}`);

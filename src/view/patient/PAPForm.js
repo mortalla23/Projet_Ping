@@ -26,7 +26,7 @@ const PAPForm = () => {
 useEffect(() => {
   const fetchUserRole = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/users/${intervenantId}`);
+      const response = await fetch(`https://localhost:5000/api/users/${intervenantId}`);
       if (!response.ok) {
         throw new Error(`Erreur serveur : ${response.status} ${response.statusText}`);
       }
@@ -76,7 +76,7 @@ useEffect(() => {
   useEffect(() => {
     // Récupération des données du PAP
     axios
-      .get(`http://localhost:5000/api/pap/user/${userId}`)
+      .get(`https://localhost:5000/api/pap/user/${userId}`)
       .then((response) => {
         console.log("Données récupérées depuis l'API :", response.data);
         if (Array.isArray(response.data) && response.data.length > 0) {
@@ -95,7 +95,7 @@ useEffect(() => {
 
     // Récupération des informations de l'utilisateur
     axios
-      .get(`http://localhost:5000/api/users/${userId}`)
+      .get(`https://localhost:5000/api/users/${userId}`)
       .then((response) => {
         console.log("Informations utilisateur récupérées :", response.data);
         setUserInfo({
@@ -120,7 +120,7 @@ useEffect(() => {
     e.preventDefault();
     if (papId) {
       axios
-        .put(`http://localhost:5000/api/pap/update/${papId}`, formData)
+        .put(`https://localhost:5000/api/pap/update/${papId}`, formData)
         .then((response) => {
           console.log("Mise à jour réussie :", response.data);
           alert("Le document a été modifié avec succès.");
@@ -138,7 +138,7 @@ useEffect(() => {
   const handleCreate = (e) => {
     e.preventDefault();
     axios
-      .post(`http://localhost:5000/api/pap/create`, { ...formData, userId })
+      .post(`https://localhost:5000/api/pap/create`, { ...formData, userId })
       .then(() => {
         alert("Le PAP a été créé avec succès.");
         window.location.reload(); // Recharge la page après la création
