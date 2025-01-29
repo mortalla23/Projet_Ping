@@ -42,7 +42,9 @@ const OrthoAccueil = () => {
     const hiddenPages = [
       "/ortho/dashboard/allPatients",
       "/ortho/dashboard/profile",
+
       "/ortho/dashboard/listedespatients", // Ajout de la nouvelle page
+
     ];
     if (hiddenPages.includes(location.pathname)) {
       setShowDynamicContent(false);
@@ -95,8 +97,10 @@ const OrthoAccueil = () => {
   const closePrivacyPolicy = () => setShowPrivacyPolicy(false);
 
   return (
+
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "#E6F0F3" }}>
       {/* Menu Latéral */}
+
       <Drawer
         variant="permanent"
         anchor="left"
