@@ -100,7 +100,9 @@ useEffect(() => {
         console.log("Informations utilisateur récupérées :", response.data);
         setUserInfo({
           username: response.data.username || "",
-          birthDate: formatDate(response.data.birthDate), // Conversion au bon format
+          birthDate: formatDate(response.data.birthDate),
+          lastName: response.data.lastName || "",
+          firstName: response.data.firstName || "",// Conversion au bon format
         });
       })
       .catch((error) => {
@@ -165,7 +167,10 @@ useEffect(() => {
         <form onSubmit={handleSubmit}>
           <h2>Informations de l'élève</h2>
           <label htmlFor="name">Nom :</label>
-          <input type="text" id="name" value={userInfo.username} readOnly />
+          <input type="text" id="name" value={userInfo.lastName} readOnly />
+
+          <label htmlFor="name">Prénom :</label>
+          <input type="text" id="name" value={userInfo.firstName} readOnly />
 
           <label htmlFor="birthdate">Date de naissance :</label>
           <input type="date" id="birthdate" value={userInfo.birthDate} readOnly />
@@ -269,7 +274,10 @@ useEffect(() => {
             <form onSubmit={handleCreate}>
               <h2>Créer un nouveau PAP</h2>
               <label htmlFor="name">Nom :</label>
-              <input type="text" id="name" value={userInfo.username} readOnly />
+              <input type="text" id="name" value={userInfo.lastName} readOnly />
+          
+              <label htmlFor="name">Prénom :</label>
+              <input type="text" id="name" value={userInfo.firstName} readOnly />
 
               <label htmlFor="birthdate">Date de naissance :</label>
               <input type="date" id="birthdate" value={userInfo.birthDate} readOnly />
