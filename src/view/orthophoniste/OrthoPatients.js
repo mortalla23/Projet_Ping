@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
+
 import axios from "axios";
 import {
   Box,
@@ -10,61 +11,90 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button,
   TablePagination,
+  IconButton,
   Menu,
   MenuItem,
-  IconButton,
 } from "@mui/material";
-import { MoreVert } from "@mui/icons-material"; // Icône pour le menu
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom"; // ✅ Utilisation de useNavigate pour la navigation
 
-function PatientList() {
-  const [activeDropdown, setActiveDropdown] = useState(null);
-  const [patients, setPatients] = useState([]); // Liste des patients
-  const [loading, setLoading] = useState(true); // Chargement
-  const [sortOrder, setSortOrder] = useState("desc"); // Trier les patients
+const OrthoPatients = () => {
+  const [validatedPatients, setValidatedPatients] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [anchorEl, setAnchorEl] = useState(null); // État pour le menu
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [loading, setLoading] = useState(true);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const open = Boolean(anchorEl);
+  const orthoId = localStorage.getItem("orthoId");
+  const navigate = useNavigate(); // ✅ Utilisation de useNavigate pour la navigation
 
-  const dropdownRef = useRef(null);
-
-  // Récupération des patients via API
   useEffect(() => {
-    const fetchPatients = async () => {
+    const fetchValidatedPatients = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/orthophoniste/patients");
-        console.log("Patients reçus :", response.data);
-        const sortedPatients = sortPatients(response.data, sortOrder);
-        setPatients(sortedPatients);
+        if (!orthoId) {
+          toast.error("Identifiant de l'orthophoniste introuvable.");
+          setLoading(false);
+          return;
+        }
+
+        // Récupération des liens validés
+        const { data: validatedLinks } = await axios.post(
+          "http://localhost:5000/api/link/validated",
+          { linkerId: parseInt(orthoId, 10) },
+          { headers: { "Content-Type": "application/json" } }
+        );
+
+        if (!validatedLinks || validatedLinks.length === 0) {
+          toast.info("Aucun patient validé trouvé.");
+          setLoading(false);
+          return;
+        }
+
+        // Filtrer uniquement les patients avec le statut VALIDATED
+        const filteredValidatedLinks = validatedLinks.filter(link => link.validate === "VALIDATED");
+        const patientIds = filteredValidatedLinks.map((link) => link.linkedTo);
+
+        // Récupérer les détails des patients
+        const { data: patients } = await axios.post(
+          "http://localhost:5000/api/users/details",
+          { patientIds },
+          { headers: { "Content-Type": "application/json" } }
+        );
+
+        if (!patients || patients.length === 0) {
+          toast.error("Aucun détail de patient trouvé.");
+          setLoading(false);
+          return;
+        }
+
+        // Récupérer les enseignants liés aux patients
+        const { data: teachers } = await axios.post(
+          "http://localhost:5000/api/users/teachers",
+          { patientIds },
+          { headers: { "Content-Type": "application/json" } }
+        );
+
+        // Associer les enseignants aux patients
+        const patientsWithTeachers = patients.map((patient) => ({
+          ...patient,
+          teacher: teachers.find((t) => t.studentId === patient.id) || { firstName: "N/A", lastName: "N/A" },
+        }));
+
+        setValidatedPatients(patientsWithTeachers);
       } catch (error) {
-        console.error("Erreur lors de la récupération des patients :", error);
+        console.error("❌ Erreur lors du chargement :", error);
         toast.error("Erreur lors du chargement des patients.");
       } finally {
         setLoading(false);
       }
     };
-    fetchPatients();
-  }, [sortOrder]);
 
-  const sortPatients = (patients, order) => {
-    return patients.sort((a, b) => {
-      const dateA = new Date(a.lastConsultation);
-      const dateB = new Date(b.lastConsultation);
-      return order === "desc" ? dateB - dateA : dateA - dateB;
-    });
-  };
-
-  const toggleDropdown = (id) => {
-    setActiveDropdown(activeDropdown === id ? null : id);
-  };
-
-  const handleSortOrderChange = () => {
-    const newOrder = sortOrder === "desc" ? "asc" : "desc";
-    setSortOrder(newOrder);
-  };
+    fetchValidatedPatients();
+  }, [orthoId]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -75,6 +105,49 @@ function PatientList() {
     setPage(0);
   };
 
+  const handleMenuOpen = (event, patient) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedPatient(patient);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedPatient(null);
+  };
+
+  // ✅ Fonction pour gérer les différentes actions
+  const handleActionClick = (action) => {
+    if (!selectedPatient) {
+      toast.error("Aucun patient sélectionné.");
+      return;
+    }
+
+    const url = {
+      "Consulter / Modifier le PAP": `/view/patient/PAPForm?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+
+      "Consulter / Modifier le PPRE": `/view/patient/PPREForm?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Comptes-rendus des exercices": `/view/patient/CompteRendus?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Aménagements scolaires": `/view/patient/AménagementScolaire?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Historique éducatif": `/view/patient/HistoriqueEducatif?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Historique santé": `/view/patient/HistoriqueSante?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Commentaires": `/view/patient/Commentaires?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+    }[action];
+
+    if (url) {
+      navigate(url);
+    } else {
+      toast.warn("Action inconnue.");
+    }
+
+    handleMenuClose();
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString("fr-FR", options);
+  };
+
   if (loading) {
     return <Typography>Chargement des données...</Typography>;
   }
@@ -83,74 +156,67 @@ function PatientList() {
     <Box sx={{ padding: "20px" }}>
       <ToastContainer />
       <Typography variant="h5" gutterBottom>
-        Liste des patients
+        Liste des patients validés par l'orthophoniste
       </Typography>
-
-      {/* Bouton pour trier */}
-      <Box sx={{ textAlign: "right", mb: 2 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSortOrderChange}
-          sx={{ bgcolor: "#5BA8B4" }}
-        >
-          Trier par date : {sortOrder === "desc" ? "Du plus récent au plus ancien" : "Du plus ancien au plus récent"}
-        </Button>
-      </Box>
-
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
-            <TableRow sx={{ bgcolor: "#5BA8B4" }}>
-              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>#</TableCell>
-              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Nom</TableCell>
-              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Prénom</TableCell>
-              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Date de naissance</TableCell>
-              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Dernière consultation</TableCell>
-              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Action</TableCell>
+            <TableRow>
+              <TableCell>#</TableCell>
+              <TableCell>Nom</TableCell>
+              <TableCell>Prénom</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Date de naissance</TableCell>
+              <TableCell>Enseignant</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {patients.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((patient, index) => (
-              <TableRow key={patient.id}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{patient.lastName}</TableCell>
-                <TableCell>{patient.firstName}</TableCell>
-                <TableCell>{new Date(patient.birthDate).toLocaleDateString()}</TableCell>
-                <TableCell>
-                  {patient.lastConsultation ? new Date(patient.lastConsultation).toLocaleDateString() : "Non disponible"}
-                </TableCell>
-                <TableCell ref={dropdownRef} style={{ position: "relative" }}>
-                  <IconButton onClick={(e) => toggleDropdown(patient.id)}>
-                    <MoreVert />
-                  </IconButton>
-                  {activeDropdown === patient.id && (
-                    <Menu
-                      anchorEl={anchorEl}
-                      open={Boolean(anchorEl)}
-                      onClose={() => setAnchorEl(null)}
+            {validatedPatients
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((patient, index) => (
+                <TableRow key={patient.id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{patient.lastName}</TableCell>
+                  <TableCell>{patient.firstName}</TableCell>
+                  <TableCell>{patient.email}</TableCell>
+                  <TableCell>{formatDate(patient.birthDate)}</TableCell>
+                  <TableCell>
+                    {patient.teacher ? `${patient.teacher.firstName} ${patient.teacher.lastName}` : "N/A"}
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      aria-label="more"
+                      onClick={(event) => handleMenuOpen(event, patient)}
                     >
-                      <MenuItem>Modifier</MenuItem>
-                      <MenuItem>Supprimer</MenuItem>
-                    </Menu>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
+                      <MoreVertIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={patients.length}
+          count={validatedPatients.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </TableContainer>
+
+      <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
+        <MenuItem onClick={() => handleActionClick("Consulter / Modifier le PAP")}>📄 PAP</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Consulter / Modifier le PPRE")}>📖 PPRE</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Comptes-rendus des exercices")}>📝 Exercices</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Aménagements scolaires")}>🏫 Aménagements scolaires</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Historique éducatif")}>🎓 Historique éducatif</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Commentaires")}>💬 Commentaires</MenuItem>
+      </Menu>
     </Box>
   );
-}
+};
 
-export default PatientList;
+export default OrthoPatients;
