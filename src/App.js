@@ -26,7 +26,7 @@ import PatientAnamnèse from './view/patient/PatientAnamnèse';
 import AjoutIntervenant from './view/patient/AjoutIntervenant';
 import ConsulDocuments from './view/patient/ConsulDocuments';
 import PAPForm from './view/patient/PAPForm';
-
+import PatientIntervenantList from './view/patient/PatientIntervenantList'
 import HistoriqueEducation from './view/patient/HistoriqueEducation';
 import HistoriqueSante from './view/patient/HistoriqueSante';
 import PatientPpre from './view/patient/PatientPpre';
@@ -90,6 +90,7 @@ function App() {
         >
           <Route path="cr" element={<CompteRendus />} />
           <Route path="ajIntervenant" element={<AjoutIntervenant />} />
+          <Route path="intervenants/:userId" element={<PatientIntervenantList />} />
           <Route path="pap" element={<PAPForm />} />
           <Route path="ascolaires" element={<AménagementScolaire />} />
           <Route path="anamnese/:userId" element={<PatientAnamnèse />} />

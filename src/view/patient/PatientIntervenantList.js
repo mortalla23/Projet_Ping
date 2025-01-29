@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef,useParams } from "react";
 import axios from "axios";
 import {
   Box,
@@ -17,60 +17,59 @@ import {
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const PatientList = () => {
-  const [patients, setPatients] = useState([]);
-  const [addedPatients, setAddedPatients] = useState({});
+const IntervenantList = () => {
+  const [intervenants, setIntervenants] = useState([]);
+  const [addedIntervenants, setAddedIntervenants] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const debounceTimeout = useRef(null);
-  const orthoId = localStorage.getItem("orthoId");
-
+  const { patientId } = useParams();
   useEffect(() => {
-    const savedAddedPatients = localStorage.getItem("addedPatients");
-    if (savedAddedPatients) {
-      setAddedPatients(JSON.parse(savedAddedPatients));
+    const savedAddedIntervenants = localStorage.getItem("addedIntervenants");
+    if (savedAddedIntervenants) {
+      setAddedIntervenants(JSON.parse(savedAddedIntervenants));
     }
 
-    fetchPatients();
+    fetchIntervenants();
 
     const interval = setInterval(() => {
-      checkValidatedPatients();
+      checkValidatedIntervenants();
     }, 5000);
 
     return () => clearInterval(interval);
   }, []);
 
-  const fetchPatients = async (term = "") => {
+  const fetchIntervenants = async (term = "") => {
     setLoading(true);
     try {
       const url = term
-        ? `https://localhost:5000/api/users/patients/search?searchTerm=${term}`
-        : `https://localhost:5000/api/users/patients`;
+        ? `https://localhost:5000/api/users/intervenants/search?searchTerm=${term}`
+        : `https://localhost:5000/api/users/intervenants/${patientId}`;
       const { data } = await axios.get(url,{
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
           'Content-Type': 'application/json',
         },});
       
-      // Récupérer les liens validés pour filtrer les patients
+      // Récupérer les liens validés pour filtrer les Intervenants
       const { data: validatedLinks } = await axios.post(
         "https://localhost:5000/api/link/validated",
-        {linkerId: parseInt(orthoId, 10) },{
+        {linkerId: parseInt(localStorage.getItem('patientId'), 10) },{
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
             'Content-Type': 'application/json',
           },}
       );
 
-      const validatedPatientIds = validatedLinks.map(link => link.linkedTo);
-      const filteredPatients = data.filter(patient => !validatedPatientIds.includes(patient.id));
+      const validatedIntervenantIds = validatedLinks.map(link => link.linkedTo);
+      const filteredIntervenants = data.filter(intervenant => !validatedIntervenantIds.includes(intervenant.id));
       
-      setPatients(filteredPatients);
+      setIntervenants(filteredIntervenants);
     } catch (error) {
       console.error("Erreur API :", error);
-      toast.error("Impossible de charger les patients.");
+      toast.error("Impossible de charger les Intervenants.");
     } finally {
       setLoading(false);
     }
@@ -84,34 +83,34 @@ const PatientList = () => {
       clearTimeout(debounceTimeout.current);
     }
 
-    debounceTimeout.current = setTimeout(() => fetchPatients(value), 300);
+    debounceTimeout.current = setTimeout(() => fetchIntervenants(value), 300);
   };
 
-  const handleAdd = async (patient) => {
+  const handleAdd = async (intervenant) => {
     try {
       const { data: newLink } = await axios.post("https://localhost:5000/api/link/create", {
-        orthoId: parseInt(orthoId, 10),
-        patientId: patient.id,
+        linkerId: localStorage.getItem('patientId'),
+        linkedTo: intervenant.id,
       },{
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
           'Content-Type': 'application/json',
         },},);
 
-      const updatedAddedPatients = { ...addedPatients, [patient.id]: newLink.id };
-      setAddedPatients(updatedAddedPatients);
-      localStorage.setItem("addedPatients", JSON.stringify(updatedAddedPatients));
+      const updatedAddedIntervenants = { ...addedIntervenants, [intervenant.id]: newLink.id };
+      setAddedIntervenants(updatedAddedIntervenants);
+      localStorage.setItem("addedIntervenants", JSON.stringify(updatedAddedIntervenants));
 
-      toast.success(`Le patient ${patient.firstName} a été ajouté avec succès.`);
+      toast.success(`Le intervenant ${intervenant.firstName} a été ajouté avec succès.`);
     } catch (error) {
-      console.error("Erreur lors de l'ajout du patient :", error);
-      toast.error("Impossible d'ajouter le patient.");
+      console.error("Erreur lors de l'ajout du intervenant :", error);
+      toast.error("Impossible d'ajouter le intervenant.");
     }
   };
 
-  const handleCancel = async (patient) => {
+  const handleCancel = async (intervenant) => {
     try {
-      const linkId = addedPatients[patient.id];
+      const linkId = addedIntervenants[intervenant.id];
       if (!linkId) {
         toast.error("Aucun lien à annuler.");
         return;
@@ -123,22 +122,22 @@ const PatientList = () => {
           'Content-Type': 'application/json',
         },});
 
-      const updatedAddedPatients = { ...addedPatients };
-      delete updatedAddedPatients[patient.id];
-      setAddedPatients(updatedAddedPatients);
-      localStorage.setItem("addedPatients", JSON.stringify(updatedAddedPatients));
+      const updatedAddedIntervenants = { ...addedIntervenants };
+      delete updatedAddedIntervenants[intervenant.id];
+      setAddedIntervenants(updatedAddedIntervenants);
+      localStorage.setItem("addedIntervenants", JSON.stringify(updatedAddedIntervenants));
 
-      toast.info(`L'ajout du patient ${patient.firstName} a été annulé.`);
+      toast.info(`L'ajout du intervenant ${intervenant.firstName} a été annulé.`);
     } catch (error) {
       console.error("Erreur lors de l'annulation :", error);
       toast.error("Impossible d'annuler l'ajout.");
     }
   };
 
-  const checkValidatedPatients = async () => {
+  const checkValidatedIntervenants = async () => {
     try {
-      const { data: validatedPatients } = await axios.post(
-        "https://localhost:5000/api/link/validated", { params: { orthoId } },{
+      const { data: validatedIntervenants } = await axios.post(
+        "https://localhost:5000/api/link/validated", { params: {linkerId : localStorage.getItem('patientId') } },{
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
             'Content-Type': 'application/json',
@@ -146,19 +145,19 @@ const PatientList = () => {
        
       );
 
-      if (validatedPatients.length > 0) {
-        const updatedPatients = patients.filter(
-          (patient) => !validatedPatients.some((vp) => vp.linkedTo === patient.id)
+      if (validatedIntervenants.length > 0) {
+        const updatedIntervenants = intervenants.filter(
+          (intervenant) => !validatedIntervenants.some((vp) => vp.linkedTo === intervenant.id)
         );
-        setPatients(updatedPatients);
+        setIntervenants(updatedIntervenants);
 
-        validatedPatients.forEach((vp) => {
-          delete addedPatients[vp.linkedTo];
+        validatedIntervenants.forEach((vp) => {
+          delete addedIntervenants[vp.linkedTo];
         });
-        setAddedPatients({ ...addedPatients });
-        localStorage.setItem("addedPatients", JSON.stringify(addedPatients));
+        setAddedIntervenants({ ...addedIntervenants });
+        localStorage.setItem("addedIntervenants", JSON.stringify(addedIntervenants));
 
-        toast.success("Certains patients ont été validés et transférés.");
+        toast.success("Certains Intervenants ont été validés et transférés.");
       }
     } catch (error) {
       console.error("Erreur lors de la vérification :", error);
@@ -169,10 +168,10 @@ const PatientList = () => {
     <Box sx={{ padding: "20px" }}>
       <ToastContainer />
       <Typography variant="h5" gutterBottom>
-        Liste des patients
+        Liste des Intervenants
       </Typography>
       <TextField
-        label="Rechercher un patient"
+        label="Rechercher un Intervenant"
         variant="outlined"
         fullWidth
         margin="normal"
@@ -195,20 +194,20 @@ const PatientList = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {patients
+              {intervenants
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((patient, index) => (
-                  <TableRow key={patient.id}>
+                .map((intervenant, index) => (
+                  <TableRow key={intervenant.id}>
                     <TableCell>{index + 1}</TableCell>
-                    <TableCell>{patient.lastName}</TableCell>
-                    <TableCell>{patient.firstName}</TableCell>
-                    <TableCell>{patient.email}</TableCell>
+                    <TableCell>{intervenant.lastName}</TableCell>
+                    <TableCell>{intervenant.firstName}</TableCell>
+                    <TableCell>{intervenant.email}</TableCell>
                     <TableCell>
-                      {addedPatients[patient.id] ? (
+                      {addedIntervenants[intervenant.id] ? (
                         <Button
                           variant="contained"
                           color="error"
-                          onClick={() => handleCancel(patient)}
+                          onClick={() => handleCancel(intervenant)}
                         >
                           Annuler
                         </Button>
@@ -216,7 +215,7 @@ const PatientList = () => {
                         <Button
                           variant="contained"
                           color="primary"
-                          onClick={() => handleAdd(patient)}
+                          onClick={() => handleAdd(intervenant)}
                         >
                           Ajouter
                         </Button>
@@ -229,7 +228,7 @@ const PatientList = () => {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={patients.length}
+            count={intervenants.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={(event, newPage) => setPage(newPage)}
@@ -244,4 +243,4 @@ const PatientList = () => {
   );
 };
 
-export default PatientList;
+export default IntervenantList;

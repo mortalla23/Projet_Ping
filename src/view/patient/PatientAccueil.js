@@ -38,11 +38,12 @@ const PatientAccueil = () => {
   const location = useLocation();
   useEffect(() => {
     const hiddenPages = [
-        "/patient/dashboard/anamnese"+localStorage.getItem('patientId'),
+        "/patient/dashboard/anamnese/"+localStorage.getItem('patientId'),
         "/patient/dashboard/cr",
         "/patient/dashboard/ajIntervenant",
         "/patient/dashboard/ascolaires",
         "/patient/dashboard/documents",
+        "/patient/dashboard/intervenants/"+localStorage.getItem('patientId'),
       ];
      // Si l'utilisateur est sur l'une de ces pages, on cache la section dynamique
      if (hiddenPages.includes(location.pathname)) {
@@ -142,6 +143,9 @@ const PatientAccueil = () => {
           </ListItem>
           <ListItem button component={NavLink} to="/patient/dashboard/ajIntervenant" sx={linkStyle}>
             <ListItemText primary="Ajout d'un intervenant" />
+          </ListItem>
+          <ListItem button component={NavLink} to={`/patient/dashboard/intervenants/${localStorage.getItem('patientId')}`} sx={linkStyle}>
+            <ListItemText primary="Liste des intervenants" />
           </ListItem>
           <ListItem
             button
