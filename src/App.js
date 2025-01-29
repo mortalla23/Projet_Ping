@@ -74,8 +74,6 @@ function App() {
           <Route path="amenagements" element={<EnseiAmenagements />} />
           <Route path="messages" element={<Messages />} />
           <Route path="ppre/:userId" element={<EnseiPpre/>} />
-          <Route path="anamnese/:userId" element={<PatientAnamnèse />} />
-          
           
         </Route>
 
