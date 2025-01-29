@@ -1,281 +1,402 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, TextField, Button, CircularProgress } from "@mui/material";
+import { Box, Typography, TextField, Button, List, ListItem, ListItemText } from "@mui/material";
+import axios from 'axios';
 
-// Composant pour rechercher un utilisateur
-const SearchUsers = ({ onSelectUser }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [users, setUsers] = useState([]); // Liste des utilisateurs trouvés
-  const [loading, setLoading] = useState(false); // Indicateur de chargement
+const BASE_URL = 'http://localhost:5000/api';
 
-  const handleSearch = async () => {
-    if (!searchTerm.trim()) return; // Eviter les recherches vides
-
-    setLoading(true); // Commencer à charger
+const fetchConversations = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/users/search/${searchTerm}`);
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(data); // Remplir la liste avec les utilisateurs trouvés
+        const response = await axios.get(`${BASE_URL}/conversations/user/${userId}`);
+        console.log("Conversations pour l'utilisateur:", userId);
+        // Vérifier si la réponse contient un tableau sinon renvoyer un tableau vide
+        if (Array.isArray(response.data)) {
+          return response.data;
       } else {
-        console.error("Erreur lors de la recherche des utilisateurs");
+          console.warn("La réponse de l'API ne contient pas un tableau, réponse reçue:", response.data);
+          return [];
       }
     } catch (error) {
-      console.error("Erreur lors de la recherche des utilisateurs", error);
-    } finally {
-      setLoading(false); // Terminer le chargement
+        console.error("Erreur lors de la récupération des conversations :", error);
+        return [];
     }
-  };
-
-  return (
-    <Box sx={{ padding: 2 }}>
-      <TextField
-        fullWidth
-        label="Rechercher un utilisateur"
-        variant="outlined"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      <Button onClick={handleSearch} sx={{ mt: 2 }} variant="contained">
-        {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Rechercher'}
-      </Button>
-
-      <Box sx={{ mt: 2 }}>
-        {users.length === 0 && !loading && searchTerm && (
-          <Typography variant="body1">Aucun utilisateur trouvé.</Typography>
-        )}
-        {users.map((user) => (
-          <Button
-            key={user.id}
-            sx={{ display: "block", marginBottom: 1 }}
-            onClick={() => onSelectUser(user)} // Sélectionner un utilisateur
-          >
-            {user.username}
-          </Button>
-        ))}
-      </Box>
-    </Box>
-  );
 };
 
-// Composant de la messagerie
-const Messages = ({ userId }) => {
-  const [messages, setMessages] = useState([]); // Tableau des messages
-  const [newMessage, setNewMessage] = useState(""); // Message à envoyer
-  const [socket, setSocket] = useState(null);
-  const [conversationId, setConversationId] = useState(null); // Conversation ID actuelle
-  const [selectedUser, setSelectedUser] = useState(null); // Utilisateur sélectionné pour la conversation
-  const teacherId = localStorage.getItem('teacherId');  // Assurez-vous que teacherId est bien récupéré depuis localStorage
+const fetchMessagesByConversation = async (conversationId) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/messages/conversation/${conversationId}`);
+        console.log("Données des messages reçues de l'API :", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Erreur lors de la récupération des messages :", error);
+        return [];
+    }
+};
 
-  // Connexion WebSocket
-  useEffect(() => {
-    const ws = new WebSocket('ws://localhost:5000/ws'); // Connexion au serveur WebSocket
+const fetchUserDetails = async (userId) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/users/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Erreur lors de la récupération des détails de l'utilisateur :", error);
+        return null;
+    }
+};
 
-    setSocket(ws);
+const searchUsers = async (query) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/users/search/${query}`);
+        return response.data;
+    } catch (error) {
+        console.error("Erreur lors de la recherche des utilisateurs :", error);
+        return [];
+    }
+};
 
-    ws.onopen = () => {
-      console.log("WebSocket est ouvert");
-    };
+const createConversation = async (isPublic, senderId, receiverId) => {
+  try {
+      const response = await axios.post(`${BASE_URL}/conversations/add`, 
+          new URLSearchParams({ isPublic, senderId, receiverId })
+      );
+      return response.data;
+  } catch (error) {
+      console.error("Erreur lors de la création de la conversation :", error.response?.data || error);
+      return null;
+  }
+};
+
+
+
+const Messages = () => {
+    const [messages, setMessages] = useState([]);
+    const [newMessage, setNewMessage] = useState("");
+    const [conversationId, setConversationId] = useState(null);
+    const [conversations, setConversations] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchResults, setSearchResults] = useState([]);
+
+    const getUserId = () => {
+      const userId = localStorage.getItem('patientId') || localStorage.getItem('orthoId') || localStorage.getItem('teacherId');
+      console.log("Utilisateur connecté, ID récupéré:", userId);
+      return userId;
+  };
   
-    ws.onerror = (error) => {
-      console.error("Erreur WebSocket: ", error);
-    };
   
-    ws.onmessage = (event) => {
-      const messageData = JSON.parse(event.data);
-      setMessages((prevMessages) => [...prevMessages, messageData]);
-    };
-  
-    ws.onclose = (event) => {
-      if (event.wasClean) {
-        console.log('Connexion WebSocket fermée proprement');
-      } else {
-        console.error('Connexion WebSocket fermée avec erreur');
+    useEffect(() => {
+      const userId = getUserId();
+      console.log("Utilisateur connectée, ID:", userId); // Vérifier que l'ID est correct ici
+    }, []);
+    
+    useEffect(() => {
+      const userId = getUserId();
+      console.log("Utilisateur connectéeee, ID:", userId); 
+      if (userId) {
+        fetchConversations(userId).then(data => {
+          console.log("Conversations récupérées avant filtrage :", data);
+    
+          // Filtrage en fonction de l'ID de l'utilisateur
+          const filteredConversations = data.filter(conv => {
+            const userIdInt = parseInt(userId, 10);
+            console.log("Conversation ID: " + conv.id + ", User IDs: " + conv.userIds);
+    
+            // Vérifier que l'utilisateur connecté n'est pas dans la conversation
+          return conv.userIds.includes(userIdInt);
+          });
+    
+          console.log("Conversations après filtrage :", filteredConversations);
+          setConversations(filteredConversations);
+          localStorage.setItem('conversations', JSON.stringify(filteredConversations));
+        }).catch(error => {
+          console.error("Erreur lors de la récupération des conversations :", error);
+        });
       }
-    };
+    }, []);
+    
+    
+
+    const getSenderName = async (senderId) => {
+      if (!senderId) return "Utilisateur inconnu";
+      try {
+          const user = await fetchUserDetails(senderId);
+          return user ? user.username : `Utilisateur ${senderId}`;
+      } catch (error) {
+          console.error("Erreur lors de la récupération de l'utilisateur :", error);
+          return `Utilisateur ${senderId}`;
+      }
+  };
   
-    return () => ws.close(); // Fermer la connexion lors du démontage du composant
+  useEffect(() => {
+    if (conversationId) {
+      const userId = getUserId();
+        fetchMessagesByConversation(conversationId).then(async (msgs) => {
+            const updatedMessages = await Promise.all(
+                msgs.map(async (msg) => {
+                    let senderName;
+
+                    // Vérification si le message provient de l'utilisateur actuel
+                    if (parseInt(msg.sender_id) === parseInt(userId)) {
+                        senderName = localStorage.getItem('username') || "Moi";
+                    } else {
+                        const userDetails = await fetchUserDetails(msg.sender_id);
+                        senderName = userDetails ? userDetails.username : `Utilisateur ${msg.sender_id}`;
+                    }
+
+                    return { ...msg, senderName };
+                })
+            );
+
+            setMessages(updatedMessages);
+        });
+    }
+}, [conversationId]);
+
+  
+  useEffect(() => {
+    // Vérifier si une conversation est enregistrée et la supprimer pour démarrer avec une page vide
+    localStorage.removeItem('selectedConversation'); 
+    setConversationId(null);  // Assurer que l'ID est null au démarrage
+    setMessages([]); // Vider la liste des messages
   }, []);
   
-  // Fonction pour envoyer un message
-// Fonction pour envoyer un message
-const handleSendMessage = async () => {
-    const teacherId = localStorage.getItem('teacherId');  // Récupérer l'ID de l'enseignant
-    if (!teacherId) {
-      console.error('Teacher ID manquant dans le localStorage.');
-      alert('Veuillez vous connecter à nouveau.');
-      return; // Arrêter si le teacherId est manquant
-    }
-
-    if ( socket && conversationId) {
-      const message = {
-        content: newMessage,
-        senderId: teacherId, // Utiliser teacherId comme senderId
-        conversationId: conversationId, // Utiliser l'ID de la conversation sélectionnée
-      };
-  
-      if (!message.senderId || !message.conversationId) {
-        console.error("ID manquant pour l'envoi du message.");
-        alert("Les ID de l'utilisateur ou de la conversation sont manquants.");
-        return;
-      }
-  
-      // Envoi du message via WebSocket
-      socket.send(JSON.stringify(message));
-  
-      setNewMessage(""); // Réinitialiser le champ du message
-  
-      // Ajouter immédiatement le message dans l'état local pour un affichage instantané
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { ...message, senderId: teacherId, content: newMessage },
-      ]);
-  
-      // Appel API pour envoyer le message au backend
-      try {
-        const response = await fetch('http://localhost:5000/api/messages/send', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(message), // Utilise un JSON complet ici
-        });
-  
-        if (!response.ok) {
-          throw new Error('Erreur lors de l\'envoi du message');
-        }
-      } catch (error) {
-        console.error('Erreur API lors de l\'envoi du message', error);
-      }
-    } else {
-      console.error("Les IDs nécessaires ne sont pas définis.");
-      alert("Assurez-vous que l'ID de la conversation et l'ID de l'enseignant sont bien définis.");
-    }
-  };
   
 
-  // Sélectionner un utilisateur pour démarrer la conversation
-  const handleSelectUser = (user) => {
-    setSelectedUser(user);
-    createConversation(user); // Créer la conversation avec l'utilisateur sélectionné
-  };
-
-  // Créer une conversation via l'API backend
-  const createConversation = async (selectedUser) => {
-    const storedUserId = localStorage.getItem('teacherId');
-    if (!storedUserId) {
-      console.error('Aucun userId trouvé dans localStorage.');
-      alert('Veuillez vous connecter à nouveau.');
-      return;
-    }
-  
-    try {
-      // Vérification des paramètres avant l'envoi
-      console.log('userId:', storedUserId, 'isPublic:', true);
-  
-      const response = await fetch(`http://localhost:5000/api/conversations/create?userId=${storedUserId}&isPublic=true`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-        },
+useEffect(() => {
+  const savedConversationId = localStorage.getItem('selectedConversation');
+  if (savedConversationId) {
+      setConversationId(savedConversationId);
+      handleSelectConversation(savedConversationId);
+      fetchMessagesByConversation(savedConversationId).then(msgs => {
+          setMessages(msgs);
       });
-  
-      const responseText = await response.text();
-      console.log('Réponse brute du serveur:', responseText);
-  
-      if (response.ok) {
-        const data = JSON.parse(responseText);
-        // Stocker les ID de la conversation et de l'utilisateur pour l'utiliser dans l'envoi de messages
-        setConversationId(data.id);
-        setSelectedUser(selectedUser); // ID de l'utilisateur (teacherId)
-      } else {
-        console.error('Erreur lors de la création de la conversation:', responseText);
-        alert('Erreur lors de la création de la conversation.');
-      }
-    } catch (error) {
-      console.error('Erreur lors de la création de la conversation', error);
-      alert('Erreur lors de la création de la conversation.');
+  }
+}, []);
+
+const [refreshKey, setRefreshKey] = useState(0);
+
+
+useEffect(() => {
+    if (conversationId) {
+        fetchMessagesByConversation(conversationId).then(msgs => {
+            setMessages(msgs);
+        });
     }
+}, [conversationId, refreshKey]);
+
+
+const handleSelectConversation = async (id) => {
+  const userId = getUserId();
+  setConversationId(id);
+  setRefreshKey(prevKey => prevKey + 1);
+  localStorage.setItem('selectedConversation', id);
+
+  try {
+      const msgs = await fetchMessagesByConversation(id);
+
+      const updatedMessages = await Promise.all(
+          msgs.map(async (msg) => {
+              let senderName;
+              if (parseInt(msg.sender_id) === parseInt(userId)) {
+                  senderName = "Moi";
+              } else {
+                  const userDetails = await fetchUserDetails(msg.sender_id);
+                  senderName = userDetails ? userDetails.username : `Utilisateur ${msg.sender_id}`;
+              }
+              return { ...msg, senderName };
+          })
+      );
+
+      setMessages([]);  // Forcer un re-render en vidant l'état temporairement
+      setTimeout(() => setMessages(updatedMessages), 0);  // Re-rendu correct
+  } catch (error) {
+      console.error("Erreur lors de la récupération des messages :", error);
+  }
+};
+
+
+
+useEffect(() => {
+  const savedUsername = localStorage.getItem('username');
+  if (savedUsername) {
+      console.log("Utilisateur connecté :", savedUsername);
+  } else {
+      console.warn("Aucun nom d'utilisateur trouvé");
+  }
+}, []);
+
+
+
+
+const handleSendMessage = async () => {
+  const userId = getUserId();
+  if (newMessage.trim() && conversationId) {
+      try {
+          await axios.post(`${BASE_URL}/messages/add`, null, {
+              params: {
+                  conversationId,
+                  userId,
+                  content: newMessage,
+                  senderName: localStorage.getItem('username')  // Ajouter le username de l'expéditeur
+              }
+          });
+
+          // Rafraîchir les messages après l'envoi
+          const msgs = await fetchMessagesByConversation(conversationId);
+            setMessages(msgs);
+
+          setNewMessage("");  // Réinitialiser le champ du message
+      } catch (error) {
+          console.error("Erreur lors de l'envoi du message :", error);
+      }
+  }
+};
+
+
+    const handleSearch = async (e) => {
+        setSearchQuery(e.target.value);
+        if (e.target.value.trim().length > 0) {
+            const results = await searchUsers(e.target.value);
+            setSearchResults(results);
+        } else {
+            setSearchResults([]);
+        }
+    };
+
+    const handleCreateConversation = async (user) => {
+      const userId = getUserId();
+      try {
+          const response = await axios.get(`${BASE_URL}/conversations/check`, {
+              params: { senderId: userId, receiverId: user.id }
+          });
+  
+          if (response.data.exists) {
+              alert("Cette conversation existe déjà.");
+              return;
+          }
+      } catch (error) {
+          console.error("Erreur lors de la vérification de la conversation :", error);
+      }
+  
+      // Créer la conversation si elle n'existe pas
+      const newConversation = await createConversation(false, userId, user.id);
+      if (newConversation) {
+          // Rafraîchir la liste des conversations après la création pour récupérer toutes les données
+          fetchConversations(userId).then(data => {
+            const filteredConversations = data.filter(conv => 
+                conv.userIds.includes(parseInt(userId))
+            );
+              setConversations(filteredConversations);
+              localStorage.setItem('conversations', JSON.stringify(filteredConversations));
+          });
+  
+          setSearchQuery("");
+          setSearchResults([]);
+      }
   };
   
-
-  return (
-    <Box sx={{ display: "flex", height: "100vh", maxWidth: "100vw" }}>
-      {/* Zone de conversation à gauche */}
-      <Box sx={{ 
-        width: "70%", 
-        padding: 2, 
-        display: "flex", 
-        flexDirection: "column", 
-        height: "100vh", 
-        backgroundColor: "#fff",
-        borderRight: "1px solid #ddd", 
-      }}>
-        {selectedUser ? (
-          <>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              Messagerie avec {selectedUser.username} 
-            
-            </Typography>
-
-            {/* Affichage des messages */}
-           
-            <Box sx={{ flexGrow: 1, maxHeight: "60vh", overflowY: "auto", marginBottom: 2 }}>
-            {messages.length === 0 && (
-                <Typography variant="body1" sx={{ textAlign: "center", fontSize: "1.2rem" }}>
-                Aucune conversation pour le moment.
-                </Typography>
-            )}
-            {messages.map((msg, index) => (
-                <Typography 
-                key={index} 
-                sx={{ 
-                    textAlign: msg.senderId === teacherId ? "right" : "left", // Aligner à droite si c'est l'enseignant
-                    marginBottom: 1, 
-                }}
-                >
-                <strong>{msg.senderId === teacherId ? "Vous" : selectedUser.username}:</strong> {msg.content}
-                </Typography>
+    return (
+      <Box sx={{ display: "flex", height: "100vh" }}>
+      {/* Section Conversations */}
+      <Box sx={{ width: "30%", padding: 2, borderRight: "1px solid #ddd" }}>
+        <TextField
+          fullWidth
+          label="Rechercher un utilisateur"
+          variant="outlined"
+          value={searchQuery}
+          onChange={handleSearch}
+          sx={{ mb: 2 }}
+        />
+        {searchResults.length > 0 && (
+          <List>
+            {searchResults.map((user) => (
+              <ListItem key={user.id} button onClick={() => handleCreateConversation(user)}>
+                <ListItemText primary={user.username} />
+              </ListItem>
             ))}
-            </Box>
-
-
-            {/* Champ de saisie du message */}
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <TextField
-                fullWidth
-                label="Nouveau message"
-                variant="outlined"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                sx={{ mb: 2 }}
-              />
-              <Button variant="contained" sx={{ width: "100%" }} onClick={handleSendMessage}>
-                Envoyer
-              </Button>
-            </Box>
-          </>
+          </List>
+        )}
+        <Typography variant="h6">Conversations</Typography>
+        {conversations.length > 0 ? (
+          conversations.map((conv) => {
+            const currentUser = localStorage.getItem('username');
+            const otherUser = conv?.usernames?.find(username => username !== currentUser);
+    
+            return (
+              <Box
+                key={conv.id}
+                onClick={() => handleSelectConversation(conv.id)}
+                sx={{
+                  cursor: "pointer",
+                  padding: 1,
+                  borderBottom: "1px solid #ddd",
+                  backgroundColor: conversationId === conv.id ? '#f0f0f0' : 'transparent',
+                }}
+              >
+                <Typography>{otherUser || `Conversation ${conv.id}`}</Typography>
+              </Box>
+            );
+          })
         ) : (
-          <Box sx={{ flexGrow: 1, height: "20vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <Typography variant="body1" sx={{ fontSize: "1.2rem" }}>
-              Sélectionnez un utilisateur pour démarrer une conversation.
-            </Typography>
-          </Box>
+          <Typography>Aucune conversation trouvée.</Typography>
         )}
       </Box>
-
-      {/* Zone de recherche à droite */}
-      <Box sx={{ 
-        width: "30%", 
-        padding: 2, 
-        backgroundColor: "#f4f4f4", 
-        height: "100vh",
-        overflowY: "auto",
-        borderLeft: "1px solid #ddd",
-      }}>
-        <SearchUsers onSelectUser={handleSelectUser} />
+    
+      {/* Section Messages */}
+      <Box sx={{ width: "70%", padding: 2 }}>
+  {conversationId ? (
+    <>
+      <Typography variant="h6">Messages</Typography>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        {messages.map((msg) => {
+          const currentUsername = localStorage.getItem('username');
+          const isSentByCurrentUser = msg.senderName === currentUsername;
+          console.log("Utilisateur actuel :", currentUsername);
+       
+          return (
+            <Box
+              key={msg.id}
+              sx={{
+                display: 'flex',
+                justifyContent: isSentByCurrentUser ? 'flex-end' : 'flex-start',
+              }}
+            >
+              <Typography
+                sx={{
+                  backgroundColor: isSentByCurrentUser ? 'green' : 'gray',
+                  padding: '10px',
+                  borderRadius: '10px',
+                  color: 'white',
+                  maxWidth: '60%',
+                  wordBreak: 'break-word',
+                  textAlign: isSentByCurrentUser ? 'right' : 'left',
+                }}
+              >
+                <strong>{isSentByCurrentUser ? 'Moi' : msg.senderName}:</strong> {msg.content}
+              </Typography>
+            </Box>
+          );
+        })}
       </Box>
+
+      <TextField
+        value={newMessage}
+        onChange={(e) => setNewMessage(e.target.value)}
+        fullWidth
+        label="Nouveau message"
+        sx={{ mt: 2 }}
+      />
+      <Button onClick={handleSendMessage} variant="contained" sx={{ mt: 1 }}>
+        Envoyer
+      </Button>
+    </>
+  ) : (
+    <Typography variant="h6" sx={{ textAlign: 'center', marginTop: '20%' }}>
+      Sélectionnez une conversation pour afficher les messages
+    </Typography>
+  )}
+</Box>
+
     </Box>
-  );
+    
+    );
 };
 
 export default Messages;
