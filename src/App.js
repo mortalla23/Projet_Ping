@@ -16,33 +16,26 @@ import EnseiAmenagements from './view/enseignant/EnseiAmenagements';
 
 // Composants pour les différentes sections du tableau de bord pour patient
 import CompteRendus from './view/patient/CompteRendus';
-import  AménagementScolaire from './view/patient/AménagementScolaire';
+import AménagementScolaire from './view/patient/AménagementScolaire';
 import PatientAnamnèse from './view/patient/PatientAnamnèse';
 import AjoutIntervenant from './view/patient/AjoutIntervenant';
 import ConsulDocuments from './view/patient/ConsulDocuments';
 import PAPForm from './view/patient/PAPForm';
 
-
- 
-
 // Composants pour les différentes sections du tableau de bord pour orthophoniste
 import OrthoPatients from './view/orthophoniste/OrthoPatients';
 import OrthoProfile from './view/orthophoniste/OrthoProfile';
-
-
-
+import OrthoPatientList from './view/orthophoniste/OrthoPatientList'; 
 
 // Composant pour les routes protégées
 const ProtectedRoute = ({ children, role }) => {
   const user = JSON.parse(localStorage.getItem('user'));
 
   if (!user) {
-    // Si aucun utilisateur connecté, redirige vers la page de connexion
     return <Navigate to="/connexion" />;
   }
 
   if (user.role !== role) {
-    // Si l'utilisateur n'a pas le bon rôle, redirige vers une page d'erreur ou par défaut
     return <Navigate to="/connexion" />;
   }
 
@@ -57,18 +50,12 @@ function App() {
         <Route path="/" element={<Navigate to="/connexion" />} />
         <Route path="/connexion" element={<Connexion />} />
         <Route path="/inscription" element={<Inscription />} />
-        
+
         {/* Routes protégées pour l'enseignant */}
         <Route
           path="/teacher/dashboard"
-          element={
-            <ProtectedRoute role="TEACHER">
-              <EnseiAccueil />
-            </ProtectedRoute>
-            
-          }
+          element={<ProtectedRoute role="TEACHER"><EnseiAccueil /></ProtectedRoute>}
         >
-          {/* Sous-routes du tableau de bord */}
           <Route path="eleves" element={<EnseiEleves />} />
           <Route path="historique" element={<EnseiHistorique />} />
           <Route path="rapports" element={<EnseiRapports />} />
@@ -76,16 +63,11 @@ function App() {
           <Route path="messages" element={<Messages />} />
         </Route>
 
-        {/* Routes protégées pour le patient  */}
+        {/* Routes protégées pour le patient */}
         <Route
           path="/patient/dashboard"
-          element={
-            <ProtectedRoute role="PATIENT">
-              <PatientAccueil />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute role="PATIENT"><PatientAccueil /></ProtectedRoute>}
         >
-          {/* Sous-routes du tableau de bord */}
           <Route path="cr" element={<CompteRendus />} />
           <Route path="ajIntervenant" element={<AjoutIntervenant />} />
           <Route path="pap" element={<PAPForm />} />
@@ -94,29 +76,23 @@ function App() {
           <Route path="documents" element={<ConsulDocuments />} />
           <Route path="messages" element={<Messages />} />
         </Route>
-       
-       {/* Routes protégées pour l'orthophoniste */}
-       <Route
+
+        {/* Routes protégées pour l'orthophoniste */}
+        <Route
           path="/ortho/dashboard"
-          element={
-            <ProtectedRoute role="ORTHOPHONIST">
-              <OrthoAccueil />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute role="ORTHOPHONIST"><OrthoAccueil /></ProtectedRoute>}
         >
-          {/* Sous-routes du tableau de bord */}
           <Route path="allPatients" element={<OrthoPatients />} />
-          <Route path="profile" element={< OrthoProfile />} />
-          <Route path="ascolaires" element={<AménagementScolaire />} />
-          <Route path="anamnese" element={<PatientAnamnèse />} />
+          <Route path="profile" element={<OrthoProfile />} />
+          <Route path="listedespatients" element={<OrthoPatientList />} />
           <Route path="documents" element={<ConsulDocuments />} />
           <Route path="messages" element={<Messages />} />
         </Route>
-       
-        
-        {/* Ajoutez d'autres routes ici si nécessaire */}
 
-        
+        {/* ✅ Ajout des routes directes pour éviter l'erreur d'imbrication */}
+        <Route path="/view/patient/PAPForm" element={<PAPForm />} />
+        <Route path="/view/patient/AménagementScolaire" element={<AménagementScolaire />} />
+
       </Routes>
     </Router>
   );

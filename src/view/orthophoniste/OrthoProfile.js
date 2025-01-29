@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography, TextField, Button, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const OrthoProfile = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
-  // Charger les données de l'utilisateur depuis le localStorage
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
@@ -38,6 +38,17 @@ const OrthoProfile = () => {
     }
   };
 
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setUser({ ...user, photo: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   if (!user) {
     return <Typography>Chargement...</Typography>; // Afficher un message de chargement tant que les données ne sont pas disponibles
   }
@@ -49,28 +60,61 @@ const OrthoProfile = () => {
         bgcolor: "#fff",
         borderRadius: "8px",
         boxShadow: "0 2px 5px #00000033",
-        maxWidth: "800px", // Limiter la largeur du profil
-        margin: "auto", // Centrer horizontalement
-        minHeight: "600px", // Hauteur minimale du formulaire
-        display: "flex", // Utiliser flexbox pour une gestion plus flexible
-        flexDirection: "column", // Aligner les éléments en colonne
-        justifyContent: "flex-start", // Aligner les éléments au sommet
+        maxWidth: "800px",
+        margin: "auto",
+        minHeight: "600px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-start",
       }}
     >
-      <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}>
+      <Typography
+        variant="h4"
+        sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}
+      >
         Mon Profil
       </Typography>
+
+      <div style={{ textAlign: "center", marginBottom: "20px" }}>
+        <img
+          src={user.photo}
+          alt="Profil"
+          className="img-fluid rounded-circle"
+          style={{ width: "150px", height: "150px", objectFit: "cover" }}
+        />
+        <div>
+          <label htmlFor="photoInput" className="btn btn-primary btn-sm">
+            Modifier la photo
+          </label>
+          <input
+            id="photoInput"
+            type="file"
+            accept="image/*"
+            className="d-none"
+            onChange={handlePhotoChange}
+          />
+        </div>
+      </div>
 
       <form>
         <TextField
           fullWidth
           label="Nom"
-          name="username"
-          value={user.username || ""}
+          name="lastName"
+          value={user.lastName || ""}
           margin="normal"
           onChange={handleChange}
         />
-        
+
+        <TextField
+          fullWidth
+          label="Prénom"
+          name="firstName"
+          value={user.firstName || ""}
+          margin="normal"
+          onChange={handleChange}
+        />
+
         <TextField
           fullWidth
           label="Date de naissance"
@@ -80,45 +124,70 @@ const OrthoProfile = () => {
           margin="normal"
           onChange={handleChange}
         />
-        
+
+        <TextField
+          fullWidth
+          label="Cabinet / Hôpital"
+          name="clinic"
+          value={user.clinic || ""}
+          margin="normal"
+          onChange={handleChange}
+        />
+
         <TextField
           fullWidth
           label="Email"
           name="email"
           value={user.email || ""}
           margin="normal"
+          readOnly
+        />
+
+        <TextField
+          fullWidth
+          label="Téléphone"
+          name="phone"
+          value={user.phone || ""}
+          margin="normal"
+          onChange={handleChange}
+        />
+
+        <TextField
+          fullWidth
+          label="Adresse"
+          name="address"
+          value={user.address || ""}
+          margin="normal"
           onChange={handleChange}
         />
 
         <Stack direction="column" spacing={2} mt={3} alignItems="center">
-          {/* Bouton Enregistrer */}
           <Button
             color="primary"
             variant="contained"
             size="large"
             onClick={handleSave}
             sx={{
-              backgroundColor: '#5BA8B4', // Couleur personnalisée
-              '&:hover': {
-                backgroundColor: '#4c9ca3', // Couleur au survol
+              backgroundColor: "#5BA8B4",
+              "&:hover": {
+                backgroundColor: "#4c9ca3",
               },
-              width: "200px", // Réduction de la largeur des boutons
-              padding: "12px", // Augmentation du padding
+              width: "200px",
+              padding: "12px",
             }}
           >
             Enregistrer
           </Button>
 
-          {/* Bouton Déconnexion */}
           <Button
             color="secondary"
             variant="outlined"
             size="large"
             onClick={handleLogout}
             sx={{
-              mt: 2,  // Ajout de marges pour espacer les boutons
-              width: "200px", // Réduction de la largeur des boutons
-              padding: "12px", // Augmentation du padding
+              mt: 2,
+              width: "200px",
+              padding: "12px",
             }}
           >
             Déconnexion

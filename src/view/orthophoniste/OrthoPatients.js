@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+
+import axios from "axios";
 import {
   Box,
   Typography,
@@ -10,129 +11,90 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
   TablePagination,
+  IconButton,
   Menu,
   MenuItem,
-  IconButton
-} from '@mui/material';
-import { MoreVert } from '@mui/icons-material'; // Icône pour le menu
-
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+} from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom"; // ✅ Utilisation de useNavigate pour la navigation
 
 const OrthoPatients = () => {
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false);
-  const [searchEmail, setSearchEmail] = useState(''); // Email pour rechercher un élève
-  const [foundStudent, setFoundStudent] = useState(null); // Élève trouvé
-  const [orthoId, setOrthoId] = useState(null);
-
-  // Pagination State
+  const [validatedPatients, setValidatedPatients] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  // Etat pour le menu
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [loading, setLoading] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedStudent, setSelectedStudent] = useState(null); // Élève sélectionné pour afficher le menu
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const open = Boolean(anchorEl);
+  const orthoId = localStorage.getItem("orthoId");
+  const navigate = useNavigate(); // ✅ Utilisation de useNavigate pour la navigation
 
   useEffect(() => {
-    const storedOrthoId = localStorage.getItem('orthoId');
-    console.log('ID orthophoniste:', storedOrthoId);
-    if (storedOrthoId) {
-      setOrthoId(storedOrthoId);
-      fetchStudents(storedOrthoId);
-    } else {
-      toast.error('Aucun ID orthophoniste trouvé. Veuillez vous reconnecter.');
-    }
-  }, []);
+    const fetchValidatedPatients = async () => {
+      try {
+        if (!orthoId) {
+          toast.error("Identifiant de l'orthophoniste introuvable.");
+          setLoading(false);
+          return;
+        }
 
-  const fetchStudents = async (orthoId) => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/orthophoniste/patients', {
-        params: { orthoId },
-      });
-      console.log('Données reçues de l\'API:', response.data); // Affiche les données reçues
-      if (response.data && response.data.length > 0) {
-        setStudents(response.data);
-      } else {
-        toast.error('Aucun élève trouvé.');
+        // Récupération des liens validés
+        const { data: validatedLinks } = await axios.post(
+          "http://localhost:5000/api/link/validated",
+          { linkerId: parseInt(orthoId, 10) },
+          { headers: { "Content-Type": "application/json" } }
+        );
+
+        if (!validatedLinks || validatedLinks.length === 0) {
+          toast.info("Aucun patient validé trouvé.");
+          setLoading(false);
+          return;
+        }
+
+        // Filtrer uniquement les patients avec le statut VALIDATED
+        const filteredValidatedLinks = validatedLinks.filter(link => link.validate === "VALIDATED");
+        const patientIds = filteredValidatedLinks.map((link) => link.linkedTo);
+
+        // Récupérer les détails des patients
+        const { data: patients } = await axios.post(
+          "http://localhost:5000/api/users/details",
+          { patientIds },
+          { headers: { "Content-Type": "application/json" } }
+        );
+
+        if (!patients || patients.length === 0) {
+          toast.error("Aucun détail de patient trouvé.");
+          setLoading(false);
+          return;
+        }
+
+        // Récupérer les enseignants liés aux patients
+        const { data: teachers } = await axios.post(
+          "http://localhost:5000/api/users/teachers",
+          { patientIds },
+          { headers: { "Content-Type": "application/json" } }
+        );
+
+        // Associer les enseignants aux patients
+        const patientsWithTeachers = patients.map((patient) => ({
+          ...patient,
+          teacher: teachers.find((t) => t.studentId === patient.id) || { firstName: "N/A", lastName: "N/A" },
+        }));
+
+        setValidatedPatients(patientsWithTeachers);
+      } catch (error) {
+        console.error("❌ Erreur lors du chargement :", error);
+        toast.error("Erreur lors du chargement des patients.");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      toast.error('Erreur lors du chargement des élèves.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  const handleMenuOpen = (event, student) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedStudent(student);  // Sauvegarder l'élève sélectionné
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setSelectedStudent(null);
-  };
-
-  const handleActionClick = (action) => {
-    // Logique pour gérer les actions
-    console.log(`Action: ${action} sur l'élève: ${selectedStudent.username}`);
-    handleMenuClose();
-  };
-
-  const handleSearchStudent = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/orthophoniste/patients', {
-        params: { email: searchEmail },
-      });
-      setFoundStudent(response.data);
-      toast.success('Élève trouvé.');
-    } catch (error) {
-      console.error('Erreur lors de la recherche de l’élève :', error);
-      toast.error('Aucun élève trouvé avec cet email.');
-    }
-  };
-
-  const handleAssociateStudent = async () => {
-    if (!foundStudent) {
-      toast.error('Aucun élève à associer.');
-      return;
-    }
-    const studentEmail = foundStudent.email; // Utiliser l'email de l'élève au lieu de l'ID
-    if (!studentEmail) {
-      toast.error("L'email de l'élève est manquant.");
-      return;
-    }
-    try {
-      await axios.post('http://localhost:5000/api/orthophoniste/patient/ajouter', {
-        orthoId,
-        studentId: foundStudent.id,
-      });
-
-      setStudents([...students, foundStudent]); // Ajouter l'élève à la liste locale
-      setFoundStudent(null); // Réinitialiser la recherche
-      setSearchEmail(''); // Réinitialiser l'email
-      handleClose();
-      toast.success('Élève associé avec succès.');
-    } catch (error) {
-      console.error('Erreur lors de l’association de l’élève :', error);
-      toast.error('Erreur lors de l’association de l’élève.');
-    }
-  };
-
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    setOpen(false);
-    setFoundStudent(null);
-    setSearchEmail('');
-  };
+    fetchValidatedPatients();
+  }, [orthoId]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -143,51 +105,101 @@ const OrthoPatients = () => {
     setPage(0);
   };
 
+  const handleMenuOpen = (event, patient) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedPatient(patient);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedPatient(null);
+  };
+
+  // ✅ Fonction pour gérer les différentes actions
+  const handleActionClick = (action) => {
+    if (!selectedPatient) {
+      toast.error("Aucun patient sélectionné.");
+      return;
+    }
+
+    const url = {
+      "Consulter / Modifier le PAP": `/view/patient/PAPForm?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+
+      "Consulter / Modifier le PPRE": `/view/patient/PPREForm?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Comptes-rendus des exercices": `/view/patient/CompteRendus?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Aménagements scolaires": `/view/patient/AménagementScolaire?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Historique éducatif": `/view/patient/HistoriqueEducatif?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Historique santé": `/view/patient/HistoriqueSante?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Commentaires": `/view/patient/Commentaires?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+    }[action];
+
+    if (url) {
+      navigate(url);
+    } else {
+      toast.warn("Action inconnue.");
+    }
+
+    handleMenuClose();
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString("fr-FR", options);
+  };
+
   if (loading) {
     return <Typography>Chargement des données...</Typography>;
   }
 
   return (
-    <Box sx={{ padding: '20px' }}>
+    <Box sx={{ padding: "20px" }}>
       <ToastContainer />
       <Typography variant="h5" gutterBottom>
-        Liste des patients
+        Liste des patients validés par l'orthophoniste
       </Typography>
-      <Button variant="contained" color="primary" sx={{ mb: 2, bgcolor: '#5BA8B4' }} onClick={() => setOpen(true)}>
-        Ajouter un patient
-      </Button>
-
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
-            <TableRow sx={{ bgcolor: '#5BA8B4' }}>
-              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>#</TableCell>
-              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Nom d'utilisateur</TableCell>
-              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Email</TableCell>
-              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Date de naissance</TableCell>
-              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Action</TableCell>
+            <TableRow>
+              <TableCell>#</TableCell>
+              <TableCell>Nom</TableCell>
+              <TableCell>Prénom</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Date de naissance</TableCell>
+              <TableCell>Enseignant</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {students.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((student, index) => (
-              <TableRow key={student.id}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{student.username || 'Non disponible'}</TableCell>
-                <TableCell>{student.email || 'Non disponible'}</TableCell>
-                <TableCell>{student.birthDate ? new Date(student.birthDate).toLocaleDateString() : 'Non disponible'}</TableCell>
-                <TableCell>
-                  <IconButton onClick={(e) => handleMenuOpen(e, student)}>
-                    <MoreVert /> {/* Icône de menu */}
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
+            {validatedPatients
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((patient, index) => (
+                <TableRow key={patient.id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{patient.lastName}</TableCell>
+                  <TableCell>{patient.firstName}</TableCell>
+                  <TableCell>{patient.email}</TableCell>
+                  <TableCell>{formatDate(patient.birthDate)}</TableCell>
+                  <TableCell>
+                    {patient.teacher ? `${patient.teacher.firstName} ${patient.teacher.lastName}` : "N/A"}
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      aria-label="more"
+                      onClick={(event) => handleMenuOpen(event, patient)}
+                    >
+                      <MoreVertIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={students.length}
+          count={validatedPatients.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -195,48 +207,14 @@ const OrthoPatients = () => {
         />
       </TableContainer>
 
-      {/* Menu déroulant d'actions */}
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-      >
-        <MenuItem onClick={() => handleActionClick('Consulter / Modifier le PAP')}>Consulter / Modifier le PAP</MenuItem>
-        <MenuItem onClick={() => handleActionClick('Consulter / Modifier le PPRE')}>Consulter / Modifier le PPRE</MenuItem>
-        <MenuItem onClick={() => handleActionClick('Comptes-rendus des exercices')}>Comptes-rendus des exercices</MenuItem>
-        <MenuItem onClick={() => handleActionClick('Aménagements scolaires')}>Aménagements scolaires</MenuItem>
-        <MenuItem onClick={() => handleActionClick('Historique éducatif')}>Historique éducatif</MenuItem>
-        <MenuItem onClick={() => handleActionClick('Historique santé')}>Historique santé</MenuItem>
-        
+      <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
+        <MenuItem onClick={() => handleActionClick("Consulter / Modifier le PAP")}>📄 PAP</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Consulter / Modifier le PPRE")}>📖 PPRE</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Comptes-rendus des exercices")}>📝 Exercices</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Aménagements scolaires")}>🏫 Aménagements scolaires</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Historique éducatif")}>🎓 Historique éducatif</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Commentaires")}>💬 Commentaires</MenuItem>
       </Menu>
-
-      {/* Dialog pour ajouter un patient */}
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>Associer un patient existant</DialogTitle>
-        <DialogContent>
-          <TextField
-            margin="dense"
-            name="searchEmail"
-            label="Email de l'élève"
-            type="email"
-            fullWidth
-            value={searchEmail}
-            onChange={(e) => setSearchEmail(e.target.value)}
-          />
-          <Button onClick={handleSearchStudent} color="primary">Rechercher</Button>
-          {foundStudent && (
-            <Box mt={2}>
-              <Typography variant="body1">Nom : {foundStudent.username}</Typography>
-              <Typography variant="body1">Email : {foundStudent.email}</Typography>
-              <Typography variant="body1">Date de naissance : {new Date(foundStudent.birth_date).toLocaleDateString()}</Typography>
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)} color="secondary">Annuler</Button>
-          <Button onClick={handleAssociateStudent} color="primary" disabled={!foundStudent}>Associer</Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };
