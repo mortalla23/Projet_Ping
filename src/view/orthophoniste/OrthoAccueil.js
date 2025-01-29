@@ -42,6 +42,9 @@ const OrthoAccueil = () => {
     const hiddenPages = [
       "/ortho/dashboard/allPatients",
       "/ortho/dashboard/profile",
+
+      "/ortho/dashboard/listedespatients", // Ajout de la nouvelle page
+
     ];
     if (hiddenPages.includes(location.pathname)) {
       setShowDynamicContent(false);
@@ -49,8 +52,6 @@ const OrthoAccueil = () => {
       setShowDynamicContent(true);
     }
   }, [location]);
-
-  const isSpecificPage = location.pathname === "/ortho/dashboard/allPatients";
 
   const handleMenuOpen = (event) => setMenuAnchor(event.currentTarget);
   const handleMenuClose = () => setMenuAnchor(null);
@@ -96,7 +97,10 @@ const OrthoAccueil = () => {
   const closePrivacyPolicy = () => setShowPrivacyPolicy(false);
 
   return (
-    <Box sx={{ display: "flex", height: isSpecificPage ? "150vh" : "100vh", bgcolor: "#E6F0F3" }}>
+
+    <Box sx={{ display: "flex", height: "100vh", bgcolor: "#E6F0F3" }}>
+      {/* Menu Latéral */}
+
       <Drawer
         variant="permanent"
         anchor="left"
@@ -130,6 +134,9 @@ const OrthoAccueil = () => {
         <List>
           <ListItem button component={NavLink} to="/ortho/dashboard/allPatients" sx={linkStyle}>
             <ListItemText primary="Mes patients" />
+          </ListItem>
+          <ListItem button component={NavLink} to="/ortho/dashboard/listedespatients" sx={linkStyle}>
+            <ListItemText primary="Liste des patients" />
           </ListItem>
         </List>
       </Drawer>
@@ -201,7 +208,14 @@ const OrthoAccueil = () => {
         </Box>
 
         {showDynamicContent && (
-          <Box sx={{ backgroundColor: "#FFFFFF", padding: 2, borderRadius: "8px", boxShadow: "0 2px 5px #00000033" }}>
+          <Box
+            sx={{
+              backgroundColor: "#FFFFFF",
+              padding: 2,
+              borderRadius: "8px",
+              boxShadow: "0 2px 5px #00000033",
+            }}
+          >
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               Bienvenue {user.username} !
             </Typography>
