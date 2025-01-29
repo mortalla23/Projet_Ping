@@ -16,21 +16,17 @@ import EnseiAmenagements from './view/enseignant/EnseiAmenagements';
 
 // Composants pour les différentes sections du tableau de bord pour patient
 import CompteRendus from './view/patient/CompteRendus';
-import  AménagementScolaire from './view/patient/AménagementScolaire';
+import AménagementScolaire from './view/patient/AménagementScolaire';
 import PatientAnamnèse from './view/patient/PatientAnamnèse';
 import AjoutIntervenant from './view/patient/AjoutIntervenant';
 import ConsulDocuments from './view/patient/ConsulDocuments';
 import PAPForm from './view/patient/PAPForm';
 
 
- 
-
 // Composants pour les différentes sections du tableau de bord pour orthophoniste
 import OrthoPatients from './view/orthophoniste/OrthoPatients';
 import OrthoProfile from './view/orthophoniste/OrthoProfile';
-
-
-
+import OrthoPatientList from './view/orthophoniste/OrthoPatientList'; // Importation du composant Liste des Patients
 
 // Composant pour les routes protégées
 const ProtectedRoute = ({ children, role }) => {
@@ -76,7 +72,7 @@ function App() {
           <Route path="messages" element={<Messages />} />
         </Route>
 
-        {/* Routes protégées pour le patient  */}
+        {/* Routes protégées pour le patient */}
         <Route
           path="/patient/dashboard"
           element={
@@ -95,8 +91,8 @@ function App() {
           <Route path="messages" element={<Messages />} />
         </Route>
        
-       {/* Routes protégées pour l'orthophoniste */}
-       <Route
+        {/* Routes protégées pour l'orthophoniste */}
+        <Route
           path="/ortho/dashboard"
           element={
             <ProtectedRoute role="ORTHOPHONIST">
@@ -106,17 +102,15 @@ function App() {
         >
           {/* Sous-routes du tableau de bord */}
           <Route path="allPatients" element={<OrthoPatients />} />
-          <Route path="profile" element={< OrthoProfile />} />
+          <Route path="profile" element={<OrthoProfile />} />
+          <Route path="listedespatients" element={<OrthoPatientList />} /> {/* Nouvelle route */}
           <Route path="ascolaires" element={<AménagementScolaire />} />
           <Route path="anamnese" element={<PatientAnamnèse />} />
           <Route path="documents" element={<ConsulDocuments />} />
           <Route path="messages" element={<Messages />} />
         </Route>
-       
-        
-        {/* Ajoutez d'autres routes ici si nécessaire */}
 
-        
+        {/* Ajoutez d'autres routes ici si nécessaire */}
       </Routes>
     </Router>
   );
