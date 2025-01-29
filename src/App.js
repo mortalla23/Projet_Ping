@@ -15,6 +15,9 @@ import EnseiRapports from './view/enseignant/EnseiRapports';
 import EnseiAmenagements from './view/enseignant/EnseiAmenagements';
 import EnseiHistoriqueEducation from './view/enseignant/EnseiHistoriqueEducation';
 import EnseiPpre from './view/enseignant/EnseiPpre';
+import EnseiPatients from './view/enseignant/EnseiPatients';
+import EnseiPatientsList from './view/enseignant/EnseiPatientList';
+import EnseiProfile from './view/enseignant/EnseiProfile';
 
 // Composants pour les différentes sections du tableau de bord pour patient
 import CompteRendus from './view/patient/CompteRendus';
@@ -37,6 +40,7 @@ import OrthoHistoriqueEducation from './view/orthophoniste/OrthoHistoriqueEducat
 import OrthoHistoriqueSante from './view/orthophoniste/OrthoHistoriqueSante';
 import OrthoPpre from './view/orthophoniste/OrthoPpre';
 import OrthoPatientList from './view/orthophoniste/OrthoPatientList'; 
+
 
 // Composant pour les routes protégées
 const ProtectedRoute = ({ children, role }) => {
@@ -67,13 +71,15 @@ function App() {
           path="/teacher/dashboard"
           element={<ProtectedRoute role="TEACHER"><EnseiAccueil /></ProtectedRoute>}
         >
-          <Route path="eleves" element={<EnseiEleves />} />
-          <Route path="historique" element={<EnseiHistorique />} />
+          <Route path="allPatients" element={<EnseiPatients />} />
+          <Route path="profile" element={< EnseiProfile />} />
+          <Route path="ascolaires" element={<EnseiAmenagements />} />
           <Route path="historique-education/:userId" element={<EnseiHistoriqueEducation />} />
-          <Route path="rapports" element={<EnseiRapports />} />
-          <Route path="amenagements" element={<EnseiAmenagements />} />
+          <Route path="listedespatients" element={<EnseiPatientsList />} />
+          <Route path="documents" element={<ConsulDocuments />} />
           <Route path="messages" element={<Messages />} />
           <Route path="ppre/:userId" element={<EnseiPpre/>} />
+          <Route path="rapports/:userId" element={<EnseiRapports/>} />
           
         </Route>
 
