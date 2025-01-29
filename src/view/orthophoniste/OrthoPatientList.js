@@ -48,12 +48,20 @@ const PatientList = () => {
       const url = term
         ? `https://localhost:5000/api/users/patients/search?searchTerm=${term}`
         : `https://localhost:5000/api/users/patients`;
-      const { data } = await axios.get(url);
+      const { data } = await axios.get(url,{
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          'Content-Type': 'application/json',
+        },});
       
       // Récupérer les liens validés pour filtrer les patients
       const { data: validatedLinks } = await axios.post(
         "https://localhost:5000/api/link/validated",
-        { linkerId: parseInt(orthoId, 10) }
+        {linkerId: parseInt(orthoId, 10) },{
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+            'Content-Type': 'application/json',
+          },}
       );
 
       const validatedPatientIds = validatedLinks.map(link => link.linkedTo);
@@ -84,7 +92,11 @@ const PatientList = () => {
       const { data: newLink } = await axios.post("https://localhost:5000/api/link/create", {
         orthoId: parseInt(orthoId, 10),
         patientId: patient.id,
-      });
+      },{
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          'Content-Type': 'application/json',
+        },},);
 
       const updatedAddedPatients = { ...addedPatients, [patient.id]: newLink.id };
       setAddedPatients(updatedAddedPatients);
@@ -105,7 +117,11 @@ const PatientList = () => {
         return;
       }
 
-      await axios.delete(`https://localhost:5000/api/link/${linkId}`);
+      await axios.delete(`https://localhost:5000/api/link/${linkId}`,{
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          'Content-Type': 'application/json',
+        },});
 
       const updatedAddedPatients = { ...addedPatients };
       delete updatedAddedPatients[patient.id];
@@ -122,8 +138,12 @@ const PatientList = () => {
   const checkValidatedPatients = async () => {
     try {
       const { data: validatedPatients } = await axios.post(
-        "https://localhost:5000/api/link/validated",
-        { params: { orthoId } }
+        "https://localhost:5000/api/link/validated", { params: { orthoId } },{
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+            'Content-Type': 'application/json',
+          },},
+       
       );
 
       if (validatedPatients.length > 0) {

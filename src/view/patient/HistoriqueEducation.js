@@ -61,13 +61,21 @@ const HistoriqueEducation = () => {
       const fetchHistoriqueEducation = async () => {
         try {
           const userDocResponse = await fetch(
-            `https://localhost:5000/api/user-documents?userId=${userId}&documentType=HistoriqueEducation`
+            `https://localhost:5000/api/user-documents?userId=${userId}&documentType=HistoriqueEducation`,{
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+                'Content-Type': 'application/json',
+              },}
           );
           const userDocData = await userDocResponse.json();
           if (userDocData && userDocData[0].documentId) {
             documentIdRef.current=userDocData[0].id;
             const historiqueEducationResponse = await fetch(
-              `https://localhost:5000/api/historique-education/${userDocData[0].documentId}`
+              `https://localhost:5000/api/historique-education/${userDocData[0].documentId}`,{
+                headers: {
+                  'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+                  'Content-Type': 'application/json',
+                },}
             );
             const historiqueEducationData = await historiqueEducationResponse.json();
             if (historiqueEducationData) {
@@ -105,6 +113,7 @@ const HistoriqueEducation = () => {
       const response = await fetch('https://localhost:5000/api/historique-education', {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData), // Envoyer toutes les données du formulaire
@@ -124,6 +133,7 @@ const HistoriqueEducation = () => {
         const userDocumentResponse = await fetch('https://localhost:5000/api/user-documents', {
             method: 'POST',
             headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({

@@ -51,13 +51,21 @@ const HistoriqueSante = () => {
     const fetchHistoriqueSante = async () => {
       try {
         const userDocResponse = await fetch(
-          `https://localhost:5000/api/user-documents?userId=${userId}&documentType=HistoriqueSante`
+          `https://localhost:5000/api/user-documents?userId=${userId}&documentType=HistoriqueSante`,{
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+              'Content-Type': 'application/json',
+            },}
         );
         const userDocData = await userDocResponse.json();
         if (userDocData && userDocData[0].documentId) {
           documentIdRef.current=userDocData[0].id;
           const historiqueSanteResponse = await fetch(
-            `https://localhost:5000/api/historique-sante/${userDocData[0].documentId}`
+            `https://localhost:5000/api/historique-sante/${userDocData[0].documentId}`,{
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+                'Content-Type': 'application/json',
+              },}
           );
           const historiqueSanteData = await historiqueSanteResponse.json();
           if (historiqueSanteData) {
@@ -94,6 +102,7 @@ const HistoriqueSante = () => {
       const response = await fetch('https://localhost:5000/api/historique-sante', {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData), // Envoyer toutes les données du formulaire
@@ -113,6 +122,7 @@ const HistoriqueSante = () => {
         const userDocumentResponse = await fetch('https://localhost:5000/api/user-documents', {
             method: 'POST',
             headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({

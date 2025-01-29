@@ -66,7 +66,10 @@ const EnseiHistorique = () => {
       // Ajouter d'autres attributs ici selon les besoins
     }
     // Envoi des données au backend via une requête POST
-    const response = await axios.post('https://localhost:5000/api/user-documents', requestData);
+    const response = await axios.post('https://localhost:5000/api/user-documents', {headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+      'Content-Type': 'application/json',
+    },},requestData);
 
     if (response.status === 200) {
       console.log('Données envoyées avec succès:', response.data);

@@ -39,13 +39,21 @@ const Ppre = () => {
         const fetchPpre = async () => {
           try {
             const userDocResponse = await fetch(
-              `https://localhost:5000/api/user-documents?userId=${userId}&documentType=PPRE`
+              `https://localhost:5000/api/user-documents?userId=${userId}&documentType=PPRE`,{
+                headers: {
+                  'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+                  'Content-Type': 'application/json',
+                },}
             );
             const userDocData = await userDocResponse.json();
             if (userDocData && userDocData[0].documentId) {
               documentIdRef.current=userDocData[0].id;
               const ppreResponse = await fetch(
-                `https://localhost:5000/api/ppre/${userDocData[0].documentId}`
+                `https://localhost:5000/api/ppre/${userDocData[0].documentId}`,{
+                  headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+                    'Content-Type': 'application/json',
+                  },}
               );
               const ppreData = await ppreResponse.json();
               if (ppreData) {
@@ -74,6 +82,7 @@ const Ppre = () => {
         const response = await fetch('https://localhost:5000/api/ppre', {
           method: 'POST',
           headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(formData), // Envoyer toutes les données du formulaire
@@ -93,6 +102,7 @@ const Ppre = () => {
           const userDocumentResponse = await fetch('https://localhost:5000/api/user-documents', {
               method: 'POST',
               headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({

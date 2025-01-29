@@ -26,7 +26,11 @@ const PAPForm = () => {
 useEffect(() => {
   const fetchUserRole = async () => {
     try {
-      const response = await fetch(`https://localhost:5000/api/users/${intervenantId}`);
+      const response = await fetch(`https://localhost:5000/api/users/${intervenantId}`,{
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          'Content-Type': 'application/json',
+        },});
       if (!response.ok) {
         throw new Error(`Erreur serveur : ${response.status} ${response.statusText}`);
       }
@@ -76,7 +80,11 @@ useEffect(() => {
   useEffect(() => {
     // Récupération des données du PAP
     axios
-      .get(`https://localhost:5000/api/pap/user/${userId}`)
+      .get(`https://localhost:5000/api/pap/user/${userId}`,{
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          'Content-Type': 'application/json',
+        },})
       .then((response) => {
         console.log("Données récupérées depuis l'API :", response.data);
         if (Array.isArray(response.data) && response.data.length > 0) {
@@ -95,7 +103,11 @@ useEffect(() => {
 
     // Récupération des informations de l'utilisateur
     axios
-      .get(`https://localhost:5000/api/users/${userId}`)
+      .get(`https://localhost:5000/api/users/${userId}`,{
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          'Content-Type': 'application/json',
+        },})
       .then((response) => {
         console.log("Informations utilisateur récupérées :", response.data);
         setUserInfo({
@@ -120,7 +132,11 @@ useEffect(() => {
     e.preventDefault();
     if (papId) {
       axios
-        .put(`https://localhost:5000/api/pap/update/${papId}`, formData)
+        .put(`https://localhost:5000/api/pap/update/${papId}`, formData,{
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+            'Content-Type': 'application/json',
+          },})
         .then((response) => {
           console.log("Mise à jour réussie :", response.data);
           alert("Le document a été modifié avec succès.");
@@ -138,7 +154,11 @@ useEffect(() => {
   const handleCreate = (e) => {
     e.preventDefault();
     axios
-      .post(`https://localhost:5000/api/pap/create`, { ...formData, userId })
+      .post(`https://localhost:5000/api/pap/create`, { ...formData, userId },{
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          'Content-Type': 'application/json',
+        },})
       .then(() => {
         alert("Le PAP a été créé avec succès.");
         window.location.reload(); // Recharge la page après la création

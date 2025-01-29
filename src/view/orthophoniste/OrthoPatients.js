@@ -43,7 +43,11 @@ const OrthoPatients = () => {
 
         // Récupération des liens validés
         const { data: validatedLinks } = await axios.post(
-          "https://localhost:5000/api/link/validated",
+          "https://localhost:5000/api/link/validated",{
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+              'Content-Type': 'application/json',
+            },},
           { linkerId: parseInt(orthoId, 10) },
           { headers: { "Content-Type": "application/json" } }
         );
@@ -62,7 +66,11 @@ const OrthoPatients = () => {
         const { data: patients } = await axios.post(
           "https://localhost:5000/api/users/details",
           { patientIds },
-          { headers: { "Content-Type": "application/json" } }
+          {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+              'Content-Type': 'application/json',
+            },}
         );
 
         if (!patients || patients.length === 0) {
@@ -75,7 +83,11 @@ const OrthoPatients = () => {
         const { data: teachers } = await axios.post(
           "https://localhost:5000/api/users/teachers",
           { patientIds },
-          { headers: { "Content-Type": "application/json" } }
+          {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+              'Content-Type': 'application/json',
+            },}
         );
 
         // Associer les enseignants aux patients

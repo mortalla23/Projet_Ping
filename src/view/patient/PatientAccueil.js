@@ -75,6 +75,7 @@ const PatientAccueil = () => {
   const handleLogout = () => {
     localStorage.removeItem("user"); // Supprimer les informations de l'utilisateur
     localStorage.removeItem('userId');
+    localStorage.removeItem('token');
     localStorage.removeItem("cookiesConsent"); // Supprimer le consentement des cookies pour réafficher la bannière lors de la prochaine connexion
     console.log("Utilisateur déconnecté, données supprimées.");
     window.location.href = "/connexion"; // Rediriger vers la page de connexion

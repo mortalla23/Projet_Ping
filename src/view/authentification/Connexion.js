@@ -62,7 +62,7 @@ const Connexion = () => {
         return '/connexion';
     }
   };
-  const handleLogin = (userId, username) => {
+  const handleLogin = (userId, username,token) => {
     // Nettoyer les anciennes données
     localStorage.removeItem('patientId');
     localStorage.removeItem('orthoId');
@@ -70,7 +70,9 @@ const Connexion = () => {
     
     // Stocker les nouvelles informations de l'utilisateur connecté
     localStorage.setItem('userId', userId); 
-    localStorage.setItem('username', username); 
+    localStorage.setItem('username', username);
+    localStorage.setItem('token',token);
+    console.log("Token reçu :", token);
 };
 
   // Gestion de la soumission
@@ -90,7 +92,7 @@ const Connexion = () => {
       const user = response.data;
 
      // Appelez handleLogin pour mettre à jour le localStorage
-     handleLogin(user.id, user.username); // Enregistrer l'ID et le nom d'utilisateur dans localStorage
+     handleLogin(user.id, user.username,user.token); // Enregistrer l'ID et le nom d'utilisateur dans localStorage
      
       // Vérifie si l'utilisateur est un enseignant
       if (user.role === 'TEACHER') {

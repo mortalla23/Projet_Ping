@@ -38,7 +38,11 @@ const SectionAmenagement = () => {
 useEffect(() => {
   const fetchUserRole = async () => {
     try {
-      const response = await fetch(`https://localhost:5000/api/users/${intervenantId}`);
+      const response = await fetch(`https://localhost:5000/api/users/${intervenantId}`,{
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          'Content-Type': 'application/json',
+        },});
       if (!response.ok) {
         throw new Error(`Erreur serveur : ${response.status} ${response.statusText}`);
       }
@@ -63,7 +67,11 @@ useEffect(() => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`https://localhost:5000/api/amenagements/user/${userId}`);
+        const response = await fetch(`https://localhost:5000/api/amenagements/user/${userId}`,{
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+            'Content-Type': 'application/json',
+          },});
         if (!response.ok) {
           throw new Error(`Erreur serveur : ${response.status} ${response.statusText}`);
         }
@@ -217,7 +225,8 @@ useEffect(() => {
                           {
                             method: "POST",
                             headers: {
-                              "Content-Type": "application/x-www-form-urlencoded",
+                              'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+                              'Content-Type': 'application/json',
                             },
                             body: `amenagementId=${amenagement.id}`,
                           }
@@ -277,7 +286,8 @@ useEffect(() => {
         const response = await fetch("https://localhost:5000/api/amenagements/create", {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(payload),
         });

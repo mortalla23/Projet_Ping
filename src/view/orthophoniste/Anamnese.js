@@ -193,13 +193,21 @@ const PatientAnamnèse = () => {
     const fetchAnamnese = async () => {
       try {
         const userDocResponse = await fetch(
-          `https://localhost:5000/api/user-documents?userId=${userId}&documentType=Anamnese`
+          `https://localhost:5000/api/user-documents?userId=${userId}&documentType=Anamnese`,{
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+              'Content-Type': 'application/json',
+            },}
         );
         const userDocData = await userDocResponse.json();
         if (userDocData && userDocData[0].documentId) {
           documentIdRef.current=userDocData[0].id;
           const anamneseResponse = await fetch(
-            `https://localhost:5000/api/anamnese/${userDocData[0].documentId}`
+            `https://localhost:5000/api/anamnese/${userDocData[0].documentId}`,{
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+                'Content-Type': 'application/json',
+              },}
           );
           const anamneseData = await anamneseResponse.json();
           if (anamneseData) {
@@ -233,6 +241,7 @@ const PatientAnamnèse = () => {
     const anamneseResponse = await fetch('https://localhost:5000/api/anamnese/', {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData), // Envoyer les données de l'anamnèse en JSON
@@ -251,6 +260,7 @@ const PatientAnamnèse = () => {
         const userDocumentResponse = await fetch('https://localhost:5000/api/user-documents', {
             method: 'POST',
             headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({

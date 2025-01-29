@@ -5,7 +5,10 @@ import axios from 'axios';
 const BASE_URL = 'https://localhost:5000/api';
 const fetchConversations = async (userId) => {
     try {
-        const response = await axios.get(`${BASE_URL}/conversations/user/${userId}`);
+        const response = await axios.get(`${BASE_URL}/conversations/user/${userId}`,{
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          },});
         console.log("Conversations pour l'utilisateur:", userId);
         // Vérifier si la réponse contient un tableau sinon renvoyer un tableau vide
         if (Array.isArray(response.data)) {
@@ -22,7 +25,10 @@ const fetchConversations = async (userId) => {
 
 const fetchMessagesByConversation = async (conversationId) => {
     try {
-        const response = await axios.get(`${BASE_URL}/messages/conversation/${conversationId}`);
+        const response = await axios.get(`${BASE_URL}/messages/conversation/${conversationId}`,{
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          },});
         console.log("Données des messages reçues de l'API :", response.data);
         return response.data;
     } catch (error) {
@@ -33,7 +39,10 @@ const fetchMessagesByConversation = async (conversationId) => {
 
 const fetchUserDetails = async (userId) => {
     try {
-        const response = await axios.get(`${BASE_URL}/users/${userId}`);
+        const response = await axios.get(`${BASE_URL}/users/${userId}`,{
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          },});
         return response.data;
     } catch (error) {
         console.error("Erreur lors de la récupération des détails de l'utilisateur :", error);
@@ -43,7 +52,10 @@ const fetchUserDetails = async (userId) => {
 
 const searchUsers = async (query) => {
     try {
-        const response = await axios.get(`${BASE_URL}/users/search/${query}`);
+        const response = await axios.get(`${BASE_URL}/users/search/${query}`,{
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          },});
         return response.data;
     } catch (error) {
         console.error("Erreur lors de la recherche des utilisateurs :", error);
@@ -53,7 +65,10 @@ const searchUsers = async (query) => {
 
 const createConversation = async (isPublic, senderId, receiverId) => {
   try {
-      const response = await axios.post(`${BASE_URL}/conversations/add`, 
+      const response = await axios.post(`${BASE_URL}/conversations/add`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+        },},
           new URLSearchParams({ isPublic, senderId, receiverId })
       );
       return response.data;
@@ -228,7 +243,10 @@ const handleSendMessage = async () => {
   const userId = getUserId();
   if (newMessage.trim() && conversationId) {
       try {
-          await axios.post(`${BASE_URL}/messages/add`, null, {
+          await axios.post(`${BASE_URL}/messages/add`, null,{
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+            },}, {
               params: {
                   conversationId,
                   userId,
@@ -262,7 +280,10 @@ const handleSendMessage = async () => {
     const handleCreateConversation = async (user) => {
       const userId = getUserId();
       try {
-          const response = await axios.get(`${BASE_URL}/conversations/check`, {
+          const response = await axios.get(`${BASE_URL}/conversations/check`,{
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+            },}, {
               params: { senderId: userId, receiverId: user.id }
           });
   
