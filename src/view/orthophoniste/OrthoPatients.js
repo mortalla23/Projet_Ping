@@ -43,7 +43,7 @@ const OrthoPatients = () => {
 
         // Récupération des liens validés
         const { data: validatedLinks } = await axios.post(
-          "http://localhost:5000/api/link/validated",
+          "https://localhost:5000/api/link/validated",
           { linkerId: parseInt(orthoId, 10) },
           { headers: { "Content-Type": "application/json" } }
         );
@@ -60,7 +60,7 @@ const OrthoPatients = () => {
 
         // Récupérer les détails des patients
         const { data: patients } = await axios.post(
-          "http://localhost:5000/api/users/details",
+          "https://localhost:5000/api/users/details",
           { patientIds },
           { headers: { "Content-Type": "application/json" } }
         );
@@ -73,7 +73,7 @@ const OrthoPatients = () => {
 
         // Récupérer les enseignants liés aux patients
         const { data: teachers } = await axios.post(
-          "http://localhost:5000/api/users/teachers",
+          "https://localhost:5000/api/users/teachers",
           { patientIds },
           { headers: { "Content-Type": "application/json" } }
         );
@@ -128,9 +128,9 @@ const OrthoPatients = () => {
       "Consulter / Modifier le PPRE": `/view/patient/PPREForm?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
       "Comptes-rendus des exercices": `/view/patient/CompteRendus?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
       "Aménagements scolaires": `/view/patient/AménagementScolaire?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
-      "Historique éducatif": `/view/patient/HistoriqueEducatif?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
-      "Historique santé": `/view/patient/HistoriqueSante?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
-      "Commentaires": `/view/patient/Commentaires?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Historique éducatif": `/view/orthophoniste/OrthoHistoriqueEducation?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Historique santé": `/view/orthophoniste/OrthoHistoriqueSanté?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Anamnese": `/view/orthophoniste/Anamnese?userId=${selectedPatient.id}`,
     }[action];
 
     if (url) {

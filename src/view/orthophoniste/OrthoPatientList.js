@@ -46,13 +46,13 @@ const PatientList = () => {
     setLoading(true);
     try {
       const url = term
-        ? `http://localhost:5000/api/users/patients/search?searchTerm=${term}`
-        : `http://localhost:5000/api/users/patients`;
+        ? `https://localhost:5000/api/users/patients/search?searchTerm=${term}`
+        : `https://localhost:5000/api/users/patients`;
       const { data } = await axios.get(url);
       
       // Récupérer les liens validés pour filtrer les patients
       const { data: validatedLinks } = await axios.post(
-        "http://localhost:5000/api/link/validated",
+        "https://localhost:5000/api/link/validated",
         { linkerId: parseInt(orthoId, 10) }
       );
 
@@ -81,7 +81,7 @@ const PatientList = () => {
 
   const handleAdd = async (patient) => {
     try {
-      const { data: newLink } = await axios.post("http://localhost:5000/api/link/create", {
+      const { data: newLink } = await axios.post("https://localhost:5000/api/link/create", {
         orthoId: parseInt(orthoId, 10),
         patientId: patient.id,
       });
@@ -105,7 +105,7 @@ const PatientList = () => {
         return;
       }
 
-      await axios.delete(`http://localhost:5000/api/link/${linkId}`);
+      await axios.delete(`https://localhost:5000/api/link/${linkId}`);
 
       const updatedAddedPatients = { ...addedPatients };
       delete updatedAddedPatients[patient.id];
@@ -122,7 +122,7 @@ const PatientList = () => {
   const checkValidatedPatients = async () => {
     try {
       const { data: validatedPatients } = await axios.post(
-        "http://localhost:5000/api/link/validated",
+        "https://localhost:5000/api/link/validated",
         { params: { orthoId } }
       );
 
