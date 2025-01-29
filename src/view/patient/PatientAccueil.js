@@ -11,14 +11,21 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
 } from "@mui/material";
-import { Logout, AccountCircle } from "@mui/icons-material";
+import { Logout, AccountCircle, Message } from "@mui/icons-material";
 import logo from "../../assets/images/logos/bauman.png";
+import Messages from "../message/Message";
 
 const PatientAccueil = () => {
+  const [openMessaging, setOpenMessaging] = useState(false); // Gestion de l'état de la messagerie
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [showDynamicContent, setShowDynamicContent] = useState(true);
-  const [showBanner, setShowBanner] = useState(true); // Etat pour afficher la bannière de cookies
+  const [showBanner, setShowBanner] = useState(false); // Etat pour afficher la bannière de cookies
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false); // Etat pour afficher la politique de confidentialité
 
   const user = JSON.parse(localStorage.getItem("user")) || {
@@ -31,16 +38,15 @@ const PatientAccueil = () => {
   const location = useLocation();
   useEffect(() => {
     const hiddenPages = [
-
-        "/patient/dashboard/anamnese",
-        "/patient/dashboard/cr",
-        "/patient/dashboard/ajIntervenant",
-        "/patient/dashboard/ascolaires",
-        "/patient/dashboard/documents",
-        "/patient/dashboard/pap",
-      ];
-     // Si l'utilisateur est sur l'une de ces pages, on cache la section dynamique
-     if (hiddenPages.includes(location.pathname)) {
+      "/patient/dashboard/anamnese",
+      "/patient/dashboard/cr",
+      "/patient/dashboard/ajIntervenant",
+      "/patient/dashboard/ascolaires",
+      "/patient/dashboard/documents",
+      "/patient/dashboard/pap",
+    ];
+    // Si l'utilisateur est sur l'une de ces pages, on cache la section dynamique
+    if (hiddenPages.includes(location.pathname)) {
       setShowDynamicContent(false);
     } else {
       setShowDynamicContent(true);
@@ -52,30 +58,44 @@ const PatientAccueil = () => {
   const handleMenuOpen = (event) => setMenuAnchor(event.currentTarget);
   const handleMenuClose = () => setMenuAnchor(null);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    window.location.href = "/connexion";
-  };
+
+
+  const toggleMessaging = () => setOpenMessaging(!openMessaging); // Ouvrir/fermer la messagerie
 
   const handleLogoClick = () => {
     window.location.href = "/patient/dashboard"; // Rediriger vers la page d'accueil
   };
+  // Vérifiez si l'utilisateur a déjà accepté ou refusé les cookies à la connexion
+  useEffect(() => {
+    const cookiesConsent = localStorage.getItem("cookiesConsent");
+    if (!cookiesConsent) {
+      setShowBanner(true); // Afficher la bannière si aucun consentement n'a été pris
+    }
+  }, []);
 
-  // Fonction pour actualiser la page et revenir à la page d'accueil
+  // Fonction pour gérer la déconnexion
+  const handleLogout = () => {
+    localStorage.removeItem("user"); // Supprimer les informations de l'utilisateur
+    localStorage.removeItem('userId');
+    localStorage.removeItem("cookiesConsent"); // Supprimer le consentement des cookies pour réafficher la bannière lors de la prochaine connexion
+    console.log("Utilisateur déconnecté, données supprimées.");
+    window.location.href = "/connexion"; // Rediriger vers la page de connexion
+  };
+
   const acceptCookies = () => {
-    alert("Vous avez accepté les cookies.");
-    setShowBanner(false);
+    localStorage.setItem("cookiesConsent", "accepted"); // Enregistrer le consentement dans localStorage
+    setShowBanner(false); // Masquer la bannière
   };
 
   const declineCookies = () => {
-    alert("Vous avez refusé les cookies.");
-    setShowBanner(false);
+    localStorage.setItem("cookiesConsent", "declined"); // Enregistrer le refus dans localStorage
+    setShowBanner(false); // Masquer la bannière
   };
 
   const closePrivacyPolicy = () => setShowPrivacyPolicy(false);
 
   return (
-    <Box sx={{ display: "flex", height: isSpecificPage ? "150vh" : "100vh", bgcolor: "#E6F0F3" }}>
+    <Box sx={{ display: "flex", height: "100vh", bgcolor: "#E6F0F3" }}>
       {/* Menu Latéral */}
       <Drawer
         variant="permanent"
@@ -117,54 +137,90 @@ const PatientAccueil = () => {
             <ListItemText primary="Anamnèse" />
           </ListItem>
           <ListItem button component={NavLink} to="/patient/dashboard/cr" sx={linkStyle}>
-            <ListItemText primary="Mes Compte-Rendus" />
+            <ListItemText primary="Mes compte-rendus" />
           </ListItem>
           <ListItem button component={NavLink} to="/patient/dashboard/ajIntervenant" sx={linkStyle}>
             <ListItemText primary="Ajout d'un intervenant" />
           </ListItem>
           <ListItem
-              button
-              component={NavLink}
-              to={`/patient/dashboard/pap?userId=${localStorage.getItem('patientId')}`}
-              sx={linkStyle}
-              onClick={() => {
-                console.log("userId dans localStorage :", localStorage.getItem('patientId'));
-              }}
-            >
-          <ListItemText primary="PAP" />
-        </ListItem>
+            button
+            component={NavLink}
+            to={`/patient/dashboard/pap?userId=${localStorage.getItem('patientId')}`}
+            sx={linkStyle}
+            onClick={() => {
+              console.log("userId dans localStorage :", localStorage.getItem('patientId'));
+            }}
+          >
+            <ListItemText primary="PAP" />
+          </ListItem>
 
-        <ListItem
-              button
-              component={NavLink}
-              to={`/patient/dashboard/ascolaires?userId=${localStorage.getItem('patientId')}`}
-              sx={linkStyle}
-              onClick={() => {
-                console.log("userId dans localStorage :", localStorage.getItem('patientId'));
-              }}
-            >
-          <ListItemText primary="Aménagements scolaires" />
-        </ListItem>
+          <ListItem
+            button
+            component={NavLink}
+            to={`/patient/dashboard/ascolaires?userId=${localStorage.getItem('patientId')}`}
+            sx={linkStyle}
+            onClick={() => {
+              console.log("userId dans localStorage :", localStorage.getItem('patientId'));
+            }}
+          >
+            <ListItemText primary="Aménagements scolaires" />
+          </ListItem>
           <ListItem button component={NavLink} to="/patient/dashboard/documents" sx={linkStyle}>
-            <ListItemText primary="Mes Documents" />
+            <ListItemText primary="Mes documents" />
           </ListItem>
         </List>
       </Drawer>
 
       {/* Contenu Principal */}
-      <Box sx={{ flexGrow: 1, p: 3 }}>
+     <Box sx={{
+            flexGrow: 1,
+            p: 3,
+            transition: "margin-right 0.3s ease",
+            marginRight: openMessaging ? "420px" : 0,
+          }}>
         {/* Barre Supérieure */}
         <Box sx={{
           display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2,
-          bgcolor: "#5BA8B4", color: "#FFFFFF", py: 2, px: 3, borderRadius: "10px", boxShadow: "0 2px 5px #00000033",
+          bgcolor: "#5BA8B4", color: "#FFFFFF", py: 2, px: 3, borderRadius: "10px", boxShadow: "0 2px 5px #00000033",position: "relative",
         }}>
           <Typography variant="h4" sx={{ fontWeight: "bold" }}>
             Tableau de bord du patient
           </Typography>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <IconButton onClick={handleMenuOpen} aria-label="Menu utilisateur">
+          <Box sx={{
+                   display: "flex", 
+                   alignItems: "center", 
+                   gap: 3,  // L'ajustement de l'espacement entre les boutons
+                   zIndex: 2,  // Assure que les éléments sont visibles au-dessus de la messagerie
+                 }}>
+            <IconButton onClick={handleMenuOpen} aria-label="Menu utilisateur" sx={{ zIndex: 3 }}>
               <AccountCircle sx={{ fontSize: 40, color: "#FFFFFF" }} />
             </IconButton>
+
+            {/* Positionner l'icône Messagerie sur la barre verte */}
+            <IconButton
+              onClick={toggleMessaging}
+              aria-label="Messagerie"
+              sx={{
+                position: "absolute",  // Positionner en absolu sur la barre verte
+                right: -470,  // Décalage de l'icône Messagerie à droite
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "transparent",
+                boxShadow: "none",
+                zIndex: 1,  // Mettre l'icône de messagerie en dessous du bouton `AccountCircle`
+                "&:hover": {
+                  backgroundColor: "transparent",
+                },
+                "&:focus": {
+                  outline: "none",
+                  backgroundColor: "transparent",
+                },
+              }}
+            >
+              <Message sx={{ fontSize: 40, color: "#FFFFFF" }} />
+            </IconButton>
+          </Box>
+
             <Menu
               anchorEl={menuAnchor}
               open={Boolean(menuAnchor)}
@@ -179,7 +235,7 @@ const PatientAccueil = () => {
               </MenuItem>
             </Menu>
           </Box>
-        </Box>
+     
 
         {/* Contenu Dynamique */}
         {showDynamicContent && (
@@ -194,25 +250,35 @@ const PatientAccueil = () => {
         )}
         <Outlet />
       </Box>
-
-      {/* Bannière de Consentement */}
-      {showBanner && (
+      {openMessaging && (
         <Box sx={{
-          position: "fixed", bottom: 0, width: "100%", bgcolor: "#5BA8B4", color: "white", textAlign: "center", p: 2,
-          zIndex: 1200, boxShadow: "0 -2px 5px rgba(0, 0, 0, 0.1)",
+          position: "fixed", top: 0, right: 0, bottom: 0, width: "400px", bgcolor: "#ffffff", zIndex: 1300,
+          boxShadow: "0 0 15px rgba(0, 0, 0, 0.3)", padding: "20px", transition: "width 0.3s ease",
+          height: "100%", overflowY: "auto", maxWidth: "600px", display: "block",
         }}>
+          <Messages />
+        </Box>
+      )}
+      {/* Bannière de Consentement */}
+      <Dialog open={showBanner} onClose={() => setShowBanner(false)}>
+        <DialogTitle sx={{ bgcolor: "#5BA8B4", color: "white" }}>Politique de Cookies</DialogTitle>
+        <DialogContent>
           <Typography>
             Nous utilisons des cookies pour améliorer votre expérience.{" "}
             <span style={{ textDecoration: "underline", cursor: "pointer" }} onClick={() => setShowPrivacyPolicy(true)}>
               Voir la politique de confidentialité
             </span>.
           </Typography>
-          <Box sx={{ mt: 1 }}>
-            <button onClick={acceptCookies} style={buttonStyle}>Accepter</button>
-            <button onClick={declineCookies} style={buttonStyle}>Refuser</button>
-          </Box>
-        </Box>
-      )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={acceptCookies} sx={{ backgroundColor: "#5BA8B4", color: "white" }}>
+            Accepter
+          </Button>
+          <Button onClick={declineCookies} sx={{ backgroundColor: "#5BA8B4", color: "white" }}>
+            Refuser
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Politique de Confidentialité */}
             {showPrivacyPolicy && (
