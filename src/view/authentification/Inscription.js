@@ -284,8 +284,21 @@ const Inscription = () => {
                         required
                       />
                     }
-                    label="J'accepte les conditions générales d'utilisation."
+                    label={
+                      <span>
+                        J'accepte les{' '}
+                        <a 
+                          href="/pdf/CGU.pdf" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer', position: "relative", zIndex: 10 }}
+                        >
+                          conditions générales d'utilisation
+                        </a>
+                      </span>
+                    }
                   />
+
                 </Stack>
                 <Box mt={3}>
                   <Button
