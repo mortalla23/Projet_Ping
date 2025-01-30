@@ -49,9 +49,10 @@ const PatientList = () => {
         ? `http://localhost:5000/api/users/patients/search?searchTerm=${term}`
         : `http://localhost:5000/api/users/patients`;
       const { data } = await axios.get(url);
+      setPatients(data);
       
       // Récupérer les liens validés pour filtrer les patients
-      const { data: validatedLinks } = await axios.post(
+      /*const { data: validatedLinks } = await axios.post(
         "http://localhost:5000/api/link/validated",
         { linkerId: parseInt(orthoId, 10) }
       );
@@ -59,7 +60,7 @@ const PatientList = () => {
       const validatedPatientIds = validatedLinks.map(link => link.linkedTo);
       const filteredPatients = data.filter(patient => !validatedPatientIds.includes(patient.id));
       
-      setPatients(filteredPatients);
+      setPatients(filteredPatients);*/
     } catch (error) {
       console.error("Erreur API :", error);
       toast.error("Impossible de charger les patients.");
