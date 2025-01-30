@@ -20,6 +20,9 @@ import {
 import { Logout, AccountCircle, Message } from "@mui/icons-material";
 import logo from "../../assets/images/logos/bauman.png";
 import Messages from "../message/Message";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { Paper } from "@mui/material"; // Ajoutez ceci si ce n'est pas déjà fait
 
 const PatientAccueil = () => {
   const [openMessaging, setOpenMessaging] = useState(false); // Gestion de l'état de la messagerie
@@ -27,12 +30,22 @@ const PatientAccueil = () => {
   const [showDynamicContent, setShowDynamicContent] = useState(true);
   const [showBanner, setShowBanner] = useState(false); // Etat pour afficher la bannière de cookies
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false); // Etat pour afficher la politique de confidentialité
+  const [patient, setPatient] = useState(null); // Détails du patient
+  const [linkStatus, setLinkStatus] = useState(null); 
+  const [orthoEmail, setOrthoEmail] = useState(null);
+  const [linkId, setLinkId] = useState(null); // Créer l'état pour stocker l'_id
+  const [role, setRole] = useState(""); // Pour vérifier si c'est un enseignant ou un orthophoniste
+  const [teacherEmail, setTeacherEmail] = useState(null); // Email de l'enseignant
 
   const user = JSON.parse(localStorage.getItem("user")) || {
     name: "Utilisateur",
     role: "Non défini",
     email: "inconnu@example.com",
   };
+
+  const patientId = localStorage.getItem("patientId"); // récupérer l'ID du patient
+  const orthoId = localStorage.getItem("orthoId");
+  const teacherId = localStorage.getItem("teacherId");
 
   // Utiliser useLocation pour détecter la route actuelle
   const location = useLocation();
@@ -94,6 +107,57 @@ const PatientAccueil = () => {
 
   const closePrivacyPolicy = () => setShowPrivacyPolicy(false);
 
+
+   useEffect(() => {
+    const fetchPatient = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/link/patient/${patientId}`);
+        if (response.data && response.data.length > 0) {
+          const linkData = response.data[0];
+          setPatient(linkData);
+          setLinkStatus(linkData.validate);
+          setLinkId(linkData.id);  // Enregistrer l'ID ici (id et non linkId)
+          if (linkData.role === "ORTHOPHONISTE") {
+            setOrthoEmail(linkData.orthoEmail);
+            setRole("ORTHOPHONISTE");
+          } else if (linkData.role === "TEACHER") {
+            setTeacherEmail(linkData.teacherEmail);
+            setRole("TEACHER");
+          }
+        }
+      } catch (error) {
+        console.error("Erreur lors du chargement des détails du lien", error);
+        toast.error("Impossible de charger les détails du lien.");
+      }
+    };
+    fetchPatient();
+  }, [patientId]);
+ 
+  const handleValidateLink = async (status) => {
+    console.log("Link ID:", linkId);
+    console.log("Status:", status);
+
+    if (!linkId || !status) {
+        toast.error("ID du lien ou statut manquant.");
+        return;
+    }
+
+    try {
+        // Envoi du statut sans guillemets autour de la chaîne
+        await axios.patch(`http://localhost:5000/api/link/${linkId}/validate`, {
+          status: status,  
+      });
+
+        // Mise à jour du statut localement
+        setLinkStatus(status);
+        toast.success(`Statut mis à jour : ${status}`);
+    } catch (error) {
+        console.error("Erreur lors de la mise à jour du statut du lien", error);
+        toast.error("Impossible de mettre à jour le statut.");
+    }
+};
+
+  
   return (
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "#E6F0F3" }}>
       {/* Menu Latéral */}
@@ -254,7 +318,72 @@ const PatientAccueil = () => {
           </Box>
         )}
         <Outlet />
-      </Box>
+        {showDynamicContent && (
+          <Box sx={{ padding: 3, bgcolor: "#E6F0F3", borderRadius: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#5BA8B4", marginBottom: 2 }}>
+            Détails du patient
+          </Typography>
+          <Paper sx={{ padding: 3, backgroundColor: "#FFFFFF", boxShadow: 3, borderRadius: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: "bold", color: "#397C9A" }}>
+              {patient?.firstName} {patient?.lastName}
+            </Typography>
+            {/* <Typography variant="body1">Email: {patient?.email}</Typography> */}
+
+            {role === "ORTHOPHONISTE" ? (
+              <>
+                <Typography variant="body1">Email de l'orthophoniste: {orthoEmail || "Non disponible"}</Typography>
+              </>
+            ) : role === "TEACHER" ? (
+              <>
+                <Typography variant="body1">Email de l'enseignant: {teacherEmail || "Non disponible"}</Typography>
+              </>
+            ) : null}            
+             
+             <Typography variant="body1">Statut du lien avec {role === "ORTHOPHONISTE" ? "l'orthophoniste" : "l'enseignant"}: {linkStatus}</Typography>
+    
+            <Box sx={{ marginTop: 3, display: "flex", gap: 2 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handleValidateLink("VALIDATED")}
+                disabled={linkStatus === "VALIDATED"}
+                sx={{
+                  padding: "10px 20px",
+                  borderRadius: "5px",
+                  fontWeight: "bold",
+                  transition: "0.3s ease",
+                  "&:hover": {
+                    backgroundColor: "#397C9A",
+                    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                  },
+                }}
+              >
+                Valider le lien
+              </Button>
+    
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => handleValidateLink("REFUSED")}
+                disabled={linkStatus === "REFUSED"}
+                sx={{
+                  padding: "10px 20px",
+                  borderRadius: "5px",
+                  fontWeight: "bold",
+                  transition: "0.3s ease",
+                  "&:hover": {
+                    backgroundColor: "#9C27B0",
+                    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                  },
+                }}
+              >
+                Refuser le lien
+              </Button>
+            </Box>
+          </Paper>
+        </Box>
+        )}
+      
       {openMessaging && (
         <Box sx={{
           position: "fixed", top: 0, right: 0, bottom: 0, width: "400px", bgcolor: "#ffffff", zIndex: 1300,
@@ -262,6 +391,8 @@ const PatientAccueil = () => {
           height: "100%", overflowY: "auto", maxWidth: "600px", display: "block",
         }}>
           <Messages />
+
+          
         </Box>
       )}
       {/* Bannière de Consentement */}
@@ -380,6 +511,7 @@ const PatientAccueil = () => {
                 </Box>
               </Box>
             )}
+            </Box>
           </Box>
         );
       };

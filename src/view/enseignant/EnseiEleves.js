@@ -10,29 +10,30 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  TablePagination
+  TablePagination,
+  IconButton,
+  Menu,
+  MenuItem,
 } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom'; // ✅ Utilisation de useNavigate pour la navigation
 
 const EnseiEleves = () => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false);
-  const [searchEmail, setSearchEmail] = useState(''); // Email pour rechercher un élève
-  const [foundStudent, setFoundStudent] = useState(null); // Élève trouvé
-  const [teacherId, setTeacherId] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [validatedPatients, setValidatedPatients] = useState([]);
+  const open = Boolean(anchorEl);
+  const teacherId = localStorage.getItem("teacherId");
+  const navigate = useNavigate(); // ✅ Utilisation de useNavigate pour la navigation
 
   // Pagination State
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
+  
   useEffect(() => {
     const storedTeacherId = localStorage.getItem('teacherId');
     console.log('ID enseignant récupéré depuis localStorage :', storedTeacherId);
@@ -132,6 +133,41 @@ const EnseiEleves = () => {
     setPage(0);
   };
 
+  const handleMenuOpen = (event, student) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedStudent(student);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedStudent(null);
+  };
+
+  const handleActionClick = (action) => {
+    if (!selectedStudent) {
+      toast.error("Aucun élève sélectionné.");
+      return;
+    }
+
+    const url = {
+      "Consulter / Modifier le PAP": `/view/student/PAPForm?userId=${selectedStudent.id}&intervenantId=${teacherId}`,
+      "Consulter / Modifier le PPRE": `/view/student/PPREForm?userId=${selectedStudent.id}&intervenantId=${teacherId}`,
+      "Comptes-rendus des exercices": `/view/student/CompteRendus?userId=${selectedStudent.id}&intervenantId=${teacherId}`,
+    }[action];
+
+    if (url) {
+      navigate(url);
+    } else {
+      toast.warn("Action inconnue.");
+    }
+
+    handleMenuClose();
+  };
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString("fr-FR", options);
+  };
   if (loading) {
     return <Typography>Chargement des données...</Typography>;
   }
@@ -142,26 +178,38 @@ const EnseiEleves = () => {
       <Typography variant="h5" gutterBottom>
         Liste des élèves
       </Typography>
-      <Button variant="contained" color="primary" onClick={handleOpen} sx={{ mb: 2, bgcolor: '#5BA8B4' }}>
-        Ajouter un élève
-      </Button>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
-            <TableRow sx={{ bgcolor: '#5BA8B4' }}>
-              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>#</TableCell>
-              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Nom d'utilisateur</TableCell>
-              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Email</TableCell>
-              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Date de naissance</TableCell>
+            <TableRow>
+              <TableCell>#</TableCell>
+              <TableCell>Nom</TableCell>
+              <TableCell>Prénom</TableCell>
+              <TableCell>Email</TableCell>
+               <TableCell>Date de naissance</TableCell>
+              <TableCell>Orthophoniste</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {students.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((student, index) => (
-              <TableRow key={student.id}>  {/* Assurez-vous que student.id est unique */}
+            {validatedPatients.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((student, index) => (
+              <TableRow key={student.id}>
                 <TableCell>{index + 1}</TableCell>
-                <TableCell>{student.username || 'Non disponible'}</TableCell>
-                <TableCell>{student.email || 'Non disponible'}</TableCell>
-                <TableCell>{student.birthDate ? new Date(student.birthDate).toLocaleDateString() : 'Non disponible'}</TableCell>
+                <TableCell>{student.lastName}</TableCell>
+                <TableCell>{student.firstName}</TableCell>
+                <TableCell>{student.email}</TableCell>
+                <TableCell>{formatDate(student.birthDate)}</TableCell>
+                <TableCell>
+                  {student.orthophoniste ? `${student.orthophoniste.firstName} ${student.orthophoniste.lastName}` : "N/A"}
+                </TableCell>
+                <TableCell>
+                  <IconButton
+                    aria-label="more"
+                    onClick={(event) => handleMenuOpen(event, student)}
+                  >
+                    <MoreVertIcon />
+                  </IconButton>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -177,40 +225,11 @@ const EnseiEleves = () => {
         />
       </TableContainer>
 
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Associer un élève existant</DialogTitle>
-        <DialogContent>
-          <TextField
-            margin="dense"
-            name="searchEmail"
-            label="Email de l'élève"
-            type="email"
-            fullWidth
-            value={searchEmail}
-            onChange={(e) => setSearchEmail(e.target.value)}
-          />
-          <Button onClick={handleSearchStudent} color="primary">
-            Rechercher
-          </Button>
-          {foundStudent && (
-            <Box mt={2}>
-              <Typography variant="body1">Nom : {foundStudent.username}</Typography>
-              <Typography variant="body1">Email : {foundStudent.email}</Typography>
-              <Typography variant="body1">
-                Date de naissance : {new Date(foundStudent.birthDate).toLocaleDateString()}
-              </Typography>
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="secondary">
-            Annuler
-          </Button>
-          <Button onClick={handleAssociateStudent} color="primary" disabled={!foundStudent}>
-            Associer
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
+        <MenuItem onClick={() => handleActionClick("Consulter / Modifier le PAP")}>📄 PAP</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Consulter / Modifier le PPRE")}>📖 PPRE</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Comptes-rendus des exercices")}>📝 Exercices</MenuItem>
+      </Menu>
     </Box>
   );
 };

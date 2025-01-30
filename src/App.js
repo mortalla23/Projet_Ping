@@ -13,6 +13,7 @@ import EnseiEleves from './view/enseignant/EnseiEleves';
 import EnseiHistorique from './view/enseignant/EnseiHistorique';
 import EnseiRapports from './view/enseignant/EnseiRapports';
 import EnseiAmenagements from './view/enseignant/EnseiAmenagements';
+import AddStudentPage from './view/enseignant/AddStudentPage';
 import EnseiHistoriqueEducation from './view/enseignant/EnseiHistoriqueEducation';
 import EnseiPpre from './view/enseignant/EnseiPpre';
 import EnseiPatients from './view/enseignant/EnseiPatients';
@@ -74,6 +75,7 @@ function App() {
           <Route path="allPatients" element={<EnseiPatients />} />
           <Route path="profile" element={< EnseiProfile />} />
           <Route path="ascolaires" element={<EnseiAmenagements />} />
+          <Route path="addeleves" element={<AddStudentPage />} />
           <Route path="historique-education/:userId" element={<EnseiHistoriqueEducation />} />
           <Route path="listedespatients" element={<EnseiPatientsList />} />
           <Route path="documents" element={<ConsulDocuments />} />
