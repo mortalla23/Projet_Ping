@@ -13,6 +13,7 @@ import EnseiEleves from './view/enseignant/EnseiEleves';
 import EnseiHistorique from './view/enseignant/EnseiHistorique';
 import EnseiRapports from './view/enseignant/EnseiRapports';
 import EnseiAmenagements from './view/enseignant/EnseiAmenagements';
+import AddStudentPage from './view/enseignant/AddStudentPage';
 
 // Composants pour les différentes sections du tableau de bord pour patient
 import CompteRendus from './view/patient/CompteRendus';
@@ -57,6 +58,7 @@ function App() {
           element={<ProtectedRoute role="TEACHER"><EnseiAccueil /></ProtectedRoute>}
         >
           <Route path="eleves" element={<EnseiEleves />} />
+          <Route path="addeleves" element={<AddStudentPage />} />
           <Route path="historique" element={<EnseiHistorique />} />
           <Route path="rapports" element={<EnseiRapports />} />
           <Route path="amenagements" element={<EnseiAmenagements />} />

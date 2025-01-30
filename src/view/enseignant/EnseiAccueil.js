@@ -112,7 +112,10 @@ const EnseiAccueil = () => {
 
         <List>
           <ListItem button component={NavLink} to="/teacher/dashboard/eleves" sx={linkStyle}>
-            <ListItemText primary="Tous les élèves" />
+            <ListItemText primary="Tous mes élèves" />
+          </ListItem>
+          <ListItem button component={NavLink} to="/teacher/dashboard/addeleves" sx={linkStyle}>
+            <ListItemText primary="S'associer un élève" />
           </ListItem>
           <ListItem button component={NavLink} to="/teacher/dashboard/historique" sx={linkStyle}>
             <ListItemText primary="Historique éducation" />

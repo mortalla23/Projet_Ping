@@ -34,13 +34,18 @@ const PatientAccueil = () => {
   const [linkStatus, setLinkStatus] = useState(null); 
   const [orthoEmail, setOrthoEmail] = useState(null);
   const [linkId, setLinkId] = useState(null); // Créer l'état pour stocker l'_id
-
+  const [role, setRole] = useState(""); // Pour vérifier si c'est un enseignant ou un orthophoniste
+  const [teacherEmail, setTeacherEmail] = useState(null); // Email de l'enseignant
 
   const user = JSON.parse(localStorage.getItem("user")) || {
     name: "Utilisateur",
     role: "Non défini",
     email: "inconnu@example.com",
   };
+
+  const patientId = localStorage.getItem("patientId"); // récupérer l'ID du patient
+  const orthoId = localStorage.getItem("orthoId");
+  const teacherId = localStorage.getItem("teacherId");
 
   // Utiliser useLocation pour détecter la route actuelle
   const location = useLocation();
@@ -102,24 +107,23 @@ const PatientAccueil = () => {
 
   const closePrivacyPolicy = () => setShowPrivacyPolicy(false);
 
-  const patientId = localStorage.getItem("patientId"); // récupérer l'ID du patient
-  const orthoId = localStorage.getItem("orthoId");
 
-  useEffect(() => {
+   useEffect(() => {
     const fetchPatient = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/link/patient/${patientId}`);
-        console.log("Réponse API:", response.data); // Vérifie la structure exacte de la réponse
-  
         if (response.data && response.data.length > 0) {
-          const linkData = response.data[0]; // Assure-toi que la structure de réponse est correcte
-          console.log("Link ID (from response):", linkData.id); // Devrait log l'ID (id, pas linkId)
+          const linkData = response.data[0];
           setPatient(linkData);
           setLinkStatus(linkData.validate);
-          setOrthoEmail(linkData.orthoEmail);  // Enregistrer l'email de l'orthophoniste
           setLinkId(linkData.id);  // Enregistrer l'ID ici (id et non linkId)
-        } else {
-          console.log("Aucune donnée de lien trouvée.");
+          if (linkData.role === "ORTHOPHONISTE") {
+            setOrthoEmail(linkData.orthoEmail);
+            setRole("ORTHOPHONISTE");
+          } else if (linkData.role === "TEACHER") {
+            setTeacherEmail(linkData.teacherEmail);
+            setRole("TEACHER");
+          }
         }
       } catch (error) {
         console.error("Erreur lors du chargement des détails du lien", error);
@@ -128,7 +132,6 @@ const PatientAccueil = () => {
     };
     fetchPatient();
   }, [patientId]);
-
  
   const handleValidateLink = async (status) => {
     console.log("Link ID:", linkId);
@@ -154,11 +157,6 @@ const PatientAccueil = () => {
     }
 };
 
-        
-  
-
-  
-  
   
   return (
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "#E6F0F3" }}>
@@ -324,9 +322,19 @@ const PatientAccueil = () => {
             <Typography variant="h6" sx={{ fontWeight: "bold", color: "#397C9A" }}>
               {patient?.firstName} {patient?.lastName}
             </Typography>
-            <Typography variant="body1">Email: {patient?.email}</Typography>
-            <Typography variant="body1">Email de l'orthophoniste: {orthoEmail || "Non disponible"}</Typography>
-            <Typography variant="body1">Statut du lien avec l'orthophoniste: {linkStatus}</Typography>
+            {/* <Typography variant="body1">Email: {patient?.email}</Typography> */}
+
+            {role === "ORTHOPHONISTE" ? (
+              <>
+                <Typography variant="body1">Email de l'orthophoniste: {orthoEmail || "Non disponible"}</Typography>
+              </>
+            ) : role === "TEACHER" ? (
+              <>
+                <Typography variant="body1">Email de l'enseignant: {teacherEmail || "Non disponible"}</Typography>
+              </>
+            ) : null}            
+             
+             <Typography variant="body1">Statut du lien avec {role === "ORTHOPHONISTE" ? "l'orthophoniste" : "l'enseignant"}: {linkStatus}</Typography>
     
             <Box sx={{ marginTop: 3, display: "flex", gap: 2 }}>
               <Button
