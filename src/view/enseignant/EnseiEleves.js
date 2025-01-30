@@ -57,7 +57,7 @@ const EnseiEleves = () => {
         }
 
         // Filtrer uniquement les patients avec le statut VALIDATED
-        const filteredValidatedLinks = validatedLinks.filter(link => link.validate === "VALIDATED");
+        const filteredValidatedLinks = validatedLinks.filter(link => link.validate === "VALIDATED"&& link.role === "TEACHER");
         const patientIds = filteredValidatedLinks.map((link) => link.linkedTo);
 
         // Récupérer les détails des patients

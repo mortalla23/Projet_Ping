@@ -229,9 +229,9 @@ const PatientAccueil = () => {
           >
             <ListItemText primary="Aménagements scolaires" />
           </ListItem>
-          <ListItem button component={NavLink} to="/patient/dashboard/documents" sx={linkStyle}>
+          {/* <ListItem button component={NavLink} to="/patient/dashboard/documents" sx={linkStyle}>
             <ListItemText primary="Mes documents" />
-          </ListItem>
+          </ListItem> */}
         </List>
       </Drawer>
 
