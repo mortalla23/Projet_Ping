@@ -43,13 +43,11 @@ const EnseiPatients = () => {
 
         // Récupération des liens validés
         const { data: validatedLinks } = await axios.post(
-          "https://localhost:5000/api/link/validated",{
+          "https://localhost:5000/api/link/validated",{ linkerId: parseInt(teacherId, 10) },{
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
               'Content-Type': 'application/json',
-            },},
-          { linkerId: parseInt(teacherId, 10) },
-          { headers: { "Content-Type": "application/json" } }
+            },}
         );
 
         if (!validatedLinks || validatedLinks.length === 0) {
@@ -79,9 +77,9 @@ const EnseiPatients = () => {
           return;
         }
 
-        // Récupérer les orthophonistes liés aux patients
-        const { data: orthophonistes } = await axios.post(
-          "https://localhost:5000/api/users/orthos",
+        // Récupérer les enseignants liés aux patients
+        const { data: orthos } = await axios.post(
+          "https://localhost:5000/api/users/orthophonistes",
           { patientIds },
           {
             headers: {
@@ -90,13 +88,11 @@ const EnseiPatients = () => {
             },}
         );
 
-        // Associer les enseignants aux patients
-        const patientsWithOrtho = patients.map((patient) => ({
+        const patientsWithOrthos = patients.map((patient) => ({
           ...patient,
-          orthophonistes: orthophonistes.find((t) => t.studentId === patient.id) || { firstName: "N/A", lastName: "N/A" },
-        }));
-
-        setValidatedPatients(patientsWithOrtho);
+          ortho: orthos.find((t) => t.patientId === patient.id)?.ortho || { firstName: "N/A", lastName: "N/A" },
+      }));
+        setValidatedPatients(patientsWithOrthos);
       } catch (error) {
         console.error("❌ Erreur lors du chargement :", error);
         toast.error("Erreur lors du chargement des patients.");
@@ -134,6 +130,7 @@ const EnseiPatients = () => {
       return;
     }
 
+    
     const url = {
       "Consulter / Modifier le PAP": `/view/patient/PAPForm?userId=${selectedPatient.id}&intervenantId=${teacherId}`,
 
@@ -192,7 +189,7 @@ const EnseiPatients = () => {
                   <TableCell>{patient.email}</TableCell>
                   <TableCell>{formatDate(patient.birthDate)}</TableCell>
                   <TableCell>
-                    {patient.teacher ? `${patient.teacher.firstName} ${patient.teacher.lastName}` : "N/A"}
+                    {patient.ortho ? `${patient.ortho.firstName} ${patient.ortho.lastName}` : "N/A"}
                   </TableCell>
                   <TableCell>
                     <IconButton
@@ -219,12 +216,11 @@ const EnseiPatients = () => {
 
       <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
         <MenuItem onClick={() => handleActionClick("Consulter / Modifier le PAP")}>📄 PAP</MenuItem>
-        <MenuItem onClick={() => handleActionClick("Consulter / Modifier le PPRE")}>📖 PPRE</MenuItem>
-        <MenuItem onClick={() => handleActionClick("Comptes-rendus des exercices")}>📝 Exercices</MenuItem>
-        <MenuItem onClick={() => handleActionClick("Aménagements scolaires")}>🏫 Aménagements scolaires</MenuItem>
-        <MenuItem onClick={() => handleActionClick("Historique éducatif")}>🎓 Historique éducatif</MenuItem>
-        <MenuItem onClick={() => handleActionClick("Commentaires")}>💬 Commentaires</MenuItem>
-      </Menu>
+                <MenuItem onClick={() => handleActionClick("Consulter / Modifier le PPRE")}>📖 PPRE</MenuItem>
+                <MenuItem onClick={() => handleActionClick("Comptes-rendus des exercices")}>📝 Exercices</MenuItem>
+                <MenuItem onClick={() => handleActionClick("Aménagements scolaires")}>🏫 Aménagements scolaires</MenuItem>
+                <MenuItem onClick={() => handleActionClick("Historique éducatif")}>🎓 Historique éducatif</MenuItem>
+              </Menu>
     </Box>
   );
 };

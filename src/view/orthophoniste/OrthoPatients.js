@@ -43,13 +43,11 @@ const OrthoPatients = () => {
 
         // Récupération des liens validés
         const { data: validatedLinks } = await axios.post(
-          "https://localhost:5000/api/link/validated",{
+          "https://localhost:5000/api/link/validated",{ linkerId: parseInt(orthoId, 10) },{
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
               'Content-Type': 'application/json',
-            },},
-          { linkerId: parseInt(orthoId, 10) },
-          { headers: { "Content-Type": "application/json" } }
+            },}
         );
 
         if (!validatedLinks || validatedLinks.length === 0) {
@@ -135,15 +133,15 @@ const OrthoPatients = () => {
     }
 
     const url = {
-      "Consulter / Modifier le PAP": `/view/patient/PAPForm?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+     "Consulter / Modifier le PAP": `/view/patient/PAPForm?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
 
-      "Consulter / Modifier le PPRE": `/view/patient/PPREForm?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Consulter / Modifier le PPRE": `/ortho/dashboard/ppre/${selectedPatient.id}`,
       "Comptes-rendus des exercices": `/view/patient/CompteRendus?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
       "Aménagements scolaires": `/view/patient/AménagementScolaire?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
-      "Historique éducatif": `/view/orthophoniste/OrthoHistoriqueEducation?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
-      "Historique santé": `/view/orthophoniste/OrthoHistoriqueSanté?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
-      "Anamnese": `/view/orthophoniste/Anamnese?userId=${selectedPatient.id}`,
-    }[action];
+      "Historique éducatif": `/ortho/dashboard/historique-education/${selectedPatient.id}`,
+      "Historique santé": `/ortho/dashboard/historique-sante/${selectedPatient.id}`,
+      "Anamnese": `/ortho/dashboard/anamnese/${selectedPatient.id}`,
+     }[action];
 
     if (url) {
       navigate(url);
@@ -225,7 +223,8 @@ const OrthoPatients = () => {
         <MenuItem onClick={() => handleActionClick("Comptes-rendus des exercices")}>📝 Exercices</MenuItem>
         <MenuItem onClick={() => handleActionClick("Aménagements scolaires")}>🏫 Aménagements scolaires</MenuItem>
         <MenuItem onClick={() => handleActionClick("Historique éducatif")}>🎓 Historique éducatif</MenuItem>
-        <MenuItem onClick={() => handleActionClick("Commentaires")}>💬 Commentaires</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Historique santé")}>🎓 Historique sante</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Anamnese")}>💬 Anamnese</MenuItem>
       </Menu>
     </Box>
   );

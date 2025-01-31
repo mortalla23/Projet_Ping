@@ -90,8 +90,8 @@ const PatientList = () => {
   const handleAdd = async (patient) => {
     try {
       const { data: newLink } = await axios.post("https://localhost:5000/api/link/create", {
-        teacherId: parseInt(teacherId, 10),
-        patientId: patient.id,
+        linkerId: parseInt(teacherId, 10),
+        linkedTo: patient.id,
       },{
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
@@ -138,7 +138,7 @@ const PatientList = () => {
   const checkValidatedPatients = async () => {
     try {
       const { data: validatedPatients } = await axios.post(
-        "https://localhost:5000/api/link/validated", { params: { teacherId } },{
+        "https://localhost:5000/api/link/validated", { linkerId: parseInt(teacherId, 10) },{
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
             'Content-Type': 'application/json',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef,useParams } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import {
   Box,
@@ -18,6 +18,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const IntervenantList = () => {
+  const patientId =localStorage.getItem('patientId');
   const [intervenants, setIntervenants] = useState([]);
   const [addedIntervenants, setAddedIntervenants] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
@@ -25,7 +26,7 @@ const IntervenantList = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const debounceTimeout = useRef(null);
-  const { patientId } = useParams();
+
   useEffect(() => {
     const savedAddedIntervenants = localStorage.getItem("addedIntervenants");
     if (savedAddedIntervenants) {
@@ -47,25 +48,29 @@ const IntervenantList = () => {
       const url = term
         ? `https://localhost:5000/api/users/intervenants/search?searchTerm=${term}`
         : `https://localhost:5000/api/users/intervenants/${patientId}`;
-      const { data } = await axios.get(url,{
+
+      const { data } = await axios.get(url, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json',
-        },});
-      
-      // Récupérer les liens validés pour filtrer les Intervenants
+        },
+      });
+
+      // Récupérer les liens validés pour filtrer les intervenants
       const { data: validatedLinks } = await axios.post(
         "https://localhost:5000/api/link/validated",
-        {linkerId: parseInt(localStorage.getItem('patientId'), 10) },{
+        { linkerId: parseInt(localStorage.getItem('patientId'), 10) }, // Assurez-vous d'utiliser le bon ID
+        {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'Content-Type': 'application/json',
-          },}
+          },
+        }
       );
 
       const validatedIntervenantIds = validatedLinks.map(link => link.linkedTo);
       const filteredIntervenants = data.filter(intervenant => !validatedIntervenantIds.includes(intervenant.id));
-      
+
       setIntervenants(filteredIntervenants);
     } catch (error) {
       console.error("Erreur API :", error);
@@ -89,22 +94,23 @@ const IntervenantList = () => {
   const handleAdd = async (intervenant) => {
     try {
       const { data: newLink } = await axios.post("https://localhost:5000/api/link/create", {
-        linkerId: localStorage.getItem('patientId'),
+        linkerId: patientId,
         linkedTo: intervenant.id,
-      },{
+      }, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json',
-        },},);
+        },
+      });
 
       const updatedAddedIntervenants = { ...addedIntervenants, [intervenant.id]: newLink.id };
       setAddedIntervenants(updatedAddedIntervenants);
       localStorage.setItem("addedIntervenants", JSON.stringify(updatedAddedIntervenants));
 
-      toast.success(`Le intervenant ${intervenant.firstName} a été ajouté avec succès.`);
+      toast.success(`L'intervenant ${intervenant.firstName} a été ajouté avec succès.`);
     } catch (error) {
-      console.error("Erreur lors de l'ajout du intervenant :", error);
-      toast.error("Impossible d'ajouter le intervenant.");
+      console.error("Erreur lors de l'ajout de l'intervenant :", error);
+      toast.error("Impossible d'ajouter l'intervenant.");
     }
   };
 
@@ -116,18 +122,19 @@ const IntervenantList = () => {
         return;
       }
 
-      await axios.delete(`https://localhost:5000/api/link/${linkId}`,{
+      await axios.delete(`https://localhost:5000/api/link/${linkId}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json',
-        },});
+        },
+      });
 
       const updatedAddedIntervenants = { ...addedIntervenants };
       delete updatedAddedIntervenants[intervenant.id];
       setAddedIntervenants(updatedAddedIntervenants);
       localStorage.setItem("addedIntervenants", JSON.stringify(updatedAddedIntervenants));
 
-      toast.info(`L'ajout du intervenant ${intervenant.firstName} a été annulé.`);
+      toast.info(`L'ajout de l'intervenant ${intervenant.firstName} a été annulé.`);
     } catch (error) {
       console.error("Erreur lors de l'annulation :", error);
       toast.error("Impossible d'annuler l'ajout.");
@@ -137,12 +144,14 @@ const IntervenantList = () => {
   const checkValidatedIntervenants = async () => {
     try {
       const { data: validatedIntervenants } = await axios.post(
-        "https://localhost:5000/api/link/validated", { params: {linkerId : localStorage.getItem('patientId') } },{
+        "https://localhost:5000/api/link/validated",
+        { linkerId: patientId },
+        {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'Content-Type': 'application/json',
-          },},
-       
+          },
+        }
       );
 
       if (validatedIntervenants.length > 0) {

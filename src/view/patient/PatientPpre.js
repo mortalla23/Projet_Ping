@@ -25,7 +25,7 @@ const Ppre = () => {
   };
 
   const [formData, setFormData] = useState(initialFormData);
-  const { userId } = useParams();
+  const userId = localStorage.getItem('patientId');
   const documentIdRef = useRef(null);
   const handleInputChange = (e) => {
     const { name, value } = e.target;

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { ChatProvider } from '../message/ChatContext'; // Assurez-vous d'importer le bon chemin
+import ChatIcon from '../message/ChatIcon'; // Assurez-vous d'importer le bon chemin
 import {
   Box,
   Typography,
@@ -20,11 +22,9 @@ import {
 import { Logout, AccountCircle, Message } from "@mui/icons-material";
 import logo from "../../assets/images/logos/bauman.png";
 
-import Messages from "../message/Message"; // Modifiez le chemin ici
 
 const OrthoAccueil = () => {
   const [menuAnchor, setMenuAnchor] = useState(null);
-  const [openMessaging, setOpenMessaging] = useState(false);
   const [showDynamicContent, setShowDynamicContent] = useState(true);
   const [showBanner, setShowBanner] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
@@ -37,7 +37,7 @@ const OrthoAccueil = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
-
+  const [isOpen, setIsOpen] = useState(false); 
   useEffect(() => {
     const hiddenPages = [
       "/ortho/dashboard/allPatients",
@@ -57,6 +57,7 @@ const OrthoAccueil = () => {
   const handleMenuClose = () => setMenuAnchor(null);
 
  
+  const toggleMessaging = () => setIsOpen(!isOpen);
 
   const handleProfileRedirect = () => {
     navigate("/ortho/dashboard/profile");
@@ -65,8 +66,6 @@ const OrthoAccueil = () => {
   const handleLogoClick = () => {
     window.location.href = "/ortho/dashboard";
   };
-
-  const toggleMessaging = () => setOpenMessaging(!openMessaging);
 
   // Vérifiez si l'utilisateur a déjà accepté ou refusé les cookies à la connexion
     useEffect(() => {
@@ -98,7 +97,7 @@ const OrthoAccueil = () => {
   const closePrivacyPolicy = () => setShowPrivacyPolicy(false);
 
   return (
-
+    <ChatProvider>
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "#E6F0F3" }}>
       {/* Menu Latéral */}
 
@@ -146,8 +145,7 @@ const OrthoAccueil = () => {
             flexGrow: 1,
             p: 3,
             transition: "margin-right 0.3s ease",
-            marginRight: openMessaging ? "420px" : 0, // Pousse le contenu principal vers la gauche si la messagerie est ouverte
-          }}>
+            }}>
         <Box sx={{
             display: "flex", 
             justifyContent: "space-between", 
@@ -229,15 +227,8 @@ const OrthoAccueil = () => {
         <Outlet />
       </Box>
 
-      {openMessaging && (
-        <Box sx={{
-          position: "fixed", top: 0, right: 0, bottom: 0, width: "400px", bgcolor: "#ffffff", zIndex: 1300,
-          boxShadow: "0 0 15px rgba(0, 0, 0, 0.3)", padding: "20px", transition: "width 0.3s ease",
-          height: "100%", overflowY: "auto", maxWidth: "600px", display: "block",
-        }}>
-          <Messages />
-        </Box>
-      )}
+      {isOpen && (<ChatIcon />)}
+     
 
       <Dialog open={showBanner} onClose={() => setShowBanner(false)}>
         <DialogTitle sx={{ bgcolor: "#5BA8B4", color: "white" }}>Politique de Cookies</DialogTitle>
@@ -356,7 +347,7 @@ const OrthoAccueil = () => {
         </Box>
       )}
     </Box>
-  );
+  </ChatProvider> );
 };
 
 // Style des boutons et liens

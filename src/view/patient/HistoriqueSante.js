@@ -14,7 +14,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const HistoriqueSante = () => {
-  const { userId } = useParams();
+  const userId = localStorage.getItem('patientId');
   const documentIdRef = useRef(null);
   const initialFormData = {
     antecedentsMedicaux: "",

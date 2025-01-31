@@ -48,6 +48,7 @@ const Ppre = () => {
             const userDocData = await userDocResponse.json();
             if (userDocData && userDocData[0].documentId) {
               documentIdRef.current=userDocData[0].id;
+              console.log("userdoc Id: ",userDocData[0].documentId);
               const ppreResponse = await fetch(
                 `https://localhost:5000/api/ppre/${userDocData[0].documentId}`,{
                   headers: {
@@ -79,7 +80,7 @@ const Ppre = () => {
         console.log(formData);
     
         // Envoi des données au backend
-        const response = await fetch('https://localhost:5000/api/ppre', {
+        const response = await fetch('https://localhost:5000/api/ppre/', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage

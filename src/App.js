@@ -9,8 +9,7 @@ import OrthoAccueil from './view/orthophoniste/OrthoAccueil';
 import Messages from './view/message/Message';
 
 // Composants pour les différentes sections du tableau de bord pour enseignant
-import EnseiEleves from './view/enseignant/EnseiEleves';
-import EnseiHistorique from './view/enseignant/EnseiHistorique';
+//import EnseiEleves from './view/enseignant/EnseiEleves';
 import EnseiRapports from './view/enseignant/EnseiRapports';
 import EnseiAmenagements from './view/enseignant/EnseiAmenagements';
 import EnseiHistoriqueEducation from './view/enseignant/EnseiHistoriqueEducation';
@@ -90,13 +89,13 @@ function App() {
         >
           <Route path="cr" element={<CompteRendus />} />
           <Route path="ajIntervenant" element={<AjoutIntervenant />} />
-          <Route path="intervenants/:userId" element={<PatientIntervenantList />} />
+          <Route path="intervenants" element={<PatientIntervenantList />} />
           <Route path="pap" element={<PAPForm />} />
           <Route path="ascolaires" element={<AménagementScolaire />} />
-          <Route path="anamnese/:userId" element={<PatientAnamnèse />} />
-          <Route path="historique-education/:userId" element={<HistoriqueEducation />} />
-          <Route path="historique-sante/:userId" element={<HistoriqueSante/>} />
-          <Route path="ppre/:userId" element={<PatientPpre/>} />
+          <Route path="anamnese" element={<PatientAnamnèse />} />
+          <Route path="historique-education" element={<HistoriqueEducation />} />
+          <Route path="historique-sante" element={<HistoriqueSante/>} />
+          <Route path="ppre" element={<PatientPpre/>} />
           
           <Route path="documents" element={<ConsulDocuments />} />
           <Route path="messages" element={<Messages />} />

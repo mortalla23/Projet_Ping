@@ -15,7 +15,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const PatientAnamnèse = () => {
-  const { userId } = useParams();
+  const userId= localStorage.getItem('patientId');
   const documentIdRef = useRef(null);
   const initialFormData = {
     consultationDemandePar: null,

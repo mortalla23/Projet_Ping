@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, NavLink, Outlet } from "react-router-dom";
+import { ChatProvider} from '../message/ChatContext'; // Assurez-vous d'importer le bon chemin
+import ChatIcon from '../message/ChatIcon'; // Assurez-vous d'importer le bon chemin
 import {
   Box,
   Typography,
@@ -19,47 +21,36 @@ import {
 } from "@mui/material";
 import { Logout, AccountCircle, Message } from "@mui/icons-material";
 import logo from "../../assets/images/logos/bauman.png";
-import Messages from "../message/Message";
+
 
 const PatientAccueil = () => {
-  const [openMessaging, setOpenMessaging] = useState(false); // Gestion de l'état de la messagerie
   const [menuAnchor, setMenuAnchor] = useState(null);
-  const [showDynamicContent, setShowDynamicContent] = useState(true);
+  const [showDynamicContent] = useState(true);
   const [showBanner, setShowBanner] = useState(false); // Etat pour afficher la bannière de cookies
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false); // Etat pour afficher la politique de confidentialité
-
+  const location= useLocation();
   const user = JSON.parse(localStorage.getItem("user")) || {
     name: "Utilisateur",
     role: "Non défini",
     email: "inconnu@example.com",
   };
 
-  // Utiliser useLocation pour détecter la route actuelle
-  const location = useLocation();
-  useEffect(() => {
-    const hiddenPages = [
-        "/patient/dashboard/anamnese/"+localStorage.getItem('patientId'),
-        "/patient/dashboard/cr",
-        "/patient/dashboard/ajIntervenant",
-        "/patient/dashboard/ascolaires",
-        "/patient/dashboard/documents",
-        "/patient/dashboard/intervenants/"+localStorage.getItem('patientId'),
-      ];
-     // Si l'utilisateur est sur l'une de ces pages, on cache la section dynamique
-     if (hiddenPages.includes(location.pathname)) {
-      setShowDynamicContent(false);
-    } else {
-      setShowDynamicContent(true);
-    }
-  }, [location]);
-  const isSpecificPage = location.pathname === "/patient/dashboard/anamnese"+localStorage.getItem('patientId');
+  
+  const menuItems = [
+    { text: "Anamnèse", path: "/patient/dashboard/anamnese/" },
+    { text: "Mes compte-rendus", path: "/patient/dashboard/cr" },
+    { text: "Ajout d'un intervenant", path: "/patient/dashboard/ajIntervenant" },
+    { text: "Aménagements scolaires", path: "/patient/dashboard/ascolaires" },
+    { text: "Mes documents", path: "/patient/dashboard/documents" },
+    { text: "PPRE", path: "/patient/dashboard/ppre/" },
+    { text: "PAP", path: "/patient/dashboard/pap" },
+  ];
 
   const handleMenuOpen = (event) => setMenuAnchor(event.currentTarget);
   const handleMenuClose = () => setMenuAnchor(null);
+ const [isOpen, setIsOpen] = useState(false); 
 
-
-
-  const toggleMessaging = () => setOpenMessaging(!openMessaging); // Ouvrir/fermer la messagerie
+ const toggleMessaging = () => setIsOpen(!isOpen);
 
   const handleLogoClick = () => {
     window.location.href = "/patient/dashboard"; // Rediriger vers la page d'accueil
@@ -95,6 +86,7 @@ const PatientAccueil = () => {
   const closePrivacyPolicy = () => setShowPrivacyPolicy(false);
 
   return (
+    <ChatProvider>
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "#E6F0F3" }}>
       {/* Menu Latéral */}
       <Drawer
@@ -133,46 +125,24 @@ const PatientAccueil = () => {
 
         {/* Liens du Menu */}
         <List>
-          <ListItem button component={NavLink} to={`/patient/dashboard/anamnese/${localStorage.getItem('patientId')}`} 
-    sx={linkStyle}
-  >
-            <ListItemText primary="Anamnèse" />
-          </ListItem>
-          <ListItem button component={NavLink} to="/patient/dashboard/cr" sx={linkStyle}>
-            <ListItemText primary="Mes compte-rendus" />
-          </ListItem>
-          <ListItem button component={NavLink} to="/patient/dashboard/ajIntervenant" sx={linkStyle}>
-            <ListItemText primary="Ajout d'un intervenant" />
-          </ListItem>
-          <ListItem button component={NavLink} to={`/patient/dashboard/intervenants/${localStorage.getItem('patientId')}`} sx={linkStyle}>
-            <ListItemText primary="Liste des intervenants" />
-          </ListItem>
-          <ListItem
-            button
-            component={NavLink}
-            to={`/patient/dashboard/pap?userId=${localStorage.getItem('patientId')}`}
-            sx={linkStyle}
-            onClick={() => {
-              console.log("userId dans localStorage :", localStorage.getItem('patientId'));
-            }}
-          >
-            <ListItemText primary="PAP" />
-          </ListItem>
-
-          <ListItem
-            button
-            component={NavLink}
-            to={`/patient/dashboard/ascolaires?userId=${localStorage.getItem('patientId')}`}
-            sx={linkStyle}
-            onClick={() => {
-              console.log("userId dans localStorage :", localStorage.getItem('patientId'));
-            }}
-          >
-            <ListItemText primary="Aménagements scolaires" />
-          </ListItem>
-          <ListItem button component={NavLink} to="/patient/dashboard/documents" sx={linkStyle}>
-            <ListItemText primary="Mes documents" />
-          </ListItem>
+          {menuItems.map(({ text, path }) => {
+            const isActive = location.pathname === path;
+            return (
+              <ListItem
+                button
+                component={NavLink}
+                to={path}
+                key={text}
+                sx={{
+                  opacity: isActive ? 0.5 : 1, // Griser l'élément si actif
+                  pointerEvents: isActive ? "none" : "auto", // Désactiver le clic si actif
+                  color: isActive ? "#ccc" : "#fff", // Changer la couleur du texte si désactivé
+                }}
+              >
+                <ListItemText primary={text} />
+              </ListItem>
+            );
+          })}
         </List>
       </Drawer>
 
@@ -181,7 +151,7 @@ const PatientAccueil = () => {
             flexGrow: 1,
             p: 3,
             transition: "margin-right 0.3s ease",
-            marginRight: openMessaging ? "420px" : 0,
+            
           }}>
         {/* Barre Supérieure */}
         <Box sx={{
@@ -255,15 +225,8 @@ const PatientAccueil = () => {
         )}
         <Outlet />
       </Box>
-      {openMessaging && (
-        <Box sx={{
-          position: "fixed", top: 0, right: 0, bottom: 0, width: "400px", bgcolor: "#ffffff", zIndex: 1300,
-          boxShadow: "0 0 15px rgba(0, 0, 0, 0.3)", padding: "20px", transition: "width 0.3s ease",
-          height: "100%", overflowY: "auto", maxWidth: "600px", display: "block",
-        }}>
-          <Messages />
-        </Box>
-      )}
+      {isOpen && (<ChatIcon />)}
+       
       {/* Bannière de Consentement */}
       <Dialog open={showBanner} onClose={() => setShowBanner(false)}>
         <DialogTitle sx={{ bgcolor: "#5BA8B4", color: "white" }}>Politique de Cookies</DialogTitle>
@@ -381,7 +344,7 @@ const PatientAccueil = () => {
               </Box>
             )}
           </Box>
-        );
+       </ChatProvider>  );
       };
       
 
@@ -396,12 +359,5 @@ const buttonStyle = {
   borderRadius: "5px",
 };
 
-const linkStyle = {
-  "&.Mui-selected, &:hover": {
-    bgcolor: "#5BA8B4",
-    color: "#white",
-    fontWeight: "bold",
-  },
-};
 
 export default PatientAccueil;
