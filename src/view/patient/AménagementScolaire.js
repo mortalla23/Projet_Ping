@@ -301,6 +301,7 @@ useEffect(() => {
         const responseData = await response.json();
         console.log("Aménagement créé avec succès :", responseData);
         alert("Aménagement prescrit avec succès !");
+        window.location.reload(); // Recharge la page après la création
       } catch (err) {
         console.error("Erreur lors de la prescription :", err);
         alert("Une erreur est survenue lors de la prescription de l'aménagement.");
