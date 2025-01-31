@@ -85,6 +85,57 @@ const PatientAccueil = () => {
 
   const closePrivacyPolicy = () => setShowPrivacyPolicy(false);
 
+
+   useEffect(() => {
+    const fetchPatient = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/link/patient/${patientId}`);
+        if (response.data && response.data.length > 0) {
+          const linkData = response.data[0];
+          setPatient(linkData);
+          setLinkStatus(linkData.validate);
+          setLinkId(linkData.id);  // Enregistrer l'ID ici (id et non linkId)
+          if (linkData.role === "ORTHOPHONISTE") {
+            setOrthoEmail(linkData.orthoEmail);
+            setRole("ORTHOPHONISTE");
+          } else if (linkData.role === "TEACHER") {
+            setTeacherEmail(linkData.teacherEmail);
+            setRole("TEACHER");
+          }
+        }
+      } catch (error) {
+        console.error("Erreur lors du chargement des détails du lien", error);
+        toast.error("Impossible de charger les détails du lien.");
+      }
+    };
+    fetchPatient();
+  }, [patientId]);
+ 
+  const handleValidateLink = async (status) => {
+    console.log("Link ID:", linkId);
+    console.log("Status:", status);
+
+    if (!linkId || !status) {
+        toast.error("ID du lien ou statut manquant.");
+        return;
+    }
+
+    try {
+        // Envoi du statut sans guillemets autour de la chaîne
+        await axios.patch(`http://localhost:5000/api/link/${linkId}/validate`, {
+          status: status,  
+      });
+
+        // Mise à jour du statut localement
+        setLinkStatus(status);
+        toast.success(`Statut mis à jour : ${status}`);
+    } catch (error) {
+        console.error("Erreur lors de la mise à jour du statut du lien", error);
+        toast.error("Impossible de mettre à jour le statut.");
+    }
+};
+
+  
   return (
     <ChatProvider>
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "#E6F0F3" }}>

@@ -42,7 +42,6 @@ const OrthoAccueil = () => {
     const hiddenPages = [
       "/ortho/dashboard/allPatients",
       "/ortho/dashboard/profile",
-
       "/ortho/dashboard/listedespatients", // Ajout de la nouvelle page
 
     ];
