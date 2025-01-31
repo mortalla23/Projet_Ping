@@ -122,9 +122,11 @@ const EnseiEleves = () => {
     }
 
     const url = {
-      "Consulter / Modifier le PAP": `/view/student/PAPForm?userId=${selectedStudent.id}&intervenantId=${teacherId}`,
-      "Consulter / Modifier le PPRE": `/view/student/PPREForm?userId=${selectedStudent.id}&intervenantId=${teacherId}`,
-      "Comptes-rendus des exercices": `/view/student/CompteRendus?userId=${selectedStudent.id}&intervenantId=${teacherId}`,
+      "Consulter / Modifier le PAP": `/view/patient/PAPForm?userId=${selectedStudent.id}&intervenantId=${teacherId}`,
+      "Consulter / Modifier le PPRE": `/view/patient/PPREForm?userId=${selectedStudent.id}&intervenantId=${teacherId}`,
+      "Comptes-rendus des exercices": `/view/patient/CompteRendus?userId=${selectedStudent.id}&intervenantId=${teacherId}`,
+      "Aménagements scolaires": `/view/patient/AménagementScolaire?userId=${selectedStudent.id}&intervenantId=${teacherId}`,
+      "Historique éducatif": `/view/patient/EnseiHistoriqueEducation?userId=${selectedStudent.id}`,
     }[action];
 
     if (url) {
@@ -201,6 +203,8 @@ const EnseiEleves = () => {
         <MenuItem onClick={() => handleActionClick("Consulter / Modifier le PAP")}>📄 PAP</MenuItem>
         <MenuItem onClick={() => handleActionClick("Consulter / Modifier le PPRE")}>📖 PPRE</MenuItem>
         <MenuItem onClick={() => handleActionClick("Comptes-rendus des exercices")}>📝 Exercices</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Aménagements scolaires")}>🏫 Aménagements scolaires</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Historique éducatif")}>🎓 Historique éducatif</MenuItem>
       </Menu>
     </Box>
   );

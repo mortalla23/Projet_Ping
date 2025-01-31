@@ -130,7 +130,8 @@ const OrthoPatients = () => {
       "Aménagements scolaires": `/view/patient/AménagementScolaire?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
       "Historique éducatif": `/view/patient/HistoriqueEducatif?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
       "Historique santé": `/view/patient/HistoriqueSante?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
-      "Commentaires": `/view/patient/Commentaires?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Anamnese": `/view/patient/Anamnese?userId=${selectedPatient.id}`,
+      // "Commentaires": `/view/patient/Commentaires?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
     }[action];
 
     if (url) {
@@ -213,7 +214,10 @@ const OrthoPatients = () => {
         <MenuItem onClick={() => handleActionClick("Comptes-rendus des exercices")}>📝 Exercices</MenuItem>
         <MenuItem onClick={() => handleActionClick("Aménagements scolaires")}>🏫 Aménagements scolaires</MenuItem>
         <MenuItem onClick={() => handleActionClick("Historique éducatif")}>🎓 Historique éducatif</MenuItem>
-        <MenuItem onClick={() => handleActionClick("Commentaires")}>💬 Commentaires</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Anamnèse")}>🎓 Anamnèse</MenuItem>
+        
+
+        {/* <MenuItem onClick={() => handleActionClick("Commentaires")}>💬 Commentaires</MenuItem> */}
       </Menu>
     </Box>
   );

@@ -14,20 +14,24 @@ import EnseiHistorique from './view/enseignant/EnseiHistorique';
 import EnseiRapports from './view/enseignant/EnseiRapports';
 import EnseiAmenagements from './view/enseignant/EnseiAmenagements';
 import AddStudentPage from './view/enseignant/AddStudentPage';
+import Ppre from './view/enseignant/EnseiPpre' ;
+import HistoriqueEducation from './view/enseignant/EnseiHistoriqueEducation';
 
 // Composants pour les différentes sections du tableau de bord pour patient
 import CompteRendus from './view/patient/CompteRendus';
 import AménagementScolaire from './view/patient/AménagementScolaire';
-import PatientAnamnèse from './view/patient/PatientAnamnèse';
+// import PatientAnamnèse from './view/patient/PatientAnamnèse';
 import AjoutIntervenant from './view/patient/AjoutIntervenant';
 import ConsulDocuments from './view/patient/ConsulDocuments';
 import PAPForm from './view/patient/PAPForm';
+import PatientAnamnèse from './view/orthophoniste/OrthoAnamnese';
 
 // Composants pour les différentes sections du tableau de bord pour orthophoniste
 import OrthoPatients from './view/orthophoniste/OrthoPatients';
 import OrthoProfile from './view/orthophoniste/OrthoProfile';
 import OrthoPatientList from './view/orthophoniste/OrthoPatientList'; 
-
+import HistoriqueEducations from './view/orthophoniste/OrthoHistoriqueEducation'; 
+import Ppree from './view/orthophoniste/OrthoPpre'; 
 // Composant pour les routes protégées
 const ProtectedRoute = ({ children, role }) => {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -63,6 +67,9 @@ function App() {
           <Route path="rapports" element={<EnseiRapports />} />
           <Route path="amenagements" element={<EnseiAmenagements />} />
           <Route path="messages" element={<Messages />} />
+          {/* <Route path="Ppre" element={<Ppre />} />
+          <Route path='histoEdu' element= {< HistoriqueEducations/>} />
+          <Route path="AménagementScolaire" element={<AménagementScolaire />} /> */}
         </Route>
 
         {/* Routes protégées pour le patient */}
@@ -89,12 +96,18 @@ function App() {
           <Route path="listedespatients" element={<OrthoPatientList />} />
           <Route path="documents" element={<ConsulDocuments />} />
           <Route path="messages" element={<Messages />} />
+          
         </Route>
 
         {/* ✅ Ajout des routes directes pour éviter l'erreur d'imbrication */}
         <Route path="/view/patient/PAPForm" element={<PAPForm />} />
         <Route path="/view/patient/AménagementScolaire" element={<AménagementScolaire />} />
+        <Route path="/view/patient/HistoriqueEducatif" element={< HistoriqueEducation />} />
+        <Route path="/view/patient/PPREForm" element={< Ppree />} />
+        <Route path="/view/patient/EnseiHistoriqueEducation" element={< HistoriqueEducation />} />
+        <Route path="/view/patient/Anamnese" element={< PatientAnamnèse />} />
 
+        
       </Routes>
     </Router>
   );

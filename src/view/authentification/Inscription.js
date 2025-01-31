@@ -281,7 +281,7 @@ const Inscription = () => {
                         name="acceptTerms"
                         checked={formData.acceptTerms}
                         onChange={handleChange}
-                        required
+                        required 
                       />
                     }
                     label={
