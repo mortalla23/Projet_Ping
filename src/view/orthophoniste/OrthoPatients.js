@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 import axios from "axios";
 import {
@@ -121,27 +122,30 @@ const OrthoPatients = () => {
       toast.error("Aucun patient sélectionné.");
       return;
     }
-
-    const url = {
-      "Consulter / Modifier le PAP": `/view/patient/PAPForm?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
-
-      "Consulter / Modifier le PPRE": `/view/patient/PPREForm?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
-      "Comptes-rendus des exercices": `/view/patient/CompteRendus?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
-      "Aménagements scolaires": `/view/patient/AménagementScolaire?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
-      "Historique éducatif": `/view/patient/HistoriqueEducatif?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
-      "Historique santé": `/view/patient/HistoriqueSante?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
-      "Anamnese": `/view/patient/Anamnese?userId=${selectedPatient.id}`,
-      // "Commentaires": `/view/patient/Commentaires?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
-    }[action];
-
-    if (url) {
-      navigate(url);
-    } else {
+  
+    const urlMapping = {
+      "Consulter / Modifier le PAP": "/ortho/dashboard/papPatient",
+      "Consulter / Modifier le PPRE": "/view/patient/PPREForm",
+      "Comptes-rendus des exercices": "/view/patient/CompteRendus",
+      "Aménagements scolaires": "/ortho/dashboard/ascolairesPatient",
+      "Historique éducatif": "/view/patient/HistoriqueEducatif",
+      "Historique santé": "/view/patient/HistoriqueSante",
+      "Anamnèse": "/view/patient/Anamnese",
+    };
+  
+    const url = urlMapping[action];
+  
+    if (!url) {
       toast.warn("Action inconnue.");
+      return;
     }
-
+  
+    // ✅ Envoie `selectedPatient` et `orthoId` via `state`
+    navigate(url, { state: { selectedPatient, orthoId } });
+  
     handleMenuClose();
   };
+  
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";

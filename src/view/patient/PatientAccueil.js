@@ -209,7 +209,7 @@ const PatientAccueil = () => {
           <ListItem
             button
             component={NavLink}
-            to={`/patient/dashboard/pap?userId=${localStorage.getItem('patientId')}`}
+            to={`/patient/dashboard/pap`}
             sx={linkStyle}
             onClick={() => {
               console.log("userId dans localStorage :", localStorage.getItem('patientId'));
@@ -221,7 +221,7 @@ const PatientAccueil = () => {
           <ListItem
             button
             component={NavLink}
-            to={`/patient/dashboard/ascolaires?userId=${localStorage.getItem('patientId')}`}
+            to={`/patient/dashboard/ascolaires`}
             sx={linkStyle}
             onClick={() => {
               console.log("userId dans localStorage :", localStorage.getItem('patientId'));

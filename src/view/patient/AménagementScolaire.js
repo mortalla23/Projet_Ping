@@ -18,17 +18,29 @@ import {
 
 const SectionAmenagement = () => {
 
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-
-  // Récupération des paramètres depuis l'URL
-  const userId = queryParams.get("userId");
-  let intervenantId = queryParams.get("intervenantId");
-
-  // Si intervenantId n'est pas fourni, on le définit sur userId
-  if (!intervenantId) {
-    intervenantId = userId;
-  }
+   const location = useLocation(); // ✅ Récupération de `location` correctement
+    // ✅ Initialisation avec `location.state` ou `localStorage`
+    const [userId, setUserId] = useState(() => {
+      return location.state?.selectedPatient?.id || localStorage.getItem("patientId") || null;
+    });
+  
+    const [intervenantId, setIntervenantId] = useState(() => {
+      return location.state?.orthoId || localStorage.getItem("intervenantId") || null;
+    });
+  
+    useEffect(() => {
+      console.log("📌 location.state reçu :", location.state);
+  
+      // ✅ Vérifier si location.state est bien défini avant mise à jour
+      if (location.state?.selectedPatient?.id || location.state?.orthoId) {
+        setUserId(prevUserId => location.state.selectedPatient?.id ?? prevUserId);
+        setIntervenantId(prevIntervenantId => location.state.orthoId ?? prevIntervenantId);
+      } else {
+        // ✅ Évite les mises à jour inutiles en comparant avec l'ancien état
+        setUserId(prevUserId => prevUserId ?? localStorage.getItem("patientId"));
+        setIntervenantId(prevIntervenantId => prevIntervenantId ?? localStorage.getItem("intervenantId"));
+      }
+    }, [location.state]); // Dépendance correcte
 
   console.log("userId :", userId);
   console.log("intervenantId :", intervenantId);
@@ -305,7 +317,6 @@ useEffect(() => {
           {/* Champ pour le type */}
           <TextField
             select
-            label="Type d'aménagement"
             name="type"
             onChange={handleChange}
             variant="outlined"
@@ -316,7 +327,7 @@ useEffect(() => {
             }}
             required
           >
-            
+            <option value="">-- Sélectionnez un type d'aménagement --</option>  {/* Option vide par défaut */}
             <option value="Aménagement horaire">Aménagement horaire</option>
             <option value="Aménagement pédagogique">Aménagement pédagogique</option>
             <option value="Aménagement matériel">Aménagement matériel</option>
@@ -330,7 +341,7 @@ useEffect(() => {
             onChange={handleChange}
             variant="outlined"
             fullWidth
-            sx={{ marginBottom: 2 }}
+            sx={{ marginBottom: 2, textAlign: "center"}}
             required
           />
   

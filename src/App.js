@@ -96,7 +96,8 @@ function App() {
           <Route path="listedespatients" element={<OrthoPatientList />} />
           <Route path="documents" element={<ConsulDocuments />} />
           <Route path="messages" element={<Messages />} />
-          
+          <Route path="ascolairesPatient" element={<AménagementScolaire />} />
+          <Route path="papPatient" element={<PAPForm />} />
         </Route>
 
         {/* ✅ Ajout des routes directes pour éviter l'erreur d'imbrication */}
