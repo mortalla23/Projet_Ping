@@ -44,9 +44,11 @@ const OrthoPatients = () => {
 
         // Récupération des liens validés
         const { data: validatedLinks } = await axios.post(
-          "http://localhost:5000/api/link/validated",
-          { linkerId: parseInt(orthoId, 10) },
-          { headers: { "Content-Type": "application/json" } }
+          "https://localhost:5000/api/link/validated",{ linkerId: parseInt(orthoId, 10) },{
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+              'Content-Type': 'application/json',
+            },}
         );
 
         if (!validatedLinks || validatedLinks.length === 0) {
@@ -61,9 +63,13 @@ const OrthoPatients = () => {
 
         // Récupérer les détails des patients
         const { data: patients } = await axios.post(
-          "http://localhost:5000/api/users/details",
+          "https://localhost:5000/api/users/details",
           { patientIds },
-          { headers: { "Content-Type": "application/json" } }
+          {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+              'Content-Type': 'application/json',
+            },}
         );
 
         if (!patients || patients.length === 0) {
@@ -74,9 +80,13 @@ const OrthoPatients = () => {
 
         // Récupérer les enseignants liés aux patients
         const { data: teachers } = await axios.post(
-          "http://localhost:5000/api/users/teachers",
+          "https://localhost:5000/api/users/teachers",
           { patientIds },
-          { headers: { "Content-Type": "application/json" } }
+          {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+              'Content-Type': 'application/json',
+            },}
         );
 
         // Associer les enseignants aux patients
@@ -122,26 +132,27 @@ const OrthoPatients = () => {
       toast.error("Aucun patient sélectionné.");
       return;
     }
-  
-    const urlMapping = {
-      "Consulter / Modifier le PAP": "/ortho/dashboard/papPatient",
-      "Consulter / Modifier le PPRE": "/view/patient/PPREForm",
-      "Comptes-rendus des exercices": "/view/patient/CompteRendus",
-      "Aménagements scolaires": "/ortho/dashboard/ascolairesPatient",
-      "Historique éducatif": "/view/patient/HistoriqueEducatif",
-      "Historique santé": "/view/patient/HistoriqueSante",
-      "Anamnèse": "/view/patient/Anamnese",
-    };
-  
-    const url = urlMapping[action];
-  
-    if (!url) {
+
+    const url = {
+     "Consulter / Modifier le PAP": `/ortho/dashboard/papPatient`,
+
+      "Consulter / Modifier le PPRE": `/ortho/dashboard/ppre/${selectedPatient.id}`,
+      "Comptes-rendus des exercices": `/view/patient/CompteRendus?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Aménagements scolaires": `/ortho/dashboard/ascolairesPatient`,
+      "Historique éducatif": `/ortho/dashboard/historique-education/${selectedPatient.id}`,
+      "Historique santé": `/ortho/dashboard/historique-sante/${selectedPatient.id}`,
+      "Anamnese": `/ortho/dashboard/anamnese/${selectedPatient.id}`,
+     }[action];
+
+    if (url) {
+      navigate(url);
+    } else {
       toast.warn("Action inconnue.");
       return;
     }
-  
+    const intervenantId = orthoId;
     // ✅ Envoie `selectedPatient` et `orthoId` via `state`
-    navigate(url, { state: { selectedPatient, orthoId } });
+    navigate(url, { state: { selectedPatient, intervenantId } });
   
     handleMenuClose();
   };
@@ -218,10 +229,8 @@ const OrthoPatients = () => {
         <MenuItem onClick={() => handleActionClick("Comptes-rendus des exercices")}>📝 Exercices</MenuItem>
         <MenuItem onClick={() => handleActionClick("Aménagements scolaires")}>🏫 Aménagements scolaires</MenuItem>
         <MenuItem onClick={() => handleActionClick("Historique éducatif")}>🎓 Historique éducatif</MenuItem>
-        <MenuItem onClick={() => handleActionClick("Anamnèse")}>🎓 Anamnèse</MenuItem>
-        
-
-        {/* <MenuItem onClick={() => handleActionClick("Commentaires")}>💬 Commentaires</MenuItem> */}
+        <MenuItem onClick={() => handleActionClick("Historique santé")}>🎓 Historique sante</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Anamnese")}>💬 Anamnese</MenuItem>
       </Menu>
     </Box>
   );

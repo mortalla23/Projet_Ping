@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-const HistoriqueEducations = () => {
+const HistoriqueEducation = () => {
   const { userId } = useParams();
   const documentIdRef = useRef(null);
   const initialFormData = {
@@ -386,4 +386,4 @@ const HistoriqueEducations = () => {
   );
 };
 
-export default HistoriqueEducations;
+export default HistoriqueEducation;

@@ -1,6 +1,5 @@
 import React, { useState,useEffect,useRef } from "react";
 import { useParams } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -12,7 +11,7 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-const Ppree = () => {
+const Ppre = () => {
   const initialFormData = {
     objectifsEducatifs: "",
     mesuresPedagogiques: "",
@@ -27,10 +26,6 @@ const Ppree = () => {
 
   const [formData, setFormData] = useState(initialFormData);
   const { userId } = useParams();
-
-
-
-
   const documentIdRef = useRef(null);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -39,24 +34,27 @@ const Ppree = () => {
       [name]: value,
     });
   };
-  
 
    useEffect(() => {
         const fetchPpre = async () => {
           try {
             const userDocResponse = await fetch(
-                `http://localhost:5000/api/user-documents?userId=${userId}&documentType=PPRE`
-              );
+              `https://localhost:5000/api/user-documents?userId=${userId}&documentType=PPRE`,{
+                headers: {
+                  'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+                  'Content-Type': 'application/json',
+                },}
+            );
             const userDocData = await userDocResponse.json();
             if (userDocData && userDocData[0].documentId) {
               documentIdRef.current=userDocData[0].id;
+              console.log("userdoc Id: ",userDocData[0].documentId);
               const ppreResponse = await fetch(
-                `https://localhost:5000/api/ppre/${userDocData[0].documentId}`,
-                // {
-                //   headers: {
-                //     'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
-                //     'Content-Type': 'application/json',
-                //   },}
+                `https://localhost:5000/api/ppre/${userDocData[0].documentId}`,{
+                  headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+                    'Content-Type': 'application/json',
+                  },}
               );
               const ppreData = await ppreResponse.json();
               if (ppreData) {
@@ -82,12 +80,12 @@ const Ppree = () => {
         console.log(formData);
     
         // Envoi des données au backend
-        const response = await fetch('https://localhost:5000/api/ppre', {
+        const response = await fetch('https://localhost:5000/api/ppre/', {
           method: 'POST',
-        //   headers: {
-        //     'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
-        //     'Content-Type': 'application/json',
-        //   },
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+            'Content-Type': 'application/json',
+          },
           body: JSON.stringify(formData), // Envoyer toutes les données du formulaire
         });
         
@@ -104,10 +102,10 @@ const Ppree = () => {
           // 2. Ajouter le user_document après avoir obtenu l'ID de l'anamnèse
           const userDocumentResponse = await fetch('https://localhost:5000/api/user-documents', {
               method: 'POST',
-            //   headers: {
-            //     'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
-            //     'Content-Type': 'application/json',
-            //   },
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+                'Content-Type': 'application/json',
+              },
               body: JSON.stringify({
                 id:id,
                 userId: userId, // Assure-toi que userId est valide et non 0
@@ -228,4 +226,4 @@ const Ppree = () => {
   );
 };
 
-export default Ppree;
+export default Ppre;
