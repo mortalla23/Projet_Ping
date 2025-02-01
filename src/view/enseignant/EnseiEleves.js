@@ -35,70 +35,98 @@ const EnseiEleves = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   
   useEffect(() => {
-    const fetchValidatedPatients = async () => {
-      try {
-        if (!teacherId) {
-          toast.error("Identifiant de l'enseignant introuvable.");
-          setLoading(false);
-          return;
-        }
+    const storedTeacherId = localStorage.getItem('teacherId');
+    console.log('ID enseignant récupéré depuis localStorage :', storedTeacherId);
+    if (storedTeacherId) {
+      setTeacherId(storedTeacherId);
+      fetchStudents(storedTeacherId);
+    } else {
+      toast.error('Aucun ID enseignant trouvé. Veuillez vous reconnecter.');
+    }
+  }, []);
 
-        // Récupération des liens validés
-        const { data: validatedLinks } = await axios.post(
-          "http://localhost:5000/api/link/validated",
-          { linkerId: parseInt(teacherId, 10) },
-          { headers: { "Content-Type": "application/json" } }
-        );
 
-        if (!validatedLinks || validatedLinks.length === 0) {
-          toast.info("Aucun patient validé trouvé.");
-          setLoading(false);
-          return;
-        }
+  const fetchStudents = async (teacherId) => {
+    try {
+      const response = await axios.get('https://localhost:5000/api/teacher/students', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          'Content-Type': 'application/json',
+        },
+        params: { teacherId },
+      });
+      console.log('Données reçues :', response.data); 
+      // Si la réponse n'est pas déjà un tableau, on l'encapsule dans un tableau
+      setStudents(Array.isArray(response.data) ? response.data : [response.data]);
+    } catch (error) {
+      console.error('Erreur lors du chargement des élèves :', error);
+      toast.error('Erreur lors du chargement des élèves.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        // Filtrer uniquement les patients avec le statut VALIDATED
-        const filteredValidatedLinks = validatedLinks.filter(link => link.validate === "VALIDATED"&& link.role === "TEACHER");
-        const patientIds = filteredValidatedLinks.map((link) => link.linkedTo);
+  const handleSearchStudent = async () => {
+    try {
+      const response = await axios.get('https://localhost:5000/api/teacher/students', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          'Content-Type': 'application/json',
+        },
+        params: { email: searchEmail },
+      });
+      setFoundStudent(response.data);
+      toast.success('Élève trouvé.');
+    } catch (error) {
+      console.error('Erreur lors de la recherche de l’élève :', error);
+      toast.error('Aucun élève trouvé avec cet email.');
+    }
+  };
 
-        // Récupérer les détails des patients
-        const { data: patients } = await axios.post(
-          "http://localhost:5000/api/users/details",
-          { patientIds },
-          { headers: { "Content-Type": "application/json" } }
-        );
+  
 
-        if (!patients || patients.length === 0) {
-          toast.error("Aucun détail de patient trouvé.");
-          setLoading(false);
-          return;
-        }
+  const handleAssociateStudent = async () => {
+    if (!foundStudent) {
+      toast.error('Aucun élève à associer.');
+      return;
+    }
+    const studentEmail = foundStudent.email; // Utiliser l'email de l'élève au lieu de l'ID
+    if (!studentEmail) {
+      toast.error("L'email de l'élève est manquant.");
+      return;
+    }
+    try {
+      await axios.post('https://localhost:5000/api/teacher/link-student-by-email', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          'Content-Type': 'application/json',
+        },
+        teacherId,
+        studentEmail,
+        studentId: foundStudent.id,
+      });
+      
+      setStudents([...students, foundStudent]); // Ajouter l'élève à la liste locale
+      setFoundStudent(null); // Réinitialiser la recherche
+      setSearchEmail(''); // Réinitialiser l'email
+      handleClose();
+      toast.success('Élève associé avec succès.');
+    } catch (error) {
+      console.error('Erreur lors de l’association de l’élève :', error);
+      toast.error('Erreur lors de l’association de l’élève.');
+    }
+  };
 
-        // Récupérer les enseignants liés aux patients
-        const { data: teachers } = await axios.post(
-          "http://localhost:5000/api/users/teachers",
-          { patientIds },
-          { headers: { "Content-Type": "application/json" } }
-        );
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    setOpen(false);
+    setFoundStudent(null);
+    setSearchEmail('');
+  };
 
-        // Associer les enseignants aux patients
-        const patientsWithTeachers = patients.map((patient) => ({
-          ...patient,
-          teacher: teachers.find((t) => t.studentId === patient.id) || { firstName: "N/A", lastName: "N/A" },
-        }));
-
-        setValidatedPatients(patientsWithTeachers);
-      } catch (error) {
-        console.error("❌ Erreur lors du chargement :", error);
-        toast.error("Erreur lors du chargement des patients.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchValidatedPatients();
-  }, [teacherId]);
-
-  const handleChangePage = (event, newPage) => setPage(newPage);
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));

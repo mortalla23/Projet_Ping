@@ -1,0 +1,65 @@
+/* ChatListWindow.css */
+
+.chat-list-window {
+    position: relative; /* Changez de absolute à relative */
+    width: 100%; /* Prend toute la largeur de son conteneur */
+    height: 100%; /* Prend toute la hauteur de son conteneur */
+    background-color: #ffffff; /* Couleur de fond blanche */
+    border: 1px solid #ddd; /* Bordure grise */
+    border-radius: 10px; /* Bordures arrondies */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Ombre douce */
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Masque le débordement */
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Centre verticalement */
+    padding: 10px;
+    background-color: #5BA8B4; /* Couleur bleue */
+    color: white; /* Texte blanc */
+    border-bottom: 2px solid #5BA8B4; /* Bordure inférieure plus sombre */
+}
+
+.close-button {
+    background: none;
+    border: none;
+    color: white; /* Texte blanc */
+    cursor: pointer;
+}
+
+.back-button {
+    background: none;
+    border: none;
+    color: #007bff; /* Couleur bleue */
+    cursor: pointer;
+    padding: 10px;
+    font-size: 16px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1; /* Permet à la liste de s'étendre pour remplir l'espace disponible */
+    overflow-y: auto; /* Ajoute le défilement si nécessaire */
+}
+
+li {
+    padding: 12px; /* Ajoute un padding */
+    border-bottom: 1px solid #eee; /* Bordure entre les éléments de la liste */
+    transition: background-color 0.3s; /* Ajoute une transition */
+}
+
+li:hover {
+    background-color: #f1f1f1; /* Change la couleur de fond au survol */
+}
+
+.chat-window-container {
+    margin-top: 10px;
+    padding: 10px; /* Ajoute du padding autour de la fenêtre de chat */
+    flex-grow: 1; /* Permet à la fenêtre de chat de s'étendre */
+}

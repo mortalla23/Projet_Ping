@@ -25,16 +25,16 @@ const SectionAmenagement = () => {
     });
   
     const [intervenantId, setIntervenantId] = useState(() => {
-      return location.state?.orthoId || localStorage.getItem("intervenantId") || null;
+      return location.state?.intervenantId || localStorage.getItem("intervenantId") || null;
     });
   
     useEffect(() => {
       console.log("📌 location.state reçu :", location.state);
   
       // ✅ Vérifier si location.state est bien défini avant mise à jour
-      if (location.state?.selectedPatient?.id || location.state?.orthoId) {
+      if (location.state?.selectedPatient?.id || location.state?.intervenantId) {
         setUserId(prevUserId => location.state.selectedPatient?.id ?? prevUserId);
-        setIntervenantId(prevIntervenantId => location.state.orthoId ?? prevIntervenantId);
+        setIntervenantId(prevIntervenantId => location.state.intervenantId ?? prevIntervenantId);
       } else {
         // ✅ Évite les mises à jour inutiles en comparant avec l'ancien état
         setUserId(prevUserId => prevUserId ?? localStorage.getItem("patientId"));
@@ -50,7 +50,11 @@ const SectionAmenagement = () => {
 useEffect(() => {
   const fetchUserRole = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/users/${intervenantId}`);
+      const response = await fetch(`https://localhost:5000/api/users/${intervenantId}`,{
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          'Content-Type': 'application/json',
+        },});
       if (!response.ok) {
         throw new Error(`Erreur serveur : ${response.status} ${response.statusText}`);
       }
@@ -75,12 +79,17 @@ useEffect(() => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/amenagements/user/${userId}`);
+        const response = await fetch(`https://localhost:5000/api/amenagements/user/${userId}`,{
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+            'Content-Type': 'application/json',
+          },});
         if (!response.ok) {
           throw new Error(`Erreur serveur : ${response.status} ${response.statusText}`);
         }
 
         const data = await response.json();
+        
         const validated = data.filter((item) => item.status === "VALIDATED");
         const pending = data.filter((item) => item.status === "ONGOING");
         setValidatedAmenagements(validated);
@@ -224,16 +233,13 @@ useEffect(() => {
                     sx={{ marginTop: 2 }}
                     onClick={async () => {
                       try {
-                        const response = await fetch(
-                          `http://localhost:5000/api/amenagements/validate`,
-                          {
-                            method: "POST",
-                            headers: {
-                              "Content-Type": "application/x-www-form-urlencoded",
-                            },
-                            body: `amenagementId=${amenagement.id}`,
+                        const response = await fetch(`https://localhost:5000/api/amenagements/validate?amenagementId=${amenagement.id}`, {
+                          method: "POST",
+                          headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`, 
+                            'Content-Type': 'application/json',
                           }
-                        );
+                        });
                         if (!response.ok) {
                           throw new Error("Erreur lors de la validation de l'aménagement");
                         }
@@ -242,6 +248,7 @@ useEffect(() => {
                         setPendingAmenagements((prev) =>
                           prev.filter((item) => item.id !== amenagement.id)
                         );
+                        window.location.reload(); // Recharge la page après la création
                       } catch (error) {
                         alert("Une erreur est survenue lors de la validation.");
                         console.error(error);
@@ -282,17 +289,20 @@ useEffect(() => {
       const payload = {
         ...formData,
         userId, // ID utilisateur défini en dur
-        idPrescripteur: intervenantId, // ID intervenant défini en dur
+        idPrescripteur: parseInt(intervenantId, 10), // ID intervenant défini en dur
       };
   
       try {
-        const response = await fetch("http://localhost:5000/api/amenagements/create", {
+        console.log("📌 Payload envoyé :", payload);
+        const response = await fetch("https://localhost:5000/api/amenagements/create", {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(payload),
         });
+        console.log(localStorage.getItem("token"));
   
         if (!response.ok) {
           throw new Error(`Erreur serveur : ${response.status} ${response.statusText}`);

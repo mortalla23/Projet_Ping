@@ -6,84 +6,56 @@ import "./PAPForm.css";
 
 const PAPForm = () => {
   
-  const location = useLocation(); // ✅ Récupération de `location` correctement
-  // ✅ Initialisation avec `location.state` ou `localStorage`
-  const [userId, setUserId] = useState(() => {
-    return location.state?.selectedPatient?.id || localStorage.getItem("patientId") || null;
-  });
-
-  const [intervenantId, setIntervenantId] = useState(() => {
-    return location.state?.orthoId || localStorage.getItem("intervenantId") || null;
-  });
-
-  useEffect(() => {
-    console.log("📌 location.state reçu :", location.state);
-
-    // ✅ Vérifier si location.state est bien défini avant mise à jour
-    if (location.state?.selectedPatient?.id || location.state?.orthoId) {
-      setUserId(prevUserId => location.state.selectedPatient?.id ?? prevUserId);
-      setIntervenantId(prevIntervenantId => location.state.orthoId ?? prevIntervenantId);
-    } else {
-      // ✅ Évite les mises à jour inutiles en comparant avec l'ancien état
-      setUserId(prevUserId => prevUserId ?? localStorage.getItem("patientId"));
-      setIntervenantId(prevIntervenantId => prevIntervenantId ?? localStorage.getItem("intervenantId"));
-    }
-  }, [location.state]); // Dépendance correcte
-
-  /*const [userId, setUserId] = useState(null);
-  const [intervenantId, setIntervenantId] = useState(null);
-  
-
-  useEffect(() => {
-    console.log("📌 location.state reçu :", location.state);
-
-    // Si `location.state` existe, récupérer les valeurs
-    if (location.state?.selectedPatient?.id || location.state?.orthoId) {
-      setUserId(location.state.selectedPatient?.id);
-      setIntervenantId(location.state.orthoId);
-    } else {
-      // Sinon, récupérer depuis `localStorage`
-      const storedUserId = localStorage.getItem("patientId");
-      setUserId(localStorage.getItem("patientId"));
-      setIntervenantId(localStorage.getItem("patientId"));
-    }
-  }, [location.state]);*/
-  /*const userId = localStorage.getItem('patientId');
-  const intervenantId = localStorage.getItem('patientId');*/
-  
-
-
-  // Récupération des paramètres depuis l'URL
-  //const userId = localStorage.getItem('patientId');
-  //const intervenantId = localStorage.getItem('patientId');
-
-  // Si intervenantId n'est pas fourni, on le définit sur userId
-  /*if (!intervenantId) {
-    intervenantId = userId;
-  }*/
-
-  console.log("userId :", userId);
-  console.log("intervenantId :", intervenantId);
-
-  const [role, setRole] = useState(null); // État pour stocker le rôle utilisateur
-
-useEffect(() => {
-  const fetchUserRole = async () => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/users/${intervenantId}`);
-      if (!response.ok) {
-        throw new Error(`Erreur serveur : ${response.status} ${response.statusText}`);
-      }
-      const userData = await response.json();
-      setRole(userData.role); // Mettre à jour l'état avec le rôle utilisateur
-      console.log("Rôle de l'intervenant récupéré :", userData.role); // Affiche le rôle dans la console
-    } catch (err) {
-      console.error("Erreur lors de la récupération du rôle utilisateur :", err);
-    }
-  };
-
-  fetchUserRole();
-}, [intervenantId]); // Dépendance à intervenantId pour relancer l'effet si intervenantId change
+ const location = useLocation(); // ✅ Récupération de `location` correctement
+     // ✅ Initialisation avec `location.state` ou `localStorage`
+     const [userId, setUserId] = useState(() => {
+       return location.state?.selectedPatient?.id || localStorage.getItem("patientId") || null;
+     });
+   
+     const [intervenantId, setIntervenantId] = useState(() => {
+       return location.state?.intervenantId || localStorage.getItem("intervenantId") || null;
+     });
+   
+     useEffect(() => {
+       console.log("📌 location.state reçu :", location.state);
+   
+       // ✅ Vérifier si location.state est bien défini avant mise à jour
+       if (location.state?.selectedPatient?.id || location.state?.intervenantId) {
+         setUserId(prevUserId => location.state.selectedPatient?.id ?? prevUserId);
+         setIntervenantId(prevIntervenantId => location.state.intervenantId ?? prevIntervenantId);
+       } else {
+         // ✅ Évite les mises à jour inutiles en comparant avec l'ancien état
+         setUserId(prevUserId => prevUserId ?? localStorage.getItem("patientId"));
+         setIntervenantId(prevIntervenantId => prevIntervenantId ?? localStorage.getItem("intervenantId"));
+       }
+     }, [location.state]); // Dépendance correcte
+ 
+   console.log("userId :", userId);
+   console.log("intervenantId :", intervenantId);
+   
+   const [role, setUserRole] = useState(null); // État pour stocker le rôle utilisateur
+ 
+ useEffect(() => {
+   const fetchUserRole = async () => {
+     try {
+       const response = await fetch(`https://localhost:5000/api/users/${intervenantId}`,{
+         headers: {
+           'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+           'Content-Type': 'application/json',
+         },});
+       if (!response.ok) {
+         throw new Error(`Erreur serveur : ${response.status} ${response.statusText}`);
+       }
+       const userData = await response.json();
+       setUserRole(userData.role); // Mettre à jour l'état avec le rôle utilisateur
+       console.log("Rôle de l'intervenant récupéré :", userData.role); // Affiche le rôle dans la console
+     } catch (err) {
+       console.error("Erreur lors de la récupération du rôle utilisateur :", err);
+     }
+   };
+ 
+   fetchUserRole();
+ }, [intervenantId]); // Dépendance à intervenantId pour relancer l'effet si intervenantId change
 
   const [formData, setFormData] = useState({
     responsables: "",
@@ -120,7 +92,11 @@ useEffect(() => {
   useEffect(() => {
     // Récupération des données du PAP
     axios
-      .get(`http://localhost:5000/api/pap/user/${userId}`)
+      .get(`https://localhost:5000/api/pap/user/${userId}`,{
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          'Content-Type': 'application/json',
+        },})
       .then((response) => {
         console.log("Données récupérées depuis l'API :", response.data);
         if (Array.isArray(response.data) && response.data.length > 0) {
@@ -139,7 +115,11 @@ useEffect(() => {
 
     // Récupération des informations de l'utilisateur
     axios
-      .get(`http://localhost:5000/api/users/${userId}`)
+      .get(`https://localhost:5000/api/users/${userId}`,{
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          'Content-Type': 'application/json',
+        },})
       .then((response) => {
         console.log("Informations utilisateur récupérées :", response.data);
         setUserInfo({
@@ -166,7 +146,11 @@ useEffect(() => {
     e.preventDefault();
     if (papId) {
       axios
-        .put(`http://localhost:5000/api/pap/update/${papId}`, formData)
+        .put(`https://localhost:5000/api/pap/update/${papId}`, formData,{
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+            'Content-Type': 'application/json',
+          },})
         .then((response) => {
           console.log("Mise à jour réussie :", response.data);
           alert("Le document a été modifié avec succès.");
@@ -184,7 +168,11 @@ useEffect(() => {
   const handleCreate = (e) => {
     e.preventDefault();
     axios
-      .post(`http://localhost:5000/api/pap/create`, { ...formData, userId })
+      .post(`https://localhost:5000/api/pap/create`, { ...formData, userId },{
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
+          'Content-Type': 'application/json',
+        },})
       .then(() => {
         alert("Le PAP a été créé avec succès.");
         window.location.reload(); // Recharge la page après la création
