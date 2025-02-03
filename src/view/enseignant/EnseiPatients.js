@@ -22,7 +22,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom"; // ✅ Utilisation de useNavigate pour la navigation
 
-const OrthoPatients = () => {
+const EnseiPatients = () => {
   const [validatedPatients, setValidatedPatients] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -97,7 +97,7 @@ const OrthoPatients = () => {
 
         setValidatedPatients(patientsWithTeachers);
       } catch (error) {
-        console.error("❌ Erreur lors du chargement :", error);
+        //console.error("❌ Erreur lors du chargement :", error);
         toast.error("Erreur lors du chargement des patients.");
       } finally {
         setLoading(false);
@@ -137,11 +137,10 @@ const OrthoPatients = () => {
      "Consulter / Modifier le PAP": `/teacher/dashboard/papEleve`,
 
       "Consulter / Modifier le PPRE": `/teacher/dashboard/ppre/${selectedPatient.id}`,
-      "Comptes-rendus des exercices": `/view/patient/CompteRendus?userId=${selectedPatient.id}&intervenantId=${teacherId}`,
+      "Comptes-rendus des exercices": `/view/patient/CompteRendus`,
       "Aménagements scolaires": `/teacher/dashboard/ascolairesEleve`,
       "Historique éducatif": `/teacher/dashboard/historique-education/${selectedPatient.id}`,
-      "Historique santé": `/teacher/dashboard/historique-sante/${selectedPatient.id}`,
-      "Anamnese": `/teacher/dashboard/anamnese/${selectedPatient.id}`,
+      
      }[action];
 
     if (url) {
@@ -229,11 +228,10 @@ const OrthoPatients = () => {
         <MenuItem onClick={() => handleActionClick("Comptes-rendus des exercices")}>📝 Exercices</MenuItem>
         <MenuItem onClick={() => handleActionClick("Aménagements scolaires")}>🏫 Aménagements scolaires</MenuItem>
         <MenuItem onClick={() => handleActionClick("Historique éducatif")}>🎓 Historique éducatif</MenuItem>
-        <MenuItem onClick={() => handleActionClick("Historique santé")}>🎓 Historique sante</MenuItem>
-        <MenuItem onClick={() => handleActionClick("Anamnese")}>💬 Anamnese</MenuItem>
+        
       </Menu>
     </Box>
   );
 };
 
-export default OrthoPatients;
+export default EnseiPatients;
