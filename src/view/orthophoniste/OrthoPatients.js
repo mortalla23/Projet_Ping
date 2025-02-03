@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 import axios from "axios";
 import {
@@ -57,7 +58,7 @@ const OrthoPatients = () => {
         }
 
         // Filtrer uniquement les patients avec le statut VALIDATED
-        const filteredValidatedLinks = validatedLinks.filter(link => link.validate === "VALIDATED");
+        const filteredValidatedLinks = validatedLinks.filter(link => link.validate === "VALIDATED" && link.role === "ORTHOPHONIST");
         const patientIds = filteredValidatedLinks.map((link) => link.linkedTo);
 
         // Récupérer les détails des patients
@@ -96,7 +97,7 @@ const OrthoPatients = () => {
 
         setValidatedPatients(patientsWithTeachers);
       } catch (error) {
-        console.error("❌ Erreur lors du chargement :", error);
+        //console.error("❌ Erreur lors du chargement :", error);
         toast.error("Erreur lors du chargement des patients.");
       } finally {
         setLoading(false);
@@ -133,11 +134,11 @@ const OrthoPatients = () => {
     }
 
     const url = {
-     "Consulter / Modifier le PAP": `/view/patient/PAPForm?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+     "Consulter / Modifier le PAP": `/ortho/dashboard/papPatient`,
 
       "Consulter / Modifier le PPRE": `/ortho/dashboard/ppre/${selectedPatient.id}`,
-      "Comptes-rendus des exercices": `/view/patient/CompteRendus?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
-      "Aménagements scolaires": `/view/patient/AménagementScolaire?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Comptes-rendus des exercices": `/view/patient/CompteRendus`,
+      "Aménagements scolaires": `/ortho/dashboard/ascolairesPatient`,
       "Historique éducatif": `/ortho/dashboard/historique-education/${selectedPatient.id}`,
       "Historique santé": `/ortho/dashboard/historique-sante/${selectedPatient.id}`,
       "Anamnese": `/ortho/dashboard/anamnese/${selectedPatient.id}`,
@@ -147,10 +148,15 @@ const OrthoPatients = () => {
       navigate(url);
     } else {
       toast.warn("Action inconnue.");
+      return;
     }
-
+    const intervenantId = orthoId;
+    // ✅ Envoie `selectedPatient` et `orthoId` via `state`
+    navigate(url, { state: { selectedPatient, intervenantId } });
+  
     handleMenuClose();
   };
+  
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";

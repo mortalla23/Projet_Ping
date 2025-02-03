@@ -10,13 +10,11 @@ import {
   TableRow,
   Paper,
 } from '@mui/material';
-
 const EnseiRapports = () => {
   const reports = [
     { id: 1, student: 'Jean Dupont', status: 'Terminé', remarks: 'Progrès significatif' },
     { id: 2, student: 'Marie Curie', status: 'En cours', remarks: 'Besoin de soutien' },
   ];
-
   return (
     <Box sx={{ padding: '20px' }}>
       <Typography variant="h5" gutterBottom>
@@ -45,5 +43,4 @@ const EnseiRapports = () => {
     </Box>
   );
 };
-
 export default EnseiRapports;

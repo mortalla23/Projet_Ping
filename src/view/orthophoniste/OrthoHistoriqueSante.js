@@ -76,7 +76,7 @@ const HistoriqueSante = () => {
           }
         }
       } catch (error) {
-        console.error("Erreur lors du chargement de l'historique sante:", error);
+        ////console.error("Erreur lors du chargement de l'historique sante:", error);
       }
     };
 
@@ -95,8 +95,8 @@ const HistoriqueSante = () => {
     e.preventDefault();
   
     try {
-      // Afficher les données dans la console pour vérifier que tout est bien collecté
-      console.log(formData);
+      // Afficher les données dans la //console pour vérifier que tout est bien collecté
+      //console.log(formData);
   
       // Envoi des données au backend
       const response = await fetch('http://localhost:5000/api/historique-sante', {
@@ -110,14 +110,14 @@ const HistoriqueSante = () => {
       
       const historiqueSanteData = await response.json();
       if (historiqueSanteData) {
-        console.log("Historique Sante ajoutée avec succès", historiqueSanteData);
+        //console.log("Historique Sante ajoutée avec succès", historiqueSanteData);
         var id=0;  
         
         if(documentIdRef.current){
             id=documentIdRef.current;
           }
-          console.log("document id "+id);
-          console.log("l'histot id "+historiqueSanteData.id);
+          //console.log("document id "+id);
+          //console.log("l'histot id "+historiqueSanteData.id);
         // 2. Ajouter le user_document après avoir obtenu l'ID de l'anamnèse
         const userDocumentResponse = await fetch('http://localhost:5000/api/user-documents', {
             method: 'POST',
@@ -142,11 +142,11 @@ const HistoriqueSante = () => {
           if (contentType && contentType.includes('application/json')) {
             // Si la réponse est au format JSON
             const userDocumentData = await userDocumentResponse.json();
-            console.log("Document utilisateur ajouté avec succès", userDocumentData);
+            //console.log("Document utilisateur ajouté avec succès", userDocumentData);
           } else {
             // Si la réponse est du texte (par exemple "Document enregistré avec succès")
             const successMessage = await userDocumentResponse.text();
-            console.log("Réponse du serveur : ", successMessage);
+            //console.log("Réponse du serveur : ", successMessage);
           }
         }
       // Vérifier la réponse du backend
@@ -158,11 +158,11 @@ const HistoriqueSante = () => {
       } else {
         // Si c'est du texte (ex. "Document enregistré avec succès")
         const text = await response.text();
-        console.log("Message du serveur : ", text);
+        //console.log("Message du serveur : ", text);
         alert("Historique de santé enregistré avec succès !");
       }
     } catch (error) {
-      console.error("Erreur lors de la soumission du formulaire :", error);
+      //console.error("Erreur lors de la soumission du formulaire :", error);
       alert("Une erreur est survenue. Veuillez réessayer.");
     }
   };

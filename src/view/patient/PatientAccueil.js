@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useLocation, NavLink, Outlet } from "react-router-dom";
 import { ChatProvider} from '../message/ChatContext'; // Assurez-vous d'importer le bon chemin
 import ChatIcon from '../message/ChatIcon'; // Assurez-vous d'importer le bon chemin
+
+
 import {
   Box,
   Typography,
@@ -41,9 +43,9 @@ const PatientAccueil = () => {
     { text: "Mes compte-rendus", path: "/patient/dashboard/cr" },
     { text: "Ajout d'un intervenant", path: "/patient/dashboard/ajIntervenant" },
     { text: "Aménagements scolaires", path: "/patient/dashboard/ascolaires" },
-    { text: "Mes documents", path: "/patient/dashboard/documents" },
     { text: "PPRE", path: "/patient/dashboard/ppre/" },
     { text: "PAP", path: "/patient/dashboard/pap" },
+    { text: "Validations en attente", path: "/patient/dashboard/ajouts" },
   ];
 
   const handleMenuOpen = (event) => setMenuAnchor(event.currentTarget);
@@ -155,12 +157,25 @@ const PatientAccueil = () => {
           }}>
         {/* Barre Supérieure */}
         <Box sx={{
-          display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2,
-          bgcolor: "#5BA8B4", color: "#FFFFFF", py: 2, px: 3, borderRadius: "10px", boxShadow: "0 2px 5px #00000033",position: "relative",
-        }}>
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+            bgcolor: "transparent", // Suppression du bgcolor fixe
+            color: "#FFFFFF",
+            py: 2,
+            px: 3,
+            borderRadius: "10px",
+            boxShadow: "0 2px 5px #00000033",
+            position: "relative",
+            backgroundImage: "linear-gradient(to right, #397C9A, #51B7A0)", // Dégradé de gauche à droite
+            backgroundSize: "cover", // Couvre toute la barre
+          }}>
+
           <Typography variant="h4" sx={{ fontWeight: "bold" }}>
             Tableau de bord du patient
           </Typography>
+         
           <Box sx={{
                    display: "flex", 
                    alignItems: "center", 
@@ -213,7 +228,7 @@ const PatientAccueil = () => {
      
 
         {/* Contenu Dynamique */}
-        {showDynamicContent && (
+        {showDynamicContent && location.pathname === "/patient/dashboard" && (
           <Box sx={{ backgroundColor: "#FFFFFF", padding: 2, borderRadius: "8px", boxShadow: "0 2px 5px #00000033" }}>
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               Bienvenue {user.username} !

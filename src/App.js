@@ -19,6 +19,7 @@ import EnseiPatients from './view/enseignant/EnseiPatients';
 import EnseiPatientsList from './view/enseignant/EnseiPatientList';
 import EnseiProfile from './view/enseignant/EnseiProfile';
 
+
 // Composants pour les différentes sections du tableau de bord pour patient
 import CompteRendus from './view/patient/CompteRendus';
 import AménagementScolaire from './view/patient/AménagementScolaire';
@@ -30,6 +31,8 @@ import PatientIntervenantList from './view/patient/PatientIntervenantList'
 import HistoriqueEducation from './view/patient/HistoriqueEducation';
 import HistoriqueSante from './view/patient/HistoriqueSante';
 import PatientPpre from './view/patient/PatientPpre';
+import SectionLiens from './view/patient/Lien';
+
  
 
 // Composants pour les différentes sections du tableau de bord pour orthophoniste
@@ -40,6 +43,7 @@ import OrthoHistoriqueEducation from './view/orthophoniste/OrthoHistoriqueEducat
 import OrthoHistoriqueSante from './view/orthophoniste/OrthoHistoriqueSante';
 import OrthoPpre from './view/orthophoniste/OrthoPpre';
 import OrthoPatientList from './view/orthophoniste/OrthoPatientList'; 
+
 
 
 // Composant pour les routes protégées
@@ -73,7 +77,8 @@ function App() {
         >
           <Route path="allPatients" element={<EnseiPatients />} />
           <Route path="profile" element={< EnseiProfile />} />
-          <Route path="ascolaires" element={<EnseiAmenagements />} />
+          <Route path="ascolairesEleve" element={<AménagementScolaire />} />
+          <Route path="papEleve" element={<PAPForm />} />
           <Route path="addeleves" element={<AddStudentPage />} />
           <Route path="historique-education/:userId" element={<EnseiHistoriqueEducation />} />
           <Route path="listedespatients" element={<EnseiPatientsList />} />
@@ -98,6 +103,7 @@ function App() {
           <Route path="historique-education" element={<HistoriqueEducation />} />
           <Route path="historique-sante" element={<HistoriqueSante/>} />
           <Route path="ppre" element={<PatientPpre/>} />
+          <Route path="ajouts" element={<SectionLiens/>} />
           
           <Route path="documents" element={<ConsulDocuments />} />
           <Route path="messages" element={<Messages />} />
@@ -110,7 +116,8 @@ function App() {
         >
           <Route path="allPatients" element={<OrthoPatients />} />
           <Route path="profile" element={< OrthoProfile />} />
-          <Route path="ascolaires" element={<AménagementScolaire />} />
+          <Route path="ascolairesPatient" element={<AménagementScolaire />} />
+          <Route path="papPatient" element={<PAPForm />} />
           <Route path="anamnese/:userId" element={<Anamnese />} />
           <Route path="historique-education/:userId" element={<OrthoHistoriqueEducation />} />
           <Route path="historique-sante/:userId" element={<OrthoHistoriqueSante />} />

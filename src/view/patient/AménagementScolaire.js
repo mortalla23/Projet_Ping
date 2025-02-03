@@ -18,17 +18,29 @@ import {
 
 const SectionAmenagement = () => {
 
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-
-  // Récupération des paramètres depuis l'URL
-  const userId = queryParams.get("userId");
-  let intervenantId = queryParams.get("intervenantId");
-
-  // Si intervenantId n'est pas fourni, on le définit sur userId
-  if (!intervenantId) {
-    intervenantId = userId;
-  }
+   const location = useLocation(); // ✅ Récupération de `location` correctement
+    // ✅ Initialisation avec `location.state` ou `localStorage`
+    const [userId, setUserId] = useState(() => {
+      return location.state?.selectedPatient?.id || localStorage.getItem("patientId") || null;
+    });
+  
+    const [intervenantId, setIntervenantId] = useState(() => {
+      return location.state?.intervenantId || localStorage.getItem("intervenantId") || null;
+    });
+  
+    useEffect(() => {
+      console.log("📌 location.state reçu :", location.state);
+  
+      // ✅ Vérifier si location.state est bien défini avant mise à jour
+      if (location.state?.selectedPatient?.id || location.state?.intervenantId) {
+        setUserId(prevUserId => location.state.selectedPatient?.id ?? prevUserId);
+        setIntervenantId(prevIntervenantId => location.state.intervenantId ?? prevIntervenantId);
+      } else {
+        // ✅ Évite les mises à jour inutiles en comparant avec l'ancien état
+        setUserId(prevUserId => prevUserId ?? localStorage.getItem("patientId"));
+        setIntervenantId(prevIntervenantId => prevIntervenantId ?? localStorage.getItem("intervenantId"));
+      }
+    }, [location.state]); // Dépendance correcte
 
   console.log("userId :", userId);
   console.log("intervenantId :", intervenantId);
@@ -77,6 +89,7 @@ useEffect(() => {
         }
 
         const data = await response.json();
+        
         const validated = data.filter((item) => item.status === "VALIDATED");
         const pending = data.filter((item) => item.status === "ONGOING");
         setValidatedAmenagements(validated);
@@ -220,17 +233,13 @@ useEffect(() => {
                     sx={{ marginTop: 2 }}
                     onClick={async () => {
                       try {
-                        const response = await fetch(
-                          `http://localhost:5000/api/amenagements/validate`,
-                          {
-                            method: "POST",
-                            headers: {
-                              'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
-                              'Content-Type': 'application/json',
-                            },
-                            body: `amenagementId=${amenagement.id}`,
+                        const response = await fetch(`https://localhost:5000/api/amenagements/validate?amenagementId=${amenagement.id}`, {
+                          method: "POST",
+                          headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`, 
+                            'Content-Type': 'application/json',
                           }
-                        );
+                        });
                         if (!response.ok) {
                           throw new Error("Erreur lors de la validation de l'aménagement");
                         }
@@ -239,6 +248,7 @@ useEffect(() => {
                         setPendingAmenagements((prev) =>
                           prev.filter((item) => item.id !== amenagement.id)
                         );
+                        window.location.reload(); // Recharge la page après la création
                       } catch (error) {
                         alert("Une erreur est survenue lors de la validation.");
                         console.error(error);
@@ -279,11 +289,12 @@ useEffect(() => {
       const payload = {
         ...formData,
         userId, // ID utilisateur défini en dur
-        idPrescripteur: intervenantId, // ID intervenant défini en dur
+        idPrescripteur: parseInt(intervenantId, 10), // ID intervenant défini en dur
       };
   
       try {
-        const response = await fetch("http://localhost:5000/api/amenagements/create", {
+        console.log("📌 Payload envoyé :", payload);
+        const response = await fetch("https://localhost:5000/api/amenagements/create", {
           method: "POST",
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
@@ -291,6 +302,7 @@ useEffect(() => {
           },
           body: JSON.stringify(payload),
         });
+        console.log(localStorage.getItem("token"));
   
         if (!response.ok) {
           throw new Error(`Erreur serveur : ${response.status} ${response.statusText}`);
@@ -299,6 +311,7 @@ useEffect(() => {
         const responseData = await response.json();
         console.log("Aménagement créé avec succès :", responseData);
         alert("Aménagement prescrit avec succès !");
+        window.location.reload(); // Recharge la page après la création
       } catch (err) {
         console.error("Erreur lors de la prescription :", err);
         alert("Une erreur est survenue lors de la prescription de l'aménagement.");
@@ -315,7 +328,6 @@ useEffect(() => {
           {/* Champ pour le type */}
           <TextField
             select
-            label="Type d'aménagement"
             name="type"
             onChange={handleChange}
             variant="outlined"
@@ -326,7 +338,7 @@ useEffect(() => {
             }}
             required
           >
-            
+            <option value="">-- Sélectionnez un type d'aménagement --</option>  {/* Option vide par défaut */}
             <option value="Aménagement horaire">Aménagement horaire</option>
             <option value="Aménagement pédagogique">Aménagement pédagogique</option>
             <option value="Aménagement matériel">Aménagement matériel</option>
@@ -340,7 +352,7 @@ useEffect(() => {
             onChange={handleChange}
             variant="outlined"
             fullWidth
-            sx={{ marginBottom: 2 }}
+            sx={{ marginBottom: 2, textAlign: "center"}}
             required
           />
   

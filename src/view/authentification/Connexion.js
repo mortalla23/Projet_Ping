@@ -63,7 +63,7 @@ const Connexion = () => {
     localStorage.setItem('userId', userId); 
     localStorage.setItem('username', username);
     localStorage.setItem('token',token);
-    console.log("Token reçu :", token);
+    //console.log("Token reçu :", token);
 };
 
   // Gestion de la soumission

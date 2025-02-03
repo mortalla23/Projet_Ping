@@ -18,97 +18,157 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const PatientList = () => {
+  // 📌 Récupération des infos utilisateur
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const userRole = userData?.role;
+  const userId = userRole === "ORTHOPHONIST" ? userData.id : localStorage.getItem("teacherId");
+
+  // 📌 Clé unique pour stocker les patients ajoutés par l'utilisateur
+  const STORAGE_KEY = `addedPatients_${userId}`;
+
+  // 📌 États
   const [patients, setPatients] = useState([]);
-  const [addedPatients, setAddedPatients] = useState({});
+  const [addedPatients, setAddedPatients] = useState(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : {};
+  });
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const debounceTimeout = useRef(null);
-  const teacherId = localStorage.getItem("teacherId");
 
+  // 📌 Chargement des patients et surveillance des refus
   useEffect(() => {
-    const savedAddedPatients = localStorage.getItem("addedPatients");
-    if (savedAddedPatients) {
-      setAddedPatients(JSON.parse(savedAddedPatients));
-    }
-
+    //console.log(`🎬 Démarrage de la surveillance des refus pour ${userRole} ${userId}...`);
     fetchPatients();
 
     const interval = setInterval(() => {
-      checkValidatedPatients();
+      checkRefusedInvitations();
     }, 5000);
 
     return () => clearInterval(interval);
   }, []);
 
+  // 📌 Récupération des patients
   const fetchPatients = async (term = "") => {
     setLoading(true);
     try {
       const url = term
-        ? `http://localhost:5000/api/users/patients/search?searchTerm=${term}`
-        : `http://localhost:5000/api/users/patients`;
-      const { data } = await axios.get(url,{
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
-          'Content-Type': 'application/json',
-        },});
-      
-      // Récupérer les liens validés pour filtrer les patients
-      const { data: validatedLinks } = await axios.post(
-        "http://localhost:5000/api/link/validated",
-        {linkerId: parseInt(teacherId, 10) },{
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
-            'Content-Type': 'application/json',
-          },}
-      );
+        ? `https://localhost:5000/api/users/patients/search?searchTerm=${term}`
+        : `https://localhost:5000/api/users/patients`;
 
-      const validatedPatientIds = validatedLinks.map(link => link.linkedTo);
-      const filteredPatients = data.filter(patient => !validatedPatientIds.includes(patient.id));
-      
-      setPatients(filteredPatients);
+      const { data } = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      setPatients(data);
     } catch (error) {
-      console.error("Erreur API :", error);
+      //console.error("Erreur API :", error);
       toast.error("Impossible de charger les patients.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSearch = (event) => {
-    const value = event.target.value;
-    setSearchTerm(value);
+  // 📌 Vérification des invitations refusées
+  const checkRefusedInvitations = async () => {
+    try {
+      //console.log(`🔍 Vérification des invitations refusées pour ${userRole} ${userId}...`);
 
-    if (debounceTimeout.current) {
-      clearTimeout(debounceTimeout.current);
+      const [allLinksResponse, refusedLinksResponse] = await Promise.all([
+        axios.get(`https://localhost:5000/api/link/orthophoniste/${parseInt(userId, 10)}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+        }),
+        axios.post(
+          "https://localhost:5000/api/link/rejected",
+          { linkerId: parseInt(userId, 10) },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "application/json",
+            },
+          }
+        ),
+      ]);
+
+      const allLinks = allLinksResponse.data;
+      const refusedLinks = refusedLinksResponse.data;
+
+      //console.log("✅ Tous les liens :", allLinks);
+      //console.log("❌ Liens refusés :", refusedLinks);
+
+      const patientLinksCount = {};
+      allLinks.forEach((link) => {
+        patientLinksCount[link.linkedTo] = (patientLinksCount[link.linkedTo] || 0) + 1;
+      });
+
+      const refusedLinksCount = {};
+      refusedLinks.forEach((link) => {
+        refusedLinksCount[link.linkedTo] = (refusedLinksCount[link.linkedTo] || 0) + 1;
+      });
+
+      const patientsToRemove = Object.keys(refusedLinksCount).filter(
+        (patientId) => refusedLinksCount[patientId] === patientLinksCount[patientId]
+      );
+
+      //console.log(`🚀 Patients à supprimer pour ${userRole} ${userId} :`, patientsToRemove);
+
+      if (patientsToRemove.length > 0) {
+        setAddedPatients((prevAddedPatients) => {
+          const updated = { ...prevAddedPatients };
+
+          patientsToRemove.forEach((patientId) => {
+            delete updated[patientId];
+          });
+
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+          return updated;
+        });
+      }
+    } catch (error) {
+      //console.error(`❌ Erreur lors de la vérification des refus pour ${userRole} ${userId} :`, error);
     }
-
-    debounceTimeout.current = setTimeout(() => fetchPatients(value), 300);
   };
 
+  // 📌 Ajout d'un patient
   const handleAdd = async (patient) => {
     try {
-      const { data: newLink } = await axios.post("http://localhost:5000/api/link/create", {
-        linkerId: parseInt(teacherId, 10),
-        linkedTo: patient.id,
-      },{
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
-          'Content-Type': 'application/json',
-        },},);
+      const { data: newLink } = await axios.post(
+        "https://localhost:5000/api/link/create",
+        {
+          linkerId: parseInt(userId, 10),
+          linkedTo: patient.id,
+          role: userRole,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      const updatedAddedPatients = { ...addedPatients, [patient.id]: newLink.id };
-      setAddedPatients(updatedAddedPatients);
-      localStorage.setItem("addedPatients", JSON.stringify(updatedAddedPatients));
+      setAddedPatients((prevAddedPatients) => {
+        const updated = { ...prevAddedPatients, [patient.id]: newLink.id };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        return updated;
+      });
 
       toast.success(`Le patient ${patient.firstName} a été ajouté avec succès.`);
     } catch (error) {
-      console.error("Erreur lors de l'ajout du patient :", error);
+      //console.error("Erreur lors de l'ajout du patient :", error);
       toast.error("Impossible d'ajouter le patient.");
     }
   };
 
+  // 📌 Annulation d'un ajout
   const handleCancel = async (patient) => {
     try {
       const linkId = addedPatients[patient.id];
@@ -117,51 +177,24 @@ const PatientList = () => {
         return;
       }
 
-      await axios.delete(`http://localhost:5000/api/link/${linkId}`,{
+      await axios.delete(`https://localhost:5000/api/link/${linkId}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
-          'Content-Type': 'application/json',
-        },});
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-      const updatedAddedPatients = { ...addedPatients };
-      delete updatedAddedPatients[patient.id];
-      setAddedPatients(updatedAddedPatients);
-      localStorage.setItem("addedPatients", JSON.stringify(updatedAddedPatients));
+      setAddedPatients((prevAddedPatients) => {
+        const updated = { ...prevAddedPatients };
+        delete updated[patient.id];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        return updated;
+      });
 
       toast.info(`L'ajout du patient ${patient.firstName} a été annulé.`);
     } catch (error) {
-      console.error("Erreur lors de l'annulation :", error);
+      //console.error("Erreur lors de l'annulation :", error);
       toast.error("Impossible d'annuler l'ajout.");
-    }
-  };
-
-  const checkValidatedPatients = async () => {
-    try {
-      const { data: validatedPatients } = await axios.post(
-        "http://localhost:5000/api/link/validated", { linkerId: parseInt(teacherId, 10) },{
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
-            'Content-Type': 'application/json',
-          },},
-       
-      );
-
-      if (validatedPatients.length > 0) {
-        const updatedPatients = patients.filter(
-          (patient) => !validatedPatients.some((vp) => vp.linkedTo === patient.id)
-        );
-        setPatients(updatedPatients);
-
-        validatedPatients.forEach((vp) => {
-          delete addedPatients[vp.linkedTo];
-        });
-        setAddedPatients({ ...addedPatients });
-        localStorage.setItem("addedPatients", JSON.stringify(addedPatients));
-
-        toast.success("Certains patients ont été validés et transférés.");
-      }
-    } catch (error) {
-      console.error("Erreur lors de la vérification :", error);
     }
   };
 
@@ -169,7 +202,7 @@ const PatientList = () => {
     <Box sx={{ padding: "20px" }}>
       <ToastContainer />
       <Typography variant="h5" gutterBottom>
-        Liste des patients
+        Liste des élèves
       </Typography>
       <TextField
         label="Rechercher un patient"
@@ -177,69 +210,39 @@ const PatientList = () => {
         fullWidth
         margin="normal"
         value={searchTerm}
-        onChange={handleSearch}
+        onChange={(event) => setSearchTerm(event.target.value)}
         autoFocus
       />
-      {loading ? (
-        <Typography>Chargement...</Typography>
-      ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ bgcolor: "#5BA8B4" }}>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>#</TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Nom</TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Prénom</TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Email</TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Action</TableCell>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow sx={{ bgcolor: "#5BA8B4" }}>
+              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>#</TableCell>
+              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Nom</TableCell>
+              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Prénom</TableCell>
+              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Email</TableCell>
+              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Action</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {patients.map((patient, index) => (
+              <TableRow key={patient.id}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{patient.lastName}</TableCell>
+                <TableCell>{patient.firstName}</TableCell>
+                <TableCell>{patient.email}</TableCell>
+                <TableCell>
+                  {addedPatients[patient.id] ? (
+                    <Button variant="contained" color="error" onClick={() => handleCancel(patient)}>Annuler</Button>
+                  ) : (
+                    <Button variant="contained" color="primary" onClick={() => handleAdd(patient)}>Ajouter</Button>
+                  )}
+                </TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {patients
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((patient, index) => (
-                  <TableRow key={patient.id}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>{patient.lastName}</TableCell>
-                    <TableCell>{patient.firstName}</TableCell>
-                    <TableCell>{patient.email}</TableCell>
-                    <TableCell>
-                      {addedPatients[patient.id] ? (
-                        <Button
-                          variant="contained"
-                          color="error"
-                          onClick={() => handleCancel(patient)}
-                        >
-                          Annuler
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => handleAdd(patient)}
-                        >
-                          Ajouter
-                        </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={patients.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={(event, newPage) => setPage(newPage)}
-            onRowsPerPageChange={(event) => {
-              setRowsPerPage(parseInt(event.target.value, 10));
-              setPage(0);
-            }}
-          />
-        </TableContainer>
-      )}
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 };
