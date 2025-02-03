@@ -46,8 +46,8 @@ const PatientList = () => {
     setLoading(true);
     try {
       const url = term
-        ? `https://localhost:5000/api/users/patients/search?searchTerm=${term}`
-        : `https://localhost:5000/api/users/patients`;
+        ? `http://localhost:5000/api/users/patients/search?searchTerm=${term}`
+        : `http://localhost:5000/api/users/patients`;
       const { data } = await axios.get(url,{
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
@@ -56,7 +56,7 @@ const PatientList = () => {
       
       // Récupérer les liens validés pour filtrer les patients
       const { data: validatedLinks } = await axios.post(
-        "https://localhost:5000/api/link/validated",
+        "http://localhost:5000/api/link/validated",
         {linkerId: parseInt(teacherId, 10) },{
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
@@ -89,7 +89,7 @@ const PatientList = () => {
 
   const handleAdd = async (patient) => {
     try {
-      const { data: newLink } = await axios.post("https://localhost:5000/api/link/create", {
+      const { data: newLink } = await axios.post("http://localhost:5000/api/link/create", {
         linkerId: parseInt(teacherId, 10),
         linkedTo: patient.id,
       },{
@@ -117,7 +117,7 @@ const PatientList = () => {
         return;
       }
 
-      await axios.delete(`https://localhost:5000/api/link/${linkId}`,{
+      await axios.delete(`http://localhost:5000/api/link/${linkId}`,{
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
           'Content-Type': 'application/json',
@@ -138,7 +138,7 @@ const PatientList = () => {
   const checkValidatedPatients = async () => {
     try {
       const { data: validatedPatients } = await axios.post(
-        "https://localhost:5000/api/link/validated", { linkerId: parseInt(teacherId, 10) },{
+        "http://localhost:5000/api/link/validated", { linkerId: parseInt(teacherId, 10) },{
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
             'Content-Type': 'application/json',

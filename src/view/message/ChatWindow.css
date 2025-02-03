@@ -1,35 +1,27 @@
-/* ChatListWindow.css */
-
-.chat-list-window {
-    position: absolute;
-    top: 60px;
-    right: 20px;
-    width: 300px;
-    background-color: #ffffff; /* Couleur de fond blanche */
-    border: 1px solid #ddd; /* Bordure grise */
-    border-radius: 10px; /* Bordures arrondies */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Ombre douce */
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; /* Masque le débordement */
+.chat-header {
+  display: flex;
+  align-items: center; /* Centre verticalement */
+  padding: 10px; /* Ajout de rembourrage */
+  width: 100%; /* L'en-tête prend toute la largeur */
+  box-sizing: border-box; /* Inclut le rembourrage dans la largeur totale */
 }
 
-.chat-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; /* Centre verticalement */
-    padding: 10px;
-    background-color: #5BA8B4; /* Couleur bleue */
-    color: white; /* Texte blanc */
-    border-bottom: 2px solid #5BA8B4; /* Bordure inférieure plus sombre */
+.chat-title {
+  flex-grow: 1; /* Permet au titre de prendre l'espace disponible */
+  text-align: center; /* Centre le titre */
+  font-size: 18px; /* Ajustez la taille de la police */
+  white-space: nowrap; /* Empêche le titre de se casser */
+  overflow: hidden; /* Masque le débordement */
+  text-overflow: ellipsis; /* Ajoute des points de suspension si le texte déborde */
 }
 
 .close-button {
-    background: none;
-    border: none;
-    color: white; /* Texte blanc */
-    cursor: pointer;
+  padding: 5px 10px; /* Réduisez le rembourrage */
+  font-size: 14px; /* Ajustez la taille de la police */
+  background-color: transparent; /* Fond transparent */
+  border: none; /* Pas de bordure */
+  cursor: pointer; /* Curseur pointer pour indiquer qu'il est cliquable */
+  margin-left: 10px; /* Ajout d'un espacement à gauche du bouton */
 }
 
 .back-button {
@@ -57,7 +49,86 @@ li:hover {
     background-color: #f1f1f1; /* Change la couleur de fond au survol */
 }
 
-.chat-window-container {
-    margin-top: 10px;
-    padding: 10px; /* Ajoute du padding autour de la fenêtre de chat */
+
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  height: 80vh; /* Changez cela pour ajuster la hauteur de la fenêtre de chat */
+  max-height: 1000px; /* Hauteur maximale */
+  width: 100%; /* Largeur complète */
+  border: 1px solid #ddd; /* Optionnel : pour visualiser la fenêtre */
+  overflow: hidden; /* Empêche le débordement */
 }
+
+.messages-container {
+  flex-grow: 1; /* Permet à la zone des messages d'occuper l'espace disponible */
+  padding: 10px;
+  padding-bottom: 60px; /* Ajoute un espace pour le champ d'entrée */
+  overflow-y: auto; /* Active le défilement vertical */
+  display: flex;
+  flex-direction: column;
+}
+
+.message-input {
+  position: relative; /* Changez ceci pour `relative` */
+  bottom: 0; /* Collé au bas de la fenêtre */
+  left: 0; /* Collé au côté gauche */
+  right: 0; /* Collé au côté droit */
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  background-color: #fff; /* Arrière-plan blanc */
+  display: flex;
+  margin-top: auto; /* Pousse le champ d'entrée vers le bas de la fenêtre de chat */
+}
+
+.input-field {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-right: 10px;
+  min-width: 0;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  max-width: 60%;
+}
+
+.message.user {
+  align-self: flex-end;
+  text-align: right;
+}
+
+.message.other {
+  align-self: flex-start;
+  text-align: left;
+}
+
+.message-bubble {
+  max-width: 75%; /* Limiter la largeur des bulles de message */
+  word-wrap: break-word; /* Permet de couper les mots trop longs */
+  padding: 10px;
+  border-radius: 15px;
+  margin: 5px 0; /* Espacement entre les messages */
+}
+
+.message.user .message-bubble {
+  background-color: #5BA8B4; /* Green background for the connected user */
+}
+
+.message-header {
+  font-size: small;
+  margin-bottom: 3px;
+}
+
+.message-date {
+  font-size: 0.8em;
+  color: #888;
+  margin-top: 5px;
+}
+
+
+

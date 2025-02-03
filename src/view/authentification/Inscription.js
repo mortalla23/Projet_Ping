@@ -4,10 +4,13 @@ import axios from 'axios';
 import PageContainer from '../../component/container/PageContainer';
 import Logo from '../../layouts/logo/Logo'; // Conserve le logo
 import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 const Inscription = () => {
   const navigate = useNavigate();
-
+  const [otpSent, setOtpSent] = useState(false);
+const [otp, setOtp] = useState('');
+const [setUserId] = useState(null);
   // State pour les données du formulaire
   const [formData, setFormData] = useState({
     username: '',
@@ -20,6 +23,16 @@ const Inscription = () => {
     acceptTerms: false,
   });
 
+  if (localStorage.getItem('user')) {
+        if(localStorage.getItem('teacherId')){
+      
+      return <Navigate to="/teacher/dashboard" />;
+    } else if (localStorage.getItem('orthoId')) {
+      return <Navigate to="/ortho/dashboard" />;
+    } else if (localStorage.getItem('patientId')) {
+      return <Navigate to="/patient/dashboard" />;
+    }
+    }
   // Gestion des changements dans le formulaire
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -90,7 +103,7 @@ const Inscription = () => {
 
       console.log("Données envoyées :", dataToSend);
 
-      const response = await axios.post('https://localhost:5000/api/users/inscription', dataToSend, {
+      const response = await axios.post('http://localhost:5000/api/users/inscription', dataToSend, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -101,16 +114,45 @@ const Inscription = () => {
 
       console.log("Réponse de l'API :", response.data);
       alert('Inscription réussie !');
-      resetForm();
-      navigate('/connexion'); // Redirection vers la page de connexion
+      setOtpSent(true);
     } catch (error) {
       console.error('Erreur lors de l\'inscription :', error);
       if (error.response) {
         console.error("Statut HTTPS :", error.response.status);
         console.error("Données de la réponse :", error.response.data);
-        alert(`Erreur : ${error.response.data.message || "Une erreur est survenue."}`);
+        alert(`Erreur : ${error.response.data || "Une erreur est survenue."}`);
       } else {
         console.error("Erreur sans réponse du serveur :", error);
+        alert("Impossible de se connecter au serveur.");
+      }
+    }
+  };
+
+  const handleOtpSubmit = async () => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/users/verify-otp', null, {
+        params: {
+          email: formData.email,
+          otp: otp,
+        },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        httpsAgent: new (require("https").Agent)({
+          rejectUnauthorized: false, // Ignore les erreurs SSL
+        }),
+      });
+
+      console.log("Réponse de l'API :", response.data);
+      alert('OTP validé avec succès !');
+      resetForm();
+      
+      navigate('/connexion');
+    } catch (error) {
+      console.error('Erreur lors de la validation de l\'OTP :', error);
+      if (error.response) {
+        alert(`Erreur : ${error.response.data.message || "Une erreur est survenue."}`);
+      } else {
         alert("Impossible de se connecter au serveur.");
       }
     }
@@ -306,6 +348,43 @@ const Inscription = () => {
                   </Button>
                 </Box>
               </form>
+              {otpSent && (
+                <Box mt={3}>
+                  <Typography
+                    variant="subtitle1"
+                    fontWeight={600}
+                    component="label"
+                    htmlFor="otp"
+                    mb="5px"
+                  >
+                    OTP
+                  </Typography>
+                  <TextField
+                    id="otp"
+                    name="otp"
+                    placeholder="Entrez l'OTP"
+                    variant="outlined"
+                    fullWidth
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    required
+                  />
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    size="large"
+                    fullWidth
+                    onClick={handleOtpSubmit}
+                    sx={{
+                      textTransform: 'none',
+                      borderRadius: '8px',
+                      mt: 2,
+                    }}
+                  >
+                    Valider OTP
+                  </Button>
+                </Box>
+              )}
             </Card>
           </Grid>
         </Grid>

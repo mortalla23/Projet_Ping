@@ -26,7 +26,7 @@ const PAPForm = () => {
 useEffect(() => {
   const fetchUserRole = async () => {
     try {
-      const response = await fetch(`https://localhost:5000/api/users/${intervenantId}`,{
+      const response = await fetch(`http://localhost:5000/api/users/${intervenantId}`,{
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
           'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ useEffect(() => {
   useEffect(() => {
     // Récupération des données du PAP
     axios
-      .get(`https://localhost:5000/api/pap/user/${userId}`,{
+      .get(`http://localhost:5000/api/pap/user/${userId}`,{
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
           'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ useEffect(() => {
 
     // Récupération des informations de l'utilisateur
     axios
-      .get(`https://localhost:5000/api/users/${userId}`,{
+      .get(`http://localhost:5000/api/users/${userId}`,{
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
           'Content-Type': 'application/json',
@@ -134,7 +134,7 @@ useEffect(() => {
     e.preventDefault();
     if (papId) {
       axios
-        .put(`https://localhost:5000/api/pap/update/${papId}`, formData,{
+        .put(`http://localhost:5000/api/pap/update/${papId}`, formData,{
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
             'Content-Type': 'application/json',
@@ -156,7 +156,7 @@ useEffect(() => {
   const handleCreate = (e) => {
     e.preventDefault();
     axios
-      .post(`https://localhost:5000/api/pap/create`, { ...formData, userId },{
+      .post(`http://localhost:5000/api/pap/create`, { ...formData, userId },{
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
           'Content-Type': 'application/json',

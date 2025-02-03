@@ -4,35 +4,41 @@ import { useChat } from './ChatContext'; // Importez le contexte
 import './ChatWindow.css'; // Pour les styles
 
 const ChatWindow = ({ onClose }) => {
-    const { selectedConversationId, conversations, users, userId } = useChat();
+    const { selectedConversationId, users, userId } = useChat();
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    const conversation = conversations.find(conv => conv.id === selectedConversationId);
-    const conversationName = conversation ? conversation.participants.map(p => p.username).join(', ') : 'Conversation';
-
+   const { conversationName } = useChat();
+    
     // Effect to handle WebSocket connection
-   /* useEffect(() => {
-        const socket = new WebSocket("ws://192.168.1.29:8080/ws2"); // Remplacez l'URL par celle de votre serveur WebSocket
+   useEffect(() => {
+        const socket = new WebSocket("ws://localhost:5000/ws"); // Remplacez l'URL par celle de votre serveur WebSocket
         
         socket.onopen = () => {
-            console.log("WebSocket2 connecté");
-            socket.send(JSON.stringify({ conversationId: selectedConversationId }));
+            console.log("WebSocket connecté");
+            socket.send(JSON.stringify({ action: "subscribe", conversationId: selectedConversationId }));
         };
 
         socket.onmessage = (event) => {
             const data = JSON.parse(event.data);
-            console.log("Message reçu Ws2:", data);
-
-            if (data.conversationId === selectedConversationId) {
+            console.log("Message reçu Ws:", data);
+        
+            // Vérifiez si le type est "message" et que la conversationId correspond
+            if (data.type === "message" && data.conversationId === selectedConversationId) {
                 setMessages(prevMessages => [...prevMessages, data]);
+                console.log("Messages");
             }
         };
-
+        socket.onerror = function(error) {
+            console.error('WebSocket Error: ', error);
+        };
+        socket.onclose = function(event) {
+            console.log('WebSocket fermé: ', event);
+        }
         return () => {
             socket.close(); // Assurez-vous de fermer la connexion WebSocket au démontage
         };
     }, [selectedConversationId]);
-*/
+
     useEffect(() => {
         const getMessages = async () => {
             if (selectedConversationId) {
@@ -46,53 +52,63 @@ const ChatWindow = ({ onClose }) => {
 
     const handleSendMessage = async () => {
         if (newMessage.trim()) {
-            // Envoyer le message via l'API
-            const sentMessage = await addMessage(selectedConversationId, userId, newMessage);
-            console.log("Message du server",sentMessage); 
-            // Créer un nouvel objet pour le message avec l'ID de l'utilisateur
             const messageWithSender = {
-                content:newMessage, // Inclut tous les champs de sentMessage
-                senderId: parseInt(userId,10), // Ajoute l'identifiant de l'utilisateur
-                createdAt: new Date().toISOString() // La date actuelle au format ISO
+                content: newMessage,
+                senderId: parseInt(userId, 10),
+                createdAt: new Date().toISOString(),
             };
     
-            // Mettre à jour l'état des messages avec le nouveau message enrichi
-            setMessages([...messages, messageWithSender]);
-            console.log("Les messages",messages);
+            console.log("Message à envoyer:", messageWithSender);
+    
+            // Envoyer le message via l'API
+            const sentMessage = await addMessage(selectedConversationId, userId, newMessage);
+            
+            console.log("Message du server", sentMessage);
+    
+            // Mettre à jour l'état des messages avec le nouveau message
+            setMessages(prevMessages => [...prevMessages, sentMessage]); // Utilisez sentMessage si le serveur renvoie un message
             setNewMessage(''); // Réinitialise le champ de message
         }
     };
-
     return (
-        <div className="chat-window">
-            <div className="chat-header">
-                <h2>{conversationName}</h2>
-                <button className="close-button" onClick={onClose}>X</button>
-            </div>
-            <div className="messages-container">
-                {messages.map((message) => {
-                    const sender = users.find(user => user.id === message.senderId);
-                    const senderName = sender ? sender.username : 'Inconnu';
-
-                    return (
-                        <div key={message.id} className="message">
-                            <strong>{senderName}: </strong>
-                            <span>{message.content}</span>
-                        </div>
-                    );
-                })}
-            </div>
-            <div className="message-input">
-                <input
-                    type="text"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Écrivez un message..."
-                    className="input-field"
-                />
-                <button onClick={handleSendMessage}>Envoyer</button>
-            </div>
-        </div>
+    <div className="chat-window">
+    <div className="chat-header">
+    <div className="title-container">
+        <h2 className="chat-title">{conversationName}</h2>
+    </div>
+    <button className="close-button" onClick={onClose}>X</button>
+    </div>
+    <div className="messages-container">
+        {messages.map((message) => {
+            const sender = users.find(user => user.id === message.senderId);
+            const senderName = message.senderId === parseInt(userId, 10) 
+                ? 'You' 
+                : (sender ? sender.username : 'Inconnu');
+            
+            return (
+                <div key={message.id} className={`message ${message.senderId === parseInt(userId, 10) ? 'user' : 'other'}`}>
+                    <div className="message-header">{senderName}</div>
+                    <div className="message-bubble">{message.content}</div>
+                    <div className="message-date">
+    {isNaN(new Date(message.createdAt).getTime())
+        ? new Date().toLocaleString() // Affiche la date actuelle si invalid
+        : new Date(message.createdAt).toLocaleString()} 
+</div>
+                </div>
+            );
+        })}
+    </div>
+    <div className="message-input">
+        <input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            placeholder="Écrivez un message..."
+            className="input-field"
+        />
+        <button onClick={handleSendMessage}>Envoyer</button>
+    </div>
+</div>
     );
 };
 

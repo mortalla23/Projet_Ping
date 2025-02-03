@@ -48,7 +48,7 @@ const EnseiEleves = () => {
 
   const fetchStudents = async (teacherId) => {
     try {
-      const response = await axios.get('https://localhost:5000/api/teacher/students', {
+      const response = await axios.get('http://localhost:5000/api/teacher/students', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
           'Content-Type': 'application/json',
@@ -68,7 +68,7 @@ const EnseiEleves = () => {
 
   const handleSearchStudent = async () => {
     try {
-      const response = await axios.get('https://localhost:5000/api/teacher/students', {
+      const response = await axios.get('http://localhost:5000/api/teacher/students', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
           'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ const EnseiEleves = () => {
       return;
     }
     try {
-      await axios.post('https://localhost:5000/api/teacher/link-student-by-email', {
+      await axios.post('http://localhost:5000/api/teacher/link-student-by-email', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
           'Content-Type': 'application/json',
