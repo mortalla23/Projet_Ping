@@ -233,7 +233,7 @@ useEffect(() => {
                     sx={{ marginTop: 2 }}
                     onClick={async () => {
                       try {
-                        const response = await fetch(`https://localhost:5000/api/amenagements/validate?amenagementId=${amenagement.id}`, {
+                        const response = await fetch(`http://localhost:5000/api/amenagements/validate?amenagementId=${amenagement.id}`, {
                           method: "POST",
                           headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`, 
@@ -294,7 +294,7 @@ useEffect(() => {
   
       try {
         console.log("📌 Payload envoyé :", payload);
-        const response = await fetch("https://localhost:5000/api/amenagements/create", {
+        const response = await fetch("http://localhost:5000/api/amenagements/create", {
           method: "POST",
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage

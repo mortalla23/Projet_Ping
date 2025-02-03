@@ -166,7 +166,7 @@ const IntervenantList = () => {
         setAddedIntervenants({ ...addedIntervenants });
         localStorage.setItem("addedIntervenants", JSON.stringify(addedIntervenants));
 
-        toast.success("Certains Intervenants ont été validés et transférés.");
+       // toast.success("Certains Intervenants ont été validés et transférés.");
       }
     } catch (error) {
       console.error("Erreur lors de la vérification :", error);

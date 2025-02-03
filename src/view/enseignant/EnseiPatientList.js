@@ -55,8 +55,8 @@ const PatientList = () => {
     setLoading(true);
     try {
       const url = term
-        ? `https://localhost:5000/api/users/patients/search?searchTerm=${term}`
-        : `https://localhost:5000/api/users/patients`;
+        ? `http://localhost:5000/api/users/patients/search?searchTerm=${term}`
+        : `http://localhost:5000/api/users/patients`;
 
       const { data } = await axios.get(url, {
         headers: {
@@ -80,14 +80,14 @@ const PatientList = () => {
       //console.log(`🔍 Vérification des invitations refusées pour ${userRole} ${userId}...`);
 
       const [allLinksResponse, refusedLinksResponse] = await Promise.all([
-        axios.get(`https://localhost:5000/api/link/orthophoniste/${parseInt(userId, 10)}`, {
+        axios.get(`http://localhost:5000/api/link/orthophoniste/${parseInt(userId, 10)}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
         }),
         axios.post(
-          "https://localhost:5000/api/link/rejected",
+          "http://localhost:5000/api/link/rejected",
           { linkerId: parseInt(userId, 10) },
           {
             headers: {
@@ -141,7 +141,7 @@ const PatientList = () => {
   const handleAdd = async (patient) => {
     try {
       const { data: newLink } = await axios.post(
-        "https://localhost:5000/api/link/create",
+        "http://localhost:5000/api/link/create",
         {
           linkerId: parseInt(userId, 10),
           linkedTo: patient.id,
@@ -177,7 +177,7 @@ const PatientList = () => {
         return;
       }
 
-      await axios.delete(`https://localhost:5000/api/link/${linkId}`, {
+      await axios.delete(`http://localhost:5000/api/link/${linkId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "application/json",

@@ -80,7 +80,7 @@ const EnseiPatients = () => {
 
         // Récupérer les enseignants liés aux patients
         const { data: teachers } = await axios.post(
-          "https://localhost:5000/api/users/teachers",
+          "http://localhost:5000/api/users/teachers",
           { patientIds },
           {
             headers: {
@@ -171,7 +171,7 @@ const EnseiPatients = () => {
     <Box sx={{ padding: "20px" }}>
       <ToastContainer />
       <Typography variant="h5" gutterBottom>
-        Liste des patients validés par l'orthophoniste
+        Liste des patients validés par l'enseignant
       </Typography>
       <TableContainer component={Paper}>
         <Table>
