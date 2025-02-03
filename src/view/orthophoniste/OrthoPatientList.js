@@ -28,7 +28,7 @@ const OrthoPatientList = () => {
   const orthoId = localStorage.getItem("orthoId");
 
   useEffect(() => {
-    console.log("🎬 Démarrage de la surveillance des refus...");
+    //console.log("🎬 Démarrage de la surveillance des refus...");
     const savedAddedPatients = localStorage.getItem("addedPatients");
     if (savedAddedPatients) {
       setAddedPatients(JSON.parse(savedAddedPatients));
@@ -76,7 +76,7 @@ const OrthoPatientList = () => {
 
       setPatients(filteredPatients);*/
     } catch (error) {
-      console.error("Erreur API :", error);
+      //console.error("Erreur API :", error);
       toast.error("Impossible de charger les patients.");
     } finally {
       setLoading(false);
@@ -86,7 +86,7 @@ const OrthoPatientList = () => {
   // 🔥 Vérifie uniquement les invitations refusées sans recharger toute la liste
   const checkRefusedInvitations = async () => {
     try {
-        console.log("🔍 Vérification rapide des invitations refusées...");
+        //console.log("🔍 Vérification rapide des invitations refusées...");
 
         // 1️⃣ Lancer les deux requêtes en parallèle
         const [allLinksResponse, refusedLinksResponse] = await Promise.all([
@@ -110,8 +110,8 @@ const OrthoPatientList = () => {
         const allLinks = allLinksResponse.data;
         const refusedLinks = refusedLinksResponse.data;
 
-        console.log("✅ Réponse API de tous les liens :", allLinks);
-        console.log("❌ Réponse API des liens refusés :", refusedLinks);
+        //console.log("✅ Réponse API de tous les liens :", allLinks);
+        //console.log("❌ Réponse API des liens refusés :", refusedLinks);
 
         // 2️⃣ Regrouper les liens par `linkedTo`
         const patientLinksCount = {};
@@ -119,7 +119,7 @@ const OrthoPatientList = () => {
             patientLinksCount[link.linkedTo] = (patientLinksCount[link.linkedTo] || 0) + 1;
         });
 
-        console.log("📌 Nombre total de liens par patient :", patientLinksCount);
+        //console.log("📌 Nombre total de liens par patient :", patientLinksCount);
 
         // 3️⃣ Compter combien de ces liens sont REFUSED
         const refusedLinksCount = {};
@@ -127,14 +127,14 @@ const OrthoPatientList = () => {
             refusedLinksCount[link.linkedTo] = (refusedLinksCount[link.linkedTo] || 0) + 1;
         });
 
-        console.log("❌ Nombre de liens refusés par patient :", refusedLinksCount);
+        //console.log("❌ Nombre de liens refusés par patient :", refusedLinksCount);
 
         // 4️⃣ Trouver les patients qui ont UNIQUEMENT des liens REFUSED
         const patientsToRemove = Object.keys(refusedLinksCount).filter((patientId) => {
             return refusedLinksCount[patientId] === patientLinksCount[patientId]; // Vérifie si TOUS ses liens sont refusés
         });
 
-        console.log("🚀 Patients à supprimer (tous leurs liens sont refusés) :", patientsToRemove);
+        //console.log("🚀 Patients à supprimer (tous leurs liens sont refusés) :", patientsToRemove);
 
         // 5️⃣ Supprimer ces patients de `addedPatients`
         if (patientsToRemove.length > 0) {
@@ -143,16 +143,16 @@ const OrthoPatientList = () => {
 
                 patientsToRemove.forEach((patientId) => {
                     delete updated[patientId]; // Supprime uniquement si TOUS ses liens sont refusés
-                    console.log(`❌ Suppression du patient ${patientId} (tous ses liens sont refusés)`);
+                    //console.log(`❌ Suppression du patient ${patientId} (tous ses liens sont refusés)`);
                 });
 
-                console.log("📌 Nouveau état de addedPatients après suppression :", updated);
+                //console.log("📌 Nouveau état de addedPatients après suppression :", updated);
                 localStorage.setItem("addedPatients", JSON.stringify(updated));
                 return updated;
             });
         }
     } catch (error) {
-        console.error("❌ Erreur lors de la vérification des invitations refusées :", error);
+        //console.error("❌ Erreur lors de la vérification des invitations refusées :", error);
     }
 };
 

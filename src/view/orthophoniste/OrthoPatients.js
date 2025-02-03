@@ -97,7 +97,7 @@ const OrthoPatients = () => {
 
         setValidatedPatients(patientsWithTeachers);
       } catch (error) {
-        console.error("❌ Erreur lors du chargement :", error);
+        //console.error("❌ Erreur lors du chargement :", error);
         toast.error("Erreur lors du chargement des patients.");
       } finally {
         setLoading(false);
@@ -137,7 +137,7 @@ const OrthoPatients = () => {
      "Consulter / Modifier le PAP": `/ortho/dashboard/papPatient`,
 
       "Consulter / Modifier le PPRE": `/ortho/dashboard/ppre/${selectedPatient.id}`,
-      "Comptes-rendus des exercices": `/view/patient/CompteRendus?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Comptes-rendus des exercices": `/view/patient/CompteRendus`,
       "Aménagements scolaires": `/ortho/dashboard/ascolairesPatient`,
       "Historique éducatif": `/ortho/dashboard/historique-education/${selectedPatient.id}`,
       "Historique santé": `/ortho/dashboard/historique-sante/${selectedPatient.id}`,
