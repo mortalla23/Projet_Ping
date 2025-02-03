@@ -51,7 +51,7 @@ const HistoriqueSante = () => {
     const fetchHistoriqueSante = async () => {
       try {
         const userDocResponse = await fetch(
-          `https://localhost:5000/api/user-documents?userId=${userId}&documentType=HistoriqueSante`,{
+          `http://localhost:5000/api/user-documents?userId=${userId}&documentType=HistoriqueSante`,{
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
               'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ const HistoriqueSante = () => {
         if (userDocData && userDocData[0].documentId) {
           documentIdRef.current=userDocData[0].id;
           const historiqueSanteResponse = await fetch(
-            `https://localhost:5000/api/historique-sante/${userDocData[0].documentId}`,{
+            `http://localhost:5000/api/historique-sante/${userDocData[0].documentId}`,{
               headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
                 'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ const HistoriqueSante = () => {
       //console.log(formData);
   
       // Envoi des données au backend
-      const response = await fetch('https://localhost:5000/api/historique-sante', {
+      const response = await fetch('http://localhost:5000/api/historique-sante', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
@@ -119,7 +119,7 @@ const HistoriqueSante = () => {
           //console.log("document id "+id);
           //console.log("l'histot id "+historiqueSanteData.id);
         // 2. Ajouter le user_document après avoir obtenu l'ID de l'anamnèse
-        const userDocumentResponse = await fetch('https://localhost:5000/api/user-documents', {
+        const userDocumentResponse = await fetch('http://localhost:5000/api/user-documents', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage

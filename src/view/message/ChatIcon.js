@@ -49,7 +49,7 @@ const ChatIcon = () => {
     }, [userId, setUsers]); // Ajoutez setUsers comme dépendance
 
     const handleOpenWindow = () => {
-        setIsOpen(!isOpen); // Alterne l'état d'ouverture/fermeture
+        setIsOpen(isOpen => !isOpen); // Alterne l'état d'ouverture/fermeture
     };
 
     return (

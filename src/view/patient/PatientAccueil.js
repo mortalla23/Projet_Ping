@@ -41,7 +41,7 @@ const PatientAccueil = () => {
   const menuItems = [
     { text: "Anamnèse", path: "/patient/dashboard/anamnese/" },
     { text: "Mes compte-rendus", path: "/patient/dashboard/cr" },
-    { text: "Ajout d'un intervenant", path: "/patient/dashboard/ajIntervenant" },
+    { text: "Liste des intervenants", path: "/patient/dashboard/intervenants" },
     { text: "Aménagements scolaires", path: "/patient/dashboard/ascolaires" },
     { text: "PPRE", path: "/patient/dashboard/ppre/" },
     { text: "PAP", path: "/patient/dashboard/pap" },

@@ -22,7 +22,7 @@ const SectionLiens = () => {
       try {
         console.log("Token envoyé :", localStorage.getItem("token"));
         
-        const response = await fetch("https://localhost:5000/api/link/ongoing", {
+        const response = await fetch("http://localhost:5000/api/link/ongoing", {
           headers: {
             "Authorization": `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
@@ -59,7 +59,7 @@ const SectionLiens = () => {
     for (const link of links) {
       if (!creatorData[link.linkerId]) {
         try {
-          const response = await fetch(`https://localhost:5000/api/users/${link.linkerId}`, {
+          const response = await fetch(`http://localhost:5000/api/users/${link.linkerId}`, {
             headers: {
               "Authorization": `Bearer ${localStorage.getItem("token")}`,
               "Content-Type": "application/json",
@@ -83,7 +83,7 @@ const SectionLiens = () => {
     try {
         
         
-        const response = await fetch(`https://localhost:5000/api/link/validate?linkId=${id}`, {
+        const response = await fetch(`http://localhost:5000/api/link/validate?linkId=${id}`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -109,7 +109,7 @@ const SectionLiens = () => {
     try {
         //console.log(`📌 Validation du lien avec ID: ${id}`);
         
-        const response = await fetch(`https://localhost:5000/api/link/reject?linkId=${id}`, {
+        const response = await fetch(`http://localhost:5000/api/link/reject?linkId=${id}`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -120,7 +120,7 @@ const SectionLiens = () => {
         if (!response.ok) {
             throw new Error("Erreur lors de la validation du lien");
         }
-        /*await fetch(`https://localhost:5000/api/link/${id}`, {
+        /*await fetch(`http://localhost:5000/api/link/${id}`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("token")}`,

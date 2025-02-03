@@ -48,8 +48,8 @@ const OrthoPatientList = () => {
     setLoading(true);
     try {
       const url = term
-        ? `https://localhost:5000/api/users/patients/search?searchTerm=${term}`
-        : `https://localhost:5000/api/users/patients`;
+        ? `http://localhost:5000/api/users/patients/search?searchTerm=${term}`
+        : `http://localhost:5000/api/users/patients`;
 
       const { data } = await axios.get(url, {
         headers: {
@@ -59,7 +59,7 @@ const OrthoPatientList = () => {
       });
       setPatients(data);
       /*const { data: validatedLinks } = await axios.post(
-        "https://localhost:5000/api/link/validated",
+        "http://localhost:5000/api/link/validated",
         { linkerId: parseInt(orthoId, 10) },
         {
           headers: {
@@ -90,13 +90,13 @@ const OrthoPatientList = () => {
 
         // 1️⃣ Lancer les deux requêtes en parallèle
         const [allLinksResponse, refusedLinksResponse] = await Promise.all([
-            axios.get(`https://localhost:5000/api/link/orthophoniste/${parseInt(orthoId, 10)}`, {
+            axios.get(`http://localhost:5000/api/link/orthophoniste/${parseInt(orthoId, 10)}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                     "Content-Type": "application/json",
                 },
             }),
-            axios.post("https://localhost:5000/api/link/rejected", 
+            axios.post("http://localhost:5000/api/link/rejected", 
                 { linkerId: parseInt(orthoId, 10) },
                 {
                     headers: {
@@ -177,7 +177,7 @@ const OrthoPatientList = () => {
       const role = userObject.role; 
       //console.log("📌 Rôle de l'utilisateur :", role);
       const { data: newLink } = await axios.post(
-        "https://localhost:5000/api/link/create",
+        "http://localhost:5000/api/link/create",
         {
           linkerId: parseInt(orthoId, 10),
           linkedTo: patient.id,
@@ -215,7 +215,7 @@ const OrthoPatientList = () => {
         return;
       }
 
-      await axios.delete(`https://localhost:5000/api/link/${linkId}`, {
+      await axios.delete(`http://localhost:5000/api/link/${linkId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "application/json",

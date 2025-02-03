@@ -193,7 +193,7 @@ const PatientAnamnèse = () => {
     const fetchAnamnese = async () => {
       try {
         const userDocResponse = await fetch(
-          `https://localhost:5000/api/user-documents?userId=${userId}&documentType=Anamnese`,{
+          `http://localhost:5000/api/user-documents?userId=${userId}&documentType=Anamnese`,{
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
               'Content-Type': 'application/json',
@@ -203,7 +203,7 @@ const PatientAnamnèse = () => {
         if (userDocData && userDocData[0].documentId) {
           documentIdRef.current=userDocData[0].id;
           const anamneseResponse = await fetch(
-            `https://localhost:5000/api/anamnese/${userDocData[0].documentId}`,{
+            `http://localhost:5000/api/anamnese/${userDocData[0].documentId}`,{
               headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
                 'Content-Type': 'application/json',
@@ -238,7 +238,7 @@ const PatientAnamnèse = () => {
   
     try {
       // Envoi de la demande d'anamnèse
-    const anamneseResponse = await fetch('https://localhost:5000/api/anamnese/', {
+    const anamneseResponse = await fetch('http://localhost:5000/api/anamnese/', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
@@ -257,7 +257,7 @@ const PatientAnamnèse = () => {
         if (documentIdRef.current) {
         id = documentIdRef.current;
       }
-        const userDocumentResponse = await fetch('https://localhost:5000/api/user-documents', {
+        const userDocumentResponse = await fetch('http://localhost:5000/api/user-documents', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage

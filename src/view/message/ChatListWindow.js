@@ -19,7 +19,8 @@ const ChatListWindow = ({ onClose, conversations }) => {
     const [filterTerm, setFilterTerm] = useState(''); // État pour le filtre
     const { userId } = useChat();
     const [notification, setNotification] = useState(null);
-
+    const {setConversations} = useChat();
+    const { setConversationName } = useChat();
     useEffect(() => {
         const getLastMessages = async () => {
             const promises = conversations.map(async (conv) => {
@@ -84,6 +85,11 @@ const ChatListWindow = ({ onClose, conversations }) => {
 
     const handleSelect = (id) => {
         setSelectedConversationId(id);
+        const conversation = conversations.find(conv => conv.id === id);
+         const conversationName = conversation ? conversation.participants.map(p => p.username).join(', ') : 'Conversation';
+            console.log("ConversationName",conversation);
+            
+        setConversationName(conversationName);
         setIsChatOpen(true);
     };
 
@@ -131,7 +137,7 @@ const ChatListWindow = ({ onClose, conversations }) => {
         }
     };
 
-    /* // Fonction pour gérer les notifications
+    // Fonction pour gérer les notifications
     function handleNotification(notification) {
         setNotification(notification);
 
@@ -143,10 +149,10 @@ const ChatListWindow = ({ onClose, conversations }) => {
 
     
    useEffect(() => {
-        const ws = new WebSocket('wss://localhost:5000/wss2');
+        const ws = new WebSocket('ws://localhost:5000/ws2');
         
         ws.onopen = () => {
-            console.log('WebSocket connecté');
+            console.log('WebSocket2 connecté');
             
             // Envoie le message d'abonnement après que la connexion soit établie
             const subscribeMessage = JSON.stringify({
@@ -216,7 +222,7 @@ const ChatListWindow = ({ onClose, conversations }) => {
             ws.close(); // Ferme la connexion WebSocket lors du démontage du composant
         };
     }, [userId]); // Assurez-vous que userId est une dépendance
-*/
+
     // Gérer l'affichage de la barre de filtre
     const toggleFilter = () => {
         setShowFilter(!showFilter);

@@ -8,6 +8,7 @@ export const ChatProvider = ({ children }) => {
     const [conversations, setConversations] = useState([]);
     const [users, setUsers] = useState([]);
     const [selectedConversationId, setSelectedConversationId] = useState(null);
+    const [conversationName, setConversationName] = useState(null);
     const [userId, setUserId] = useState(null);
 //   const [conversations, setConversations] = useState([]); // Définir les conversations et setConversations
     return (
@@ -18,8 +19,10 @@ export const ChatProvider = ({ children }) => {
             setUsers,
             selectedConversationId,
             setSelectedConversationId,
-	    userId,
- 	    setUserId
+	        userId,
+ 	        setUserId,
+            conversationName,
+            setConversationName
         }}>
             {children}
         </ChatContext.Provider>

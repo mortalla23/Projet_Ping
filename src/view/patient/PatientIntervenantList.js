@@ -46,8 +46,8 @@ const IntervenantList = () => {
     setLoading(true);
     try {
       const url = term
-        ? `https://localhost:5000/api/users/intervenants/search?searchTerm=${term}`
-        : `https://localhost:5000/api/users/intervenants/${patientId}`;
+        ? `http://localhost:5000/api/users/intervenants/search?searchTerm=${term}`
+        : `http://localhost:5000/api/users/intervenants/${patientId}`;
 
       const { data } = await axios.get(url, {
         headers: {
@@ -58,7 +58,7 @@ const IntervenantList = () => {
 
       // Récupérer les liens validés pour filtrer les intervenants
       const { data: validatedLinks } = await axios.post(
-        "https://localhost:5000/api/link/validated",
+        "http://localhost:5000/api/link/validated",
         { linkerId: parseInt(localStorage.getItem('patientId'), 10) }, // Assurez-vous d'utiliser le bon ID
         {
           headers: {
@@ -93,7 +93,7 @@ const IntervenantList = () => {
 
   const handleAdd = async (intervenant) => {
     try {
-      const { data: newLink } = await axios.post("https://localhost:5000/api/link/create", {
+      const { data: newLink } = await axios.post("http://localhost:5000/api/link/create", {
         linkerId: patientId,
         linkedTo: intervenant.id,
       }, {
@@ -122,7 +122,7 @@ const IntervenantList = () => {
         return;
       }
 
-      await axios.delete(`https://localhost:5000/api/link/${linkId}`, {
+      await axios.delete(`http://localhost:5000/api/link/${linkId}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json',
@@ -144,7 +144,7 @@ const IntervenantList = () => {
   const checkValidatedIntervenants = async () => {
     try {
       const { data: validatedIntervenants } = await axios.post(
-        "https://localhost:5000/api/link/validated",
+        "http://localhost:5000/api/link/validated",
         { linkerId: patientId },
         {
           headers: {
@@ -166,7 +166,7 @@ const IntervenantList = () => {
         setAddedIntervenants({ ...addedIntervenants });
         localStorage.setItem("addedIntervenants", JSON.stringify(addedIntervenants));
 
-        toast.success("Certains Intervenants ont été validés et transférés.");
+       // toast.success("Certains Intervenants ont été validés et transférés.");
       }
     } catch (error) {
       console.error("Erreur lors de la vérification :", error);
