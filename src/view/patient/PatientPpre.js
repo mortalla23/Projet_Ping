@@ -10,6 +10,8 @@ import {
   AccordionDetails,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const Ppre = () => {
   const initialFormData = {
@@ -135,25 +137,27 @@ const Ppre = () => {
     
         if (contentType && contentType.includes('application/json')) {
           // Si la réponse est au format JSON, on la parse
-          alert("PPRE enregistré avec succès !");
+          toast.success("PPRE enregistré avec succès !");
         } else {
           // Si c'est du texte (ex. "Document enregistré avec succès")
           const text = await response.text();
           console.log("Message du serveur : ", text);
-          alert("PPRE enregistré avec succès !");
+          toast.success("PPRE enregistré avec succès !");
         }
       } catch (error) {
         console.error("Erreur lors de la soumission du formulaire :", error);
-        alert("Une erreur est survenue. Veuillez réessayer.");
+        toast.error("Une erreur est survenue. Veuillez réessayer.");
       }
   };
 
   return (
+    
     <Box sx={{ padding: 3 }}>
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar newestOnTop closeButton />
       <Typography variant="h4" sx={{ fontWeight: "bold" }}>
         Programme Personnalisé de Réussite Éducative
       </Typography>
-
+      
       <form onSubmit={handleSubmit}>
         {/* Objectifs éducatifs */}
         <Accordion>

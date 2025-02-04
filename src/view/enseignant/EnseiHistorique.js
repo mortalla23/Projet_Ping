@@ -12,6 +12,7 @@ import {
   Grid,
 } from '@mui/material';
 import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
 
 const EnseiHistorique = () => {
   const [formData, setFormData] = useState({
@@ -44,7 +45,7 @@ const EnseiHistorique = () => {
     // Récupère l'ID de l'utilisateur connecté depuis localStorage
     const userId = localStorage.getItem('teacherId'); // Change 'userId' en fonction de la clé utilisée
     if (!userId) {
-      alert("Utilisateur non connecté !");
+      toast.error("Utilisateur non connecté !");
       return;
     }
 
@@ -73,18 +74,19 @@ const EnseiHistorique = () => {
 
     if (response.status === 200) {
       console.log('Données envoyées avec succès:', response.data);
-      alert('Formulaire soumis avec succès!');
+      toast.success('Formulaire soumis avec succès!');
     } else {
       console.error('Erreur lors de la soumission:', response.data);
-      alert('Erreur lors de la soumission du formulaire');
+      toast.error('Erreur lors de la soumission du formulaire');
     }
   } catch (error) {
     console.error('Erreur lors de l’envoi des données :', error);
-    alert('Erreur lors de la soumission du formulaire');
+    toast.error('Erreur lors de la soumission du formulaire');
   }
 };
   return (
     <Box sx={{ padding: '20px' }}>
+      <ToastContainer />
       <Typography variant="h5" gutterBottom>
         Formulaire de dossier
       </Typography>

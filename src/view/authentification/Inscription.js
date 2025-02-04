@@ -5,6 +5,7 @@ import PageContainer from '../../component/container/PageContainer';
 import Logo from '../../layouts/logo/Logo'; // Conserve le logo
 import { useNavigate } from 'react-router-dom';
 import { Navigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
 
 const Inscription = () => {
   const navigate = useNavigate();
@@ -45,31 +46,31 @@ const [setUserId] = useState(null);
   // Validation des champs
   const validateForm = () => {
     if (!formData.username.trim()) {
-      alert("Le nom d'utilisateur est obligatoire.");
+      toast.error("Le nom d'utilisateur est obligatoire.");
       return false;
     }
     if (!formData.lastName.trim()) {
-      alert("Le nom est obligatoire.");
+      toast.error("Le nom est obligatoire.");
       return false;
     }
     if (!formData.firstName.trim()) {
-      alert("Le prénom est obligatoire.");
+      toast.error("Le prénom est obligatoire.");
       return false;
     }
     if (!formData.email.trim()) {
-      alert("L'email est obligatoire.");
+      toast.error("L'email est obligatoire.");
       return false;
     }
     if (!formData.password.trim() || formData.password.length < 6) {
-      alert("Le mot de passe doit contenir au moins 6 caractères.");
+      toast.error("Le mot de passe doit contenir au moins 6 caractères.");
       return false;
     }
     if (!formData.birthDate) {
-      alert("La date de naissance est obligatoire.");
+      toast.error("La date de naissance est obligatoire.");
       return false;
     }
     if (!formData.acceptTerms) {
-      alert("Vous devez accepter les conditions générales !");
+      toast.error("Vous devez accepter les conditions générales !");
       return false;
     }
     return true;
@@ -113,17 +114,18 @@ const [setUserId] = useState(null);
       });
 
       console.log("Réponse de l'API :", response.data);
-      alert('Inscription réussie !');
+      toast.success('Inscription réussie !');
+      toast.success('Saisir le code de sécurité OTP!');
       setOtpSent(true);
     } catch (error) {
       console.error('Erreur lors de l\'inscription :', error);
       if (error.response) {
         console.error("Statut HTTPS :", error.response.status);
         console.error("Données de la réponse :", error.response.data);
-        alert(`Erreur : ${error.response.data || "Une erreur est survenue."}`);
+        toast.error(`Erreur : ${error.response.data || "Une erreur est survenue."}`);
       } else {
         console.error("Erreur sans réponse du serveur :", error);
-        alert("Impossible de se connecter au serveur.");
+        toast.error("Impossible de se connecter au serveur.");
       }
     }
   };
@@ -144,22 +146,24 @@ const [setUserId] = useState(null);
       });
 
       console.log("Réponse de l'API :", response.data);
-      alert('OTP validé avec succès !');
+      
+      toast.success('OTP validé avec succès !');
       resetForm();
       
       navigate('/connexion');
     } catch (error) {
       console.error('Erreur lors de la validation de l\'OTP :', error);
       if (error.response) {
-        alert(`Erreur : ${error.response.data.message || "Une erreur est survenue."}`);
+        toast.error(`Erreur : ${error.response.data.message || "Une erreur est survenue."}`);
       } else {
-        alert("Impossible de se connecter au serveur.");
+        toast.error("Impossible de se connecter au serveur.");
       }
     }
   };
 
   return (
     <PageContainer title="Register" description="This is Register page">
+      <ToastContainer />
       <Box
         sx={{
           position: 'relative',
