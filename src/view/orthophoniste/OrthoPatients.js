@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 
 import axios from "axios";
 import {
@@ -44,11 +43,9 @@ const OrthoPatients = () => {
 
         // Récupération des liens validés
         const { data: validatedLinks } = await axios.post(
-          "http://localhost:5000/api/link/validated",{ linkerId: parseInt(orthoId, 10) },{
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
-              'Content-Type': 'application/json',
-            },}
+          "http://localhost:5000/api/link/validated",
+          { linkerId: parseInt(orthoId, 10) },
+          { headers: { "Content-Type": "application/json" } }
         );
 
         if (!validatedLinks || validatedLinks.length === 0) {
@@ -65,11 +62,7 @@ const OrthoPatients = () => {
         const { data: patients } = await axios.post(
           "http://localhost:5000/api/users/details",
           { patientIds },
-          {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
-              'Content-Type': 'application/json',
-            },}
+          { headers: { "Content-Type": "application/json" } }
         );
 
         if (!patients || patients.length === 0) {
@@ -82,11 +75,7 @@ const OrthoPatients = () => {
         const { data: teachers } = await axios.post(
           "http://localhost:5000/api/users/teachers",
           { patientIds },
-          {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`, // ou sessionStorage
-              'Content-Type': 'application/json',
-            },}
+          { headers: { "Content-Type": "application/json" } }
         );
 
         // Associer les enseignants aux patients
@@ -97,7 +86,7 @@ const OrthoPatients = () => {
 
         setValidatedPatients(patientsWithTeachers);
       } catch (error) {
-        //console.error("❌ Erreur lors du chargement :", error);
+        console.error("❌ Erreur lors du chargement :", error);
         toast.error("Erreur lors du chargement des patients.");
       } finally {
         setLoading(false);
@@ -134,29 +123,25 @@ const OrthoPatients = () => {
     }
 
     const url = {
-     "Consulter / Modifier le PAP": `/ortho/dashboard/papPatient`,
+      "Consulter / Modifier le PAP": `/view/patient/PAPForm?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
 
-      "Consulter / Modifier le PPRE": `/ortho/dashboard/ppre/${selectedPatient.id}`,
-      "Comptes-rendus des exercices": `/view/patient/CompteRendus`,
-      "Aménagements scolaires": `/ortho/dashboard/ascolairesPatient`,
-      "Historique éducatif": `/ortho/dashboard/historique-education/${selectedPatient.id}`,
-      "Historique santé": `/ortho/dashboard/historique-sante/${selectedPatient.id}`,
-      "Anamnese": `/ortho/dashboard/anamnese/${selectedPatient.id}`,
-     }[action];
+      "Consulter / Modifier le PPRE": `/ortho/dashboard/ppre?userId=${selectedPatient.id}`,
+      "Comptes-rendus des exercices": `/view/patient/CompteRendus?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Aménagements scolaires": `/view/patient/AménagementScolaire?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Historique éducatif": `/view/patient/HistoriqueEducatif?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Historique santé": `/view/patient/HistoriqueSante?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+      "Anamnese": `/view/patient/Anamnese?userId=${selectedPatient.id}`,
+      // "Commentaires": `/view/patient/Commentaires?userId=${selectedPatient.id}&intervenantId=${orthoId}`,
+    }[action];
 
     if (url) {
       navigate(url);
     } else {
       toast.warn("Action inconnue.");
-      return;
     }
-    const intervenantId = orthoId;
-    // ✅ Envoie `selectedPatient` et `orthoId` via `state`
-    navigate(url, { state: { selectedPatient, intervenantId } });
-  
+
     handleMenuClose();
   };
-  
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -229,8 +214,10 @@ const OrthoPatients = () => {
         <MenuItem onClick={() => handleActionClick("Comptes-rendus des exercices")}>📝 Exercices</MenuItem>
         <MenuItem onClick={() => handleActionClick("Aménagements scolaires")}>🏫 Aménagements scolaires</MenuItem>
         <MenuItem onClick={() => handleActionClick("Historique éducatif")}>🎓 Historique éducatif</MenuItem>
-        <MenuItem onClick={() => handleActionClick("Historique santé")}>🎓 Historique sante</MenuItem>
-        <MenuItem onClick={() => handleActionClick("Anamnese")}>💬 Anamnese</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Anamnèse")}>🎓 Anamnèse</MenuItem>
+        
+
+        {/* <MenuItem onClick={() => handleActionClick("Commentaires")}>💬 Commentaires</MenuItem> */}
       </Menu>
     </Box>
   );
