@@ -13,6 +13,7 @@ import {
   TextField,
   Divider,
 } from "@mui/material";
+import { toast, ToastContainer } from "react-toastify";
 
 
 
@@ -243,14 +244,14 @@ useEffect(() => {
                         if (!response.ok) {
                           throw new Error("Erreur lors de la validation de l'aménagement");
                         }
-                        alert("Aménagement validé avec succès !");
+                        toast.success("Aménagement validé avec succès !");
                         // Optionnel : mettez à jour l'état pour retirer cet aménagement de la liste
                         setPendingAmenagements((prev) =>
                           prev.filter((item) => item.id !== amenagement.id)
                         );
                         window.location.reload(); // Recharge la page après la création
                       } catch (error) {
-                        alert("Une erreur est survenue lors de la validation.");
+                        toast.error("Une erreur est survenue lors de la validation.");
                         console.error(error);
                       }
                     }}
@@ -310,11 +311,11 @@ useEffect(() => {
   
         const responseData = await response.json();
         console.log("Aménagement créé avec succès :", responseData);
-        alert("Aménagement prescrit avec succès !");
+        toast.success("Aménagement prescrit avec succès !");
         window.location.reload(); // Recharge la page après la création
       } catch (err) {
         console.error("Erreur lors de la prescription :", err);
-        alert("Une erreur est survenue lors de la prescription de l'aménagement.");
+        toast.error("Une erreur est survenue lors de la prescription de l'aménagement.");
       }
     };
   
@@ -436,6 +437,7 @@ useEffect(() => {
 
   return (
     <Box>
+      < ToastContainer />
       <Tabs
         value={activeTab}
         onChange={(event, newValue) => setActiveTab(newValue)}

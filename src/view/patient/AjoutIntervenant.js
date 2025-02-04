@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Box, Typography, TextField, Button, Grid, Paper, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { toast, ToastContainer } from "react-toastify";
 
 const AjoutIntervenant = () => {
   // Initialisation de l'état pour l'intervenant
@@ -25,11 +26,12 @@ const AjoutIntervenant = () => {
     e.preventDefault();
     // Ici, vous pouvez ajouter la logique pour envoyer les données au backend
     console.log("Intervenant ajouté:", intervenant);
-    alert("Intervenant ajouté avec succès!");
+    toast.success("Intervenant ajouté avec succès!");
   };
 
   return (
     <Box sx={{ padding: 3 }}>
+      <ToastContainer />
       <Typography variant="h4" sx={{ fontWeight: "bold", marginBottom: 3 }}>
         Ajouter un Intervenant
       </Typography>

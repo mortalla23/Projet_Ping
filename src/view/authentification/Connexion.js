@@ -82,14 +82,14 @@ const Connexion = () => {
         //}),
       });
 
-      alert('Connexion réussie ! Veuillez entrer l\'OTP envoyé à votre email.',response.data);
+      toast.success('Connexion réussie ! Veuillez entrer l\'OTP envoyé à votre email.',response.data);
       setOtpSent(true);
     } catch (error) {
       console.error('Erreur lors de la connexion :', error);
       if (error.response) {
-        alert(`Erreur : ${error.response.data.message || "Une erreur est survenue."}`);
+        toast.error(`Erreur : ${error.response.data.message || "Une erreur est survenue."}`);
       } else {
-        alert("Impossible de se connecter au serveur.");
+        toast.error("Impossible de se connecter au serveur.");
       }
     }
   };
@@ -111,11 +111,11 @@ const Connexion = () => {
       const user = response.data;
       console.log("Réponse de l'API :", user);
   
-      alert('OTP validé avec succès !');
+      toast.success('OTP validé avec succès !');
        // Appelez handleLogin pour mettre à jour le localStorage
      handleLogin(user.id, user.username,user.token); // Enregistrer l'ID et le nom d'utilisateur dans localStorage
      localStorage.setItem('user', JSON.stringify(user)); // Stocker l'objet utilisateur complet
-     alert('Connexion réussie !');
+     toast.success('Connexion réussie !');
      console.log(response.data);
      console.log("Détails de l'utilisateur :", user);
      console.log("Nom d'utilisateur stocké:", localStorage.getItem('username'));
@@ -148,9 +148,9 @@ const Connexion = () => {
     } catch (error) {
       console.error('Erreur lors de la validation de l\'OTP :', error);
       if (error.response) {
-        alert(`Erreur : ${error.response.data.message || "Une erreur est survenue."}`);
+        toast.error(`Erreur : ${error.response.data.message || "Une erreur est survenue."}`);
       } else {
-        alert("Impossible de se connecter au serveur.");
+        toast.error("Impossible de se connecter au serveur.");
       }
     }
   };

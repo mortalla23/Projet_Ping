@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import "./PAPForm.css";
+import { toast, ToastContainer } from "react-toastify";
 
 
 const PAPForm = () => {
@@ -153,15 +154,15 @@ const PAPForm = () => {
           },})
         .then((response) => {
           console.log("Mise à jour réussie :", response.data);
-          alert("Le document a été modifié avec succès.");
+          toast.success("Le document a été modifié avec succès.");
         })
         .catch((error) => {
           console.error("Erreur lors de la mise à jour du PAP :", error);
-          alert("Une erreur est survenue lors de la mise à jour du document.");
+          toast.error("Une erreur est survenue lors de la mise à jour du document.");
         });
     } else {
       console.error("ID du PAP introuvable, impossible de mettre à jour.");
-      alert("Impossible de mettre à jour le document : ID introuvable.");
+      toast.error("Impossible de mettre à jour le document : ID introuvable.");
     }
   };
 
@@ -174,12 +175,12 @@ const PAPForm = () => {
           'Content-Type': 'application/json',
         },})
       .then(() => {
-        alert("Le PAP a été créé avec succès.");
+        toast.success("Le PAP a été créé avec succès.");
         window.location.reload(); // Recharge la page après la création
       })
       .catch((error) => {
         console.error("Erreur lors de la création du PAP :", error);
-        alert("Une erreur est survenue lors de la création.");
+        toast.error("Une erreur est survenue lors de la création.");
       });
   };
 
@@ -190,6 +191,7 @@ const PAPForm = () => {
 
   return (
     <div className="container">
+      < ToastContainer />
       <h1>Plan d'Accompagnement Personnalisé</h1>
 
       {successMessage && <div className="success-message">{successMessage}</div>}

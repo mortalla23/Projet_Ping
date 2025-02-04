@@ -8,6 +8,7 @@ import {
   Grid,
   Button,
 } from "@mui/material";
+import { toast, ToastContainer } from "react-toastify";
 
 const SectionLiens = () => {
   const [ongoingLinks, setOngoingLinks] = useState([]);
@@ -95,13 +96,13 @@ const SectionLiens = () => {
             throw new Error("Erreur lors de la validation du lien");
         }
 
-        alert("✅ Lien validé avec succès !");
+        toast.success("✅ Lien validé avec succès !");
         
         setOngoingLinks((prev) => prev.filter((link) => link.id !== id));
 
     } catch (error) {
         console.error("❌ Erreur :", error);
-        alert("Une erreur est survenue lors de la validation.");
+        toast.error("Une erreur est survenue lors de la validation.");
     }
   };
 
@@ -128,13 +129,13 @@ const SectionLiens = () => {
             },
         });*/
         
-        alert("Vous avez refusé cet ajout.");
+        toast.success("Vous avez refusé cet ajout.");
         
         setOngoingLinks((prev) => prev.filter((link) => link.id !== id));
 
     } catch (error) {
         console.error("❌ Erreur :", error);
-        alert("Une erreur est survenue lors de la validation.");
+        toast.success("Une erreur est survenue lors de la validation.");
     }
   };
 
@@ -156,7 +157,7 @@ const SectionLiens = () => {
 
   return (
     <Box>
-    
+    < ToastContainer />
       <Typography variant="h5" sx={{ marginBottom: 2 }}>
         Validations en attente
       </Typography>
