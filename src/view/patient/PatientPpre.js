@@ -19,9 +19,9 @@ const Ppre = () => {
   };
 
   const labels = {
-    objectifsEducatifs: "Objectifs Éducatifs",
-    mesuresPedagogiques: "Mesures Pédagogiques",
-    evaluationSuivi: "Évaluation et Suivi",
+    objectifsEducatifs: "Objectifs éducatifs",
+    mesuresPedagogiques: "Mesures pédagogiques",
+    evaluationSuivi: "Évaluation et suivi",
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -151,7 +151,7 @@ const Ppre = () => {
   return (
     <Box sx={{ padding: 3 }}>
       <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-        PPRE (Programme Personnalisé de Réussite Éducative)
+        Programme Personnalisé de Réussite Éducative
       </Typography>
 
       <form onSubmit={handleSubmit}>

@@ -37,7 +37,7 @@ const CompteRendus = () => {
   return (
     <Box sx={{ padding: 3 }}>
       <Typography variant="h4" sx={{ fontWeight: 'bold', marginBottom: 3 }}>
-        Compte-Rendus des Exercices 
+        Compte-rendus des exercices 
       </Typography>
 
       {/* Liste des exercices */}

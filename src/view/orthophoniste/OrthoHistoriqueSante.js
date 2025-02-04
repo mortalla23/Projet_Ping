@@ -170,14 +170,14 @@ const HistoriqueSante = () => {
   return (
     <Box sx={{ padding: 3 }}>
       <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-        Historique de Santé
+        Historique de santé
       </Typography>
 
       <form onSubmit={handleSubmit}>
         {/* Antécédents médicaux */}
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Antécédents Médicaux</Typography>
+            <Typography>Antécédents médicaux</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Box sx={{ my: 2 }}>
@@ -217,7 +217,7 @@ const HistoriqueSante = () => {
         {/* Développement et difficultés alimentaires */}
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Développement et Alimentation</Typography>
+            <Typography>Développement et alimentation</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Box sx={{ my: 2 }}>
@@ -248,7 +248,7 @@ const HistoriqueSante = () => {
         {/* Comportements et habitudes */}
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Comportements et Habitudes</Typography>
+            <Typography>Comportements et habitudes</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Box sx={{ my: 2 }}>
@@ -299,7 +299,7 @@ const HistoriqueSante = () => {
         {/* Activités extrascolaires et temps d'écran */}
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Activités et Temps d'Écran</Typography>
+            <Typography>Activités et temps d'écran</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Box sx={{ my: 2 }}>

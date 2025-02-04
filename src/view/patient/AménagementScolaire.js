@@ -122,9 +122,7 @@ useEffect(() => {
 
     return (
       <Box>
-        <Typography variant="h5" sx={{ marginBottom: 2 }}>
-          Aménagements validés
-        </Typography>
+       
         {Object.keys(sections).map((type) => (
           <Box
             key={type}
@@ -188,9 +186,7 @@ useEffect(() => {
 
   const renderPendingAmenagements = () => (
     <Box>
-      <Typography variant="h5" sx={{ marginBottom: 2 }}>
-        Aménagements en cours de validation
-      </Typography>
+     
       {pendingAmenagements.length === 0 ? (
         <Typography>Aucun aménagement en cours de validation.</Typography>
       ) : (
@@ -321,9 +317,7 @@ useEffect(() => {
     // Affichage du formulaire
     return (
       <Box>
-        <Typography variant="h5" sx={{ marginBottom: 2 }}>
-          Prescrire un aménagement
-        </Typography>
+        
         <Box component="form" noValidate autoComplete="off" onSubmit={handleSubmit}>
           {/* Champ pour le type */}
           <TextField
@@ -443,7 +437,7 @@ useEffect(() => {
         sx={{ marginBottom: 4 }}
       >
         {tabs.map((tab, index) => (
-          <Tab key={index} label={tab.label} />
+          <Tab key={index} label={tab.label} sx={{ textTransform: "none" }}/>
         ))}
       </Tabs>
       {tabs[activeTab].render()}

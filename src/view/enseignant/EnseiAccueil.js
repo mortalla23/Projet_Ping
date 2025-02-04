@@ -26,8 +26,7 @@ import { Logout, AccountCircle, Message } from "@mui/icons-material";
 import logo from "../../assets/images/logos/bauman.png";
 
 
-
-const OrthoAccueil = () => {
+const EnseiAccueil = () => {
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [showDynamicContent, setShowDynamicContent] = useState(true);
   const [showBanner, setShowBanner] = useState(false); // Etat pour afficher la bannière de cookies
@@ -41,8 +40,8 @@ const OrthoAccueil = () => {
 
   
   const menuItems = [
-    { text: "Mes patients", path: "/ortho/dashboard/allPatients" },
-    { text: "Liste des patients", path: "/ortho/dashboard/listedespatients" },
+    { text: "Mes élèves", path: "/teacher/dashboard/allPatients" },
+    { text: "Liste des élèves", path: "/teacher/dashboard/listedespatients" },
   ];
 
   const handleMenuOpen = (event) => setMenuAnchor(event.currentTarget);
@@ -52,7 +51,7 @@ const OrthoAccueil = () => {
  const toggleMessaging = () => setIsOpen(!isOpen);
 
   const handleLogoClick = () => {
-    window.location.href = "/ortho/dashboard"; // Rediriger vers la page d'accueil
+    window.location.href = "/teacher/dashboard"; // Rediriger vers la page d'accueil
   };
   // Vérifiez si l'utilisateur a déjà accepté ou refusé les cookies à la connexion
   useEffect(() => {
@@ -170,7 +169,7 @@ const OrthoAccueil = () => {
           }}>
 
           <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-            Tableau de bord de l'orthophoniste
+            Tableau de bord de l'enseignant
           </Typography>
          
           <Box sx={{
@@ -225,7 +224,7 @@ const OrthoAccueil = () => {
      
 
         {/* Contenu Dynamique*/}
-        {showDynamicContent && location.pathname === "/ortho/dashboard" && (
+        {showDynamicContent && location.pathname === "/teacher/dashboard" && (
           <Box sx={{ backgroundColor: "#FFFFFF", padding: 2, borderRadius: "8px", boxShadow: "0 2px 5px #00000033" }}>
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               Bienvenue {user.username} !
@@ -376,4 +375,4 @@ const linkStyle = {
   },
 };
 
-export default OrthoAccueil;
+export default EnseiAccueil;

@@ -229,7 +229,7 @@ const OrthoPatients = () => {
         <MenuItem onClick={() => handleActionClick("Comptes-rendus des exercices")}>📝 Exercices</MenuItem>
         <MenuItem onClick={() => handleActionClick("Aménagements scolaires")}>🏫 Aménagements scolaires</MenuItem>
         <MenuItem onClick={() => handleActionClick("Historique éducatif")}>🎓 Historique éducatif</MenuItem>
-        <MenuItem onClick={() => handleActionClick("Historique santé")}>🎓 Historique sante</MenuItem>
+        <MenuItem onClick={() => handleActionClick("Historique santé")}>🎓 Historique santé</MenuItem>
         <MenuItem onClick={() => handleActionClick("Anamnese")}>💬 Anamnese</MenuItem>
       </Menu>
     </Box>
