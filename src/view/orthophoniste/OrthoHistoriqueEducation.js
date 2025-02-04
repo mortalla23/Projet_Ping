@@ -38,10 +38,10 @@ const HistoriqueEducation = () => {
   const labels = {
     nom: "Nom",
     prenom: "Prénom",
-    dateNaissance: "Date de Naissance",
-    niveauScolaire: "Niveau Scolaire",
-    dominant: "Droitier ou Gaucher",
-    situationFamiliale: "Situation Familiale",
+    dateNaissance: "Date de naissance",
+    niveauScolaire: "Niveau scolaire",
+    dominant: "Droitier ou gaucher",
+    situationFamiliale: "Situation familiale",
     difficulteLangage: "Difficultés dans le langage",
     bilanOrthophonique: "Bilan orthophonique réalisé",
     dateObservationDifficultes: "Date d'observation des difficultés",
@@ -121,7 +121,7 @@ const HistoriqueEducation = () => {
       
       const historiqueEducationData = await response.json();
       if (historiqueEducationData) {
-        console.log("Historique Education ajoutée avec succès", historiqueEducationData);
+        console.log("Historique éducation ajoutée avec succès", historiqueEducationData);
         var id=0;  
         
         if(documentIdRef.current){
@@ -165,12 +165,12 @@ const HistoriqueEducation = () => {
   
       if (contentType && contentType.includes('application/json')) {
         // Si la réponse est au format JSON, on la parse
-        alert("Historique de education enregistré avec succès !");
+        alert("Historique éducation enregistré avec succès !");
       } else {
         // Si c'est du texte (ex. "Document enregistré avec succès")
         const text = await response.text();
         console.log("Message du serveur : ", text);
-        alert("Historique de education enregistré avec succès !");
+        alert("Historique éducation enregistré avec succès !");
       }
     } catch (error) {
       console.error("Erreur lors de la soumission du formulaire :", error);
@@ -180,14 +180,14 @@ const HistoriqueEducation = () => {
   return (
     <Box sx={{ padding: 3 }}>
       <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-        Historique Éducation
+        Historique éducation
       </Typography>
 
       <form onSubmit={handleSubmit}>
         {/* Informations Personnelles */}
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Informations Personnelles</Typography>
+            <Typography>Informations personnelles</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Box sx={{ my: 2 }}>
@@ -249,7 +249,7 @@ const HistoriqueEducation = () => {
         {/* Difficultés et Bilan Orthophonique */}
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Difficultés et Bilan Orthophonique</Typography>
+            <Typography>Difficultés et bilan orthophonique</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Box sx={{ my: 2 }}>
@@ -309,7 +309,7 @@ const HistoriqueEducation = () => {
         {/* Apprentissage et Appréciation */}
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Apprentissage et Appréciation</Typography>
+            <Typography>Apprentissage et appréciation</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Box sx={{ my: 2 }}>
@@ -350,7 +350,7 @@ const HistoriqueEducation = () => {
         {/* Soutien Scolaire et Matières Problématiques */}
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Soutien Scolaire et Matières Problématiques</Typography>
+            <Typography>Soutien scolaire et matières problématiques</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Box sx={{ my: 2 }}>

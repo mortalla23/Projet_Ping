@@ -177,10 +177,10 @@ const IntervenantList = () => {
     <Box sx={{ padding: "20px" }}>
       <ToastContainer />
       <Typography variant="h5" gutterBottom>
-        Liste des Intervenants
+        Liste des intervenants
       </Typography>
       <TextField
-        label="Rechercher un Intervenant"
+        label="Rechercher un intervenant"
         variant="outlined"
         fullWidth
         margin="normal"

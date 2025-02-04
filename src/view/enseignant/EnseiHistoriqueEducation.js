@@ -38,7 +38,7 @@ const HistoriqueEducation = () => {
   const labels = {
     nom: "Nom",
     prenom: "Prénom",
-    dateNaissance: "Date de Naissance",
+    dateNaissance: "Date de naissance",
     niveauScolaire: "Niveau Scolaire",
     dominant: "Droitier ou Gaucher",
     situationFamiliale: "Situation Familiale",
@@ -184,14 +184,14 @@ const HistoriqueEducation = () => {
   return (
     <Box sx={{ padding: 3 }}>
       <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-        Historique Éducation
+        Historique éducation
       </Typography>
 
       <form onSubmit={handleSubmit}>
         {/* Informations Personnelles */}
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Informations Personnelles</Typography>
+            <Typography>Informations personnelles</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Box sx={{ my: 2 }}>
@@ -253,7 +253,7 @@ const HistoriqueEducation = () => {
         {/* Difficultés et Bilan Orthophonique */}
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Difficultés et Bilan Orthophonique</Typography>
+            <Typography>Difficultés et bilan orthophonique</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Box sx={{ my: 2 }}>
@@ -313,7 +313,7 @@ const HistoriqueEducation = () => {
         {/* Apprentissage et Appréciation */}
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Apprentissage et Appréciation</Typography>
+            <Typography>Apprentissage et appréciation</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Box sx={{ my: 2 }}>
@@ -354,7 +354,7 @@ const HistoriqueEducation = () => {
         {/* Soutien Scolaire et Matières Problématiques */}
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Soutien Scolaire et Matières Problématiques</Typography>
+            <Typography>Soutien scolaire et matières problématiques</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Box sx={{ my: 2 }}>
