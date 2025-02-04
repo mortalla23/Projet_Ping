@@ -138,9 +138,9 @@ const [setUserId] = useState(null);
         headers: {
           'Content-Type': 'application/json',
         },
-        httpsAgent: new (require("https").Agent)({
-          rejectUnauthorized: false, // Ignore les erreurs SSL
-        }),
+        //httpsAgent: new (require("https").Agent)({
+          //rejectUnauthorized: false, // Ignore les erreurs SSL
+        //}),
       });
 
       console.log("Réponse de l'API :", response.data);
