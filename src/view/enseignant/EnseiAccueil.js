@@ -26,7 +26,8 @@ import { Logout, AccountCircle, Message } from "@mui/icons-material";
 import logo from "../../assets/images/logos/bauman.png";
 
 
-const EnseiAccueil = () => {
+
+const OrthoAccueil = () => {
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [showDynamicContent, setShowDynamicContent] = useState(true);
   const [showBanner, setShowBanner] = useState(false); // Etat pour afficher la bannière de cookies
@@ -40,8 +41,8 @@ const EnseiAccueil = () => {
 
   
   const menuItems = [
-    { text: "Mes élèves", path: "/teacher/dashboard/allPatients" },
-    { text: "Liste des élèves", path: "/teacher/dashboard/listedespatients" },
+    { text: "Mes patients", path: "/ortho/dashboard/allPatients" },
+    { text: "Liste des patients", path: "/ortho/dashboard/listedespatients" },
   ];
 
   const handleMenuOpen = (event) => setMenuAnchor(event.currentTarget);
@@ -51,7 +52,7 @@ const EnseiAccueil = () => {
  const toggleMessaging = () => setIsOpen(!isOpen);
 
   const handleLogoClick = () => {
-    window.location.href = "/teacher/dashboard"; // Rediriger vers la page d'accueil
+    window.location.href = "/ortho/dashboard"; // Rediriger vers la page d'accueil
   };
   // Vérifiez si l'utilisateur a déjà accepté ou refusé les cookies à la connexion
   useEffect(() => {
@@ -169,7 +170,7 @@ const EnseiAccueil = () => {
           }}>
 
           <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-            Tableau de bord de l'enseignant
+            Tableau de bord de l'orthophoniste
           </Typography>
          
           <Box sx={{
@@ -224,7 +225,7 @@ const EnseiAccueil = () => {
      
 
         {/* Contenu Dynamique*/}
-        {showDynamicContent && location.pathname === "/teacher/dashboard" && (
+        {showDynamicContent && location.pathname === "/ortho/dashboard" && (
           <Box sx={{ backgroundColor: "#FFFFFF", padding: 2, borderRadius: "8px", boxShadow: "0 2px 5px #00000033" }}>
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               Bienvenue {user.username} !
@@ -243,7 +244,7 @@ const EnseiAccueil = () => {
         <DialogTitle sx={{ bgcolor: "#5BA8B4", color: "white" }}>Politique de Cookies</DialogTitle>
         <DialogContent>
           <Typography>
-            Nous utilisons des cookies pour améliorer votre expérience.{" "}
+          Nous utilisons uniquement des cookies essentiels pour vous permettre de vous connecter et d'utiliser le site correctement.{" "}
             <span style={{ textDecoration: "underline", cursor: "pointer" }} onClick={() => setShowPrivacyPolicy(true)}>
               Voir la politique de confidentialité
             </span>.
@@ -252,9 +253,6 @@ const EnseiAccueil = () => {
         <DialogActions>
           <Button onClick={acceptCookies} sx={{ backgroundColor: "#5BA8B4", color: "white" }}>
             Accepter
-          </Button>
-          <Button onClick={declineCookies} sx={{ backgroundColor: "#5BA8B4", color: "white" }}>
-            Refuser
           </Button>
         </DialogActions>
       </Dialog>
@@ -378,4 +376,4 @@ const linkStyle = {
   },
 };
 
-export default EnseiAccueil;
+export default OrthoAccueil;
