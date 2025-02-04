@@ -12,6 +12,7 @@ import {
   AccordionDetails,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { toast, ToastContainer } from "react-toastify";
 
 const HistoriqueSante = () => {
   const userId = localStorage.getItem('patientId');
@@ -154,21 +155,22 @@ const HistoriqueSante = () => {
   
       if (contentType && contentType.includes('application/json')) {
         // Si la réponse est au format JSON, on la parse
-        alert("Historique de santé enregistré avec succès !");
+        toast.success("Historique de santé enregistré avec succès !");
       } else {
         // Si c'est du texte (ex. "Document enregistré avec succès")
         const text = await response.text();
         console.log("Message du serveur : ", text);
-        alert("Historique de santé enregistré avec succès !");
+        toast.success("Historique de santé enregistré avec succès !");
       }
     } catch (error) {
       console.error("Erreur lors de la soumission du formulaire :", error);
-      alert("Une erreur est survenue. Veuillez réessayer.");
+      toast.error("Une erreur est survenue. Veuillez réessayer.");
     }
   };
   
   return (
     <Box sx={{ padding: 3 }}>
+      <ToastContainer />
       <Typography variant="h4" sx={{ fontWeight: "bold" }}>
         Historique de Santé
       </Typography>

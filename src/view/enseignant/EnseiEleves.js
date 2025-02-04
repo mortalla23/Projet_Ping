@@ -26,8 +26,12 @@ const EnseiEleves = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [validatedPatients, setValidatedPatients] = useState([]);
-  const open = Boolean(anchorEl);
-  const teacherId = localStorage.getItem("teacherId");
+  const [searchEmail, setSearchEmail] = useState('');
+  const [foundStudent, setFoundStudent] = useState(null);
+  const [open, setOpen] = useState(false);
+  //const open = Boolean(anchorEl);
+  
+  const [teacherId, setTeacherId] = localStorage.getItem("teacherId");
   const navigate = useNavigate(); // ✅ Utilisation de useNavigate pour la navigation
 
   // Pagination State
