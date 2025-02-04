@@ -77,9 +77,9 @@ const Connexion = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        httpsAgent: new (require("https").Agent)({
-          rejectUnauthorized: false,
-        }),
+        //httpsAgent: new (require("https").Agent)({
+         // rejectUnauthorized: false,
+        //}),
       });
 
       alert('Connexion réussie ! Veuillez entrer l\'OTP envoyé à votre email.',response.data);
@@ -104,9 +104,9 @@ const Connexion = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        httpsAgent: new (require("https").Agent)({
-          rejectUnauthorized: false,
-        }),
+        //httpsAgent: new (require("https").Agent)({
+          //rejectUnauthorized: false,
+        //}),
       });
       const user = response.data;
       console.log("Réponse de l'API :", user);

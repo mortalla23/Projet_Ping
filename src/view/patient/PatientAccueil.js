@@ -25,6 +25,7 @@ import { Logout, AccountCircle, Message } from "@mui/icons-material";
 import logo from "../../assets/images/logos/bauman.png";
 
 
+
 const PatientAccueil = () => {
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [showDynamicContent, setShowDynamicContent] = useState(true);
@@ -247,7 +248,7 @@ const PatientAccueil = () => {
         <DialogTitle sx={{ bgcolor: "#5BA8B4", color: "white" }}>Politique de Cookies</DialogTitle>
         <DialogContent>
           <Typography>
-            Nous utilisons des cookies pour améliorer votre expérience.{" "}
+          Nous utilisons uniquement des cookies essentiels pour vous permettre de vous connecter et d'utiliser le site correctement.{" "}
             <span style={{ textDecoration: "underline", cursor: "pointer" }} onClick={() => setShowPrivacyPolicy(true)}>
               Voir la politique de confidentialité
             </span>.
@@ -256,9 +257,6 @@ const PatientAccueil = () => {
         <DialogActions>
           <Button onClick={acceptCookies} sx={{ backgroundColor: "#5BA8B4", color: "white" }}>
             Accepter
-          </Button>
-          <Button onClick={declineCookies} sx={{ backgroundColor: "#5BA8B4", color: "white" }}>
-            Refuser
           </Button>
         </DialogActions>
       </Dialog>
