@@ -261,6 +261,7 @@ const [setUserId] = useState(null);
                   <TextField
                     id="email"
                     name="email"
+                    type='email'
                     placeholder="Votre email..."
                     variant="outlined"
                     fullWidth

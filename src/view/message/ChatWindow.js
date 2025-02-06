@@ -82,7 +82,7 @@ const ChatWindow = ({ onClose }) => {
         {messages.map((message) => {
             const sender = users.find(user => user.id === message.senderId);
             const senderName = message.senderId === parseInt(userId, 10) 
-                ? 'You' 
+                ? 'Moi' 
                 : (sender ? sender.username : 'Inconnu');
             
             return (

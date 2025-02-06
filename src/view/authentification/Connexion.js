@@ -241,7 +241,7 @@ const Connexion = () => {
                   </Box>
                   <Stack justifyContent="space-between" direction="row" alignItems="center">
                     <FormGroup>
-                      <FormControlLabel
+                      {/* <FormControlLabel
                         control={
                           <Checkbox
                             name="remember"
@@ -249,8 +249,8 @@ const Connexion = () => {
                             onChange={handleChange}
                           />
                         }
-                        label="Se souvenir de moi"
-                      />
+                        //label="Se souvenir de moi"
+                      /> */}
                     </FormGroup>
                   </Stack>
                 </Stack>
@@ -280,7 +280,7 @@ const Connexion = () => {
                     htmlFor="otp"
                     mb="5px"
                   >
-                    OTP
+                    Code de sécurité (OTP) 
                   </Typography>
                   <TextField
                     id="otp"
