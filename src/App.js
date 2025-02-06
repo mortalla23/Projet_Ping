@@ -10,7 +10,7 @@ import Messages from './view/message/Message';
 
 // Composants pour les différentes sections du tableau de bord pour enseignant
 //import EnseiEleves from './view/enseignant/EnseiEleves';
-import EnseiRapports from './view/enseignant/EnseiRapports';
+// import EnseiRapports from './view/enseignant/EnseiRapports';
 import EnseiAmenagements from './view/enseignant/EnseiAmenagements';
 import AddStudentPage from './view/enseignant/AddStudentPage';
 import EnseiHistoriqueEducation from './view/enseignant/EnseiHistoriqueEducation';
@@ -85,7 +85,7 @@ function App() {
           <Route path="documents" element={<ConsulDocuments />} />
           <Route path="messages" element={<Messages />} />
           <Route path="ppre/:userId" element={<EnseiPpre/>} />
-          <Route path="rapports/:userId" element={<EnseiRapports/>} />
+          {/* <Route path="rapports/:userId" element={<EnseiRapports/>} /> */}
           
         </Route>
 
